@@ -1,0 +1,100 @@
+roadmap_version: '1.0'
+github_enabled: true
+github_repo: paiml/rust-mdipierro-nlib
+roadmap:
+- id: PMAT-001
+  github_issue: null
+  item_type: task
+  title: 'Phase 1a: sort.rs — quicksort, mergesort, heapsort with contracts'
+  status: inprogress
+  priority: medium
+  assigned_to: null
+  created: 2026-04-06T18:31:09Z
+  updated: 2026-04-06T18:31:13.253739523+00:00
+  spec: null
+  acceptance_criteria: []
+  phases: []
+  subtasks: []
+  estimated_effort: null
+  labels: []
+  notes: null
+- id: PMAT-002
+  github_issue: null
+  item_type: task
+  title: 'Phase 1b: stats.rs — mean, variance, covariance, correlation, chi-squared'
+  status: planned
+  priority: medium
+  assigned_to: null
+  created: 2026-04-06T18:31:09Z
+  updated: 2026-04-06T18:31:09Z
+  spec: null
+  acceptance_criteria: []
+  phases: []
+  subtasks: []
+  estimated_effort: null
+  labels: []
+  notes: null
+- id: PMAT-003
+  github_issue: null
+  item_type: task
+  title: 'Phase 1c: matrix.rs — matmul, transpose, inverse, cholesky, determinant'
+  status: planned
+  priority: medium
+  assigned_to: null
+  created: 2026-04-06T18:31:09Z
+  updated: 2026-04-06T18:31:09Z
+  spec: null
+  acceptance_criteria: []
+  phases: []
+  subtasks: []
+  estimated_effort: null
+  labels: []
+  notes: null
+- id: PMAT-004
+  github_issue: null
+  item_type: task
+  title: 'Phase 2a: solve.rs — bisection, newton, secant, fixed_point'
+  status: planned
+  priority: medium
+  assigned_to: null
+  created: 2026-04-06T18:31:09Z
+  updated: 2026-04-06T18:31:09Z
+  spec: null
+  acceptance_criteria: []
+  phases: []
+  subtasks: []
+  estimated_effort: null
+  labels: []
+  notes: null
+- id: PMAT-005
+  github_issue: null
+  item_type: task
+  title: 'Phase 2b: optimize.rs — golden_section, newton_opt, gradient_descent'
+  status: planned
+  priority: medium
+  assigned_to: null
+  created: 2026-04-06T18:31:09Z
+  updated: 2026-04-06T18:31:09Z
+  spec: null
+  acceptance_criteria: []
+  phases: []
+  subtasks: []
+  estimated_effort: null
+  labels: []
+  notes: null
+- id: PMAT-006
+  github_issue: null
+  item_type: task
+  title: 'Phase 2c: integrate.rs — trapezoid, simpson, adaptive_quadrature'
+  status: planned
+  priority: medium
+  assigned_to: null
+  created: 2026-04-06T18:31:09Z
+  updated: 2026-04-06T18:31:09Z
+  spec: null
+  acceptance_criteria: []
+  phases: []
+  subtasks: []
+  estimated_effort: null
+  labels: []
+  notes: null

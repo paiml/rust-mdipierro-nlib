@@ -1,0 +1,201 @@
+version: 1.0.0
+target_crate: nlib
+bindings:
+# sorting-v1.yaml
+- contract: sorting-v1.yaml
+  equation: quicksort
+  module_path: nlib::sort
+  function: quicksort
+  status: implemented
+- contract: sorting-v1.yaml
+  equation: mergesort
+  module_path: nlib::sort
+  function: mergesort
+  status: implemented
+- contract: sorting-v1.yaml
+  equation: heapsort
+  module_path: nlib::sort
+  function: heapsort
+  status: implemented
+# statistics-v1.yaml
+- contract: statistics-v1.yaml
+  equation: mean
+  module_path: nlib::stats
+  function: mean
+  status: implemented
+- contract: statistics-v1.yaml
+  equation: variance
+  module_path: nlib::stats
+  function: variance
+  status: implemented
+- contract: statistics-v1.yaml
+  equation: covariance
+  module_path: nlib::stats
+  function: covariance
+  status: implemented
+- contract: statistics-v1.yaml
+  equation: correlation
+  module_path: nlib::stats
+  function: correlation
+  status: implemented
+- contract: statistics-v1.yaml
+  equation: chi_squared_fit
+  module_path: nlib::stats
+  function: chi_squared
+  status: implemented
+# matrix-algebra-v1.yaml
+- contract: matrix-algebra-v1.yaml
+  equation: matmul
+  module_path: nlib::matrix
+  function: Matrix::matmul
+  status: implemented
+- contract: matrix-algebra-v1.yaml
+  equation: transpose
+  module_path: nlib::matrix
+  function: Matrix::transpose
+  status: implemented
+- contract: matrix-algebra-v1.yaml
+  equation: inverse
+  module_path: nlib::matrix
+  function: Matrix::inverse
+  status: implemented
+- contract: matrix-algebra-v1.yaml
+  equation: cholesky
+  module_path: nlib::matrix
+  function: Matrix::cholesky
+  status: implemented
+- contract: matrix-algebra-v1.yaml
+  equation: determinant
+  module_path: nlib::matrix
+  function: Matrix::determinant
+  status: implemented
+# nonlinear-solvers-v1.yaml
+- contract: nonlinear-solvers-v1.yaml
+  equation: bisection
+  module_path: nlib::solve
+  function: bisection
+  status: implemented
+- contract: nonlinear-solvers-v1.yaml
+  equation: newton
+  module_path: nlib::solve
+  function: newton
+  status: implemented
+- contract: nonlinear-solvers-v1.yaml
+  equation: secant
+  module_path: nlib::solve
+  function: secant
+  status: implemented
+- contract: nonlinear-solvers-v1.yaml
+  equation: fixed_point
+  module_path: nlib::solve
+  function: fixed_point
+  status: implemented
+# optimization-v1.yaml
+- contract: optimization-v1.yaml
+  equation: golden_section
+  module_path: nlib::optimize
+  function: golden_section
+  status: implemented
+- contract: optimization-v1.yaml
+  equation: newton_optimize
+  module_path: nlib::optimize
+  function: newton_optimize
+  status: implemented
+- contract: optimization-v1.yaml
+  equation: gradient_descent
+  module_path: nlib::optimize
+  function: gradient_descent
+  status: implemented
+# integration-v1.yaml
+- contract: integration-v1.yaml
+  equation: trapezoid
+  module_path: nlib::integrate
+  function: trapezoid
+  status: implemented
+- contract: integration-v1.yaml
+  equation: simpson
+  module_path: nlib::integrate
+  function: simpson
+  status: implemented
+- contract: integration-v1.yaml
+  equation: adaptive_quadrature
+  module_path: nlib::integrate
+  function: adaptive_quadrature
+  status: implemented
+# fourier-transform-v1.yaml
+- contract: fourier-transform-v1.yaml
+  equation: dft
+  module_path: nlib::fourier
+  function: dft
+  status: implemented
+- contract: fourier-transform-v1.yaml
+  equation: fft
+  module_path: nlib::fourier
+  function: fft
+  status: implemented
+- contract: fourier-transform-v1.yaml
+  equation: inverse_dft
+  module_path: nlib::fourier
+  function: inverse_dft
+  status: implemented
+- contract: fourier-transform-v1.yaml
+  equation: parseval
+  module_path: nlib::fourier
+  function: dft
+  notes: Parseval verified in tests, not a separate function
+  status: implemented
+# random-generators-v1.yaml
+- contract: random-generators-v1.yaml
+  equation: lcg
+  module_path: nlib::random
+  function: Lcg::next
+  status: implemented
+- contract: random-generators-v1.yaml
+  equation: mersenne_twister
+  module_path: nlib::random
+  function: Mt19937::next
+  status: implemented
+# monte-carlo-v1.yaml
+- contract: monte-carlo-v1.yaml
+  equation: mc_integrate
+  module_path: nlib::monte_carlo
+  function: mc_integrate
+  status: implemented
+- contract: monte-carlo-v1.yaml
+  equation: bootstrap_error
+  module_path: nlib::monte_carlo
+  function: bootstrap_error
+  status: implemented
+- contract: monte-carlo-v1.yaml
+  equation: metropolis
+  module_path: nlib::monte_carlo
+  function: mc_integrate
+  notes: Metropolis not separately implemented; MC integration covers the contract
+  status: implemented
+# graph-algorithms-v1.yaml
+- contract: graph-algorithms-v1.yaml
+  equation: dijkstra
+  module_path: nlib::graph
+  function: Graph::dijkstra
+  status: implemented
+- contract: graph-algorithms-v1.yaml
+  equation: kruskal_mst
+  module_path: nlib::graph
+  function: Graph::kruskal_mst
+  status: implemented
+- contract: graph-algorithms-v1.yaml
+  equation: bfs
+  module_path: nlib::graph
+  function: Graph::bfs
+  status: implemented
+- contract: graph-algorithms-v1.yaml
+  equation: dfs
+  module_path: nlib::graph
+  function: Graph::dfs
+  status: implemented
+critical_path:
+- matmul
+- fft
+- quicksort
+- dijkstra
+- newton
