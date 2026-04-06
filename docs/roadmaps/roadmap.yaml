@@ -6,11 +6,11 @@ roadmap:
   github_issue: null
   item_type: task
   title: 'Phase 1a: sort.rs — quicksort, mergesort, heapsort with contracts'
-  status: inprogress
+  status: completed
   priority: medium
   assigned_to: null
   created: 2026-04-06T18:31:09Z
-  updated: 2026-04-06T18:31:13.253739523+00:00
+  updated: 2026-04-06T18:43:25.106719159+00:00
   spec: null
   acceptance_criteria: []
   phases: []
