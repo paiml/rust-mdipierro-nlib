@@ -414,11 +414,15 @@ Source: https://github.com/mdipierro/nlib
 
 - Cormen, T.H. et al. (2022). *Introduction to Algorithms* (4th Ed.).
   MIT Press. — Loop invariant proofs for sorting, graph algorithms.
-- Sedgewick, R. & Wayne, K. (2011). *Algorithms* (4th Ed.). Addison-Wesley.
-  — Correctness proofs for quicksort, MST, shortest paths.
+- Lammich, P. & Nipkow, T. (2019). "Verified Efficient Implementations
+  of Dijkstra's and Kruskal's Algorithms." arXiv:1908.07643. — Verified
+  functional Dijkstra/Kruskal in Isabelle/HOL with extracted code.
+- Leino, K.R.M. & Lucio, P. (2019). "An Assertional Proof of the
+  Stability and Correctness of Natural Mergesort." arXiv:1911.01391.
+- Gamboa, R. (2002). "The Correctness of the Fast Fourier Transform: A
+  Structured Proof in ACL2." *FMSD*, 20(1):91-106.
 - Cooley, J.W. & Tukey, J.W. (1965). "An Algorithm for the Machine
   Calculation of Complex Fourier Series." *Math. Comp.*, 19:297-301.
-  — Original FFT paper, correctness via DFT equivalence.
 
 ### Monte Carlo and random number generation
 
@@ -443,6 +447,11 @@ Source: https://github.com/mdipierro/nlib
 
 ### Python-to-Rust transpilation
 
+- Blackman, D. & Vigna, S. (2021). "Scrambled Linear Pseudorandom Number
+  Generators." *ACM TOMS*, 47(4):36. arXiv:1805.01407. — PRNG analysis
+  with TestU01 BigCrush results; relevant to `random-generators-v1`.
+- Latte, M. et al. (2023). "A Survey of Transpiler Tools and
+  Techniques." arXiv:2301.10086. — Contextualizes depyler's approach.
 - PAIML Engineering (2025). "Depyler: A Python-to-Rust Transpiler with
   Semantic Verification." https://github.com/paiml/depyler — Formal
   semantic equivalence checking between source and target languages.
