@@ -1,0 +1,145 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Dense matrix algebra — matmul, transpose, inverse, Cholesky, determinant.
+    Covers the linear-algebra chapter of nlib with exact formulas.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 4 Linear Algebra'
+  - 'Golub & Van Loan (2013) Matrix Computations, 4th Ed.'
+
+equations:
+  matmul:
+    formula: 'C[i,j] = sum_{k=0}^{p-1} A[i,k] * B[k,j]'
+    domain: 'A: f64^{m x p}, B: f64^{p x n}'
+    codomain: 'C: f64^{m x n}'
+    preconditions:
+    - 'm > 0 && p > 0 && n > 0'
+    - 'A.cols() == B.rows()'
+    postconditions:
+    - 'C.rows() == m && C.cols() == n'
+    - 'C.iter().all(|v| v.is_finite())'
+    invariants:
+    - 'Associative: (AB)C == A(BC) within tolerance'
+    - 'Distributive: A(B+C) == AB + AC within tolerance'
+    tolerance: 1.0e-10
+
+  transpose:
+    formula: 'A^T[i,j] = A[j,i]'
+    domain: 'A: f64^{m x n}'
+    codomain: 'A^T: f64^{n x m}'
+    preconditions:
+    - 'm > 0 && n > 0'
+    postconditions:
+    - 'result.rows() == n && result.cols() == m'
+    - '(A^T)^T == A'
+    invariants:
+    - 'Double transpose is identity'
+
+  inverse:
+    formula: 'A * A^{-1} = I_n'
+    domain: 'A: f64^{n x n}, det(A) != 0'
+    codomain: 'A^{-1}: f64^{n x n}'
+    preconditions:
+    - 'A is square: rows == cols'
+    - 'det(A) != 0 (nonsingular)'
+    postconditions:
+    - '|A * A^{-1} - I| < tolerance'
+    - '|A^{-1} * A - I| < tolerance'
+    tolerance: 1.0e-8
+
+  cholesky:
+    formula: 'A = L * L^T where L is lower-triangular'
+    domain: 'A: f64^{n x n}, A symmetric positive-definite'
+    codomain: 'L: f64^{n x n} lower-triangular'
+    preconditions:
+    - 'A is square and symmetric: A == A^T'
+    - 'A is positive-definite: all eigenvalues > 0'
+    postconditions:
+    - '|L * L^T - A| < tolerance'
+    - 'L[i,j] == 0 for j > i'
+    tolerance: 1.0e-10
+
+  determinant:
+    formula: 'det(A) = sum_{sigma in S_n} sgn(sigma) * prod_{i} A[i, sigma(i)]'
+    domain: 'A: f64^{n x n}'
+    codomain: 'f64'
+    preconditions:
+    - 'A is square'
+    postconditions:
+    - 'det(I) == 1.0'
+    - 'det(A * B) == det(A) * det(B) within tolerance'
+    tolerance: 1.0e-8
+
+proof_obligations:
+- type: invariant
+  property: Matmul dimension and correctness
+  formal: 'forall A(m,p), B(p,n): matmul(A,B).shape == (m,n) && |C - ref| < eps'
+  applies_to: matmul
+- type: equivalence
+  property: Inverse round-trip
+  formal: '|A * inverse(A) - I| < 1e-8'
+  applies_to: inverse
+- type: invariant
+  property: Cholesky decomposition round-trip
+  formal: '|L * L^T - A| < 1e-10 for SPD A'
+  applies_to: cholesky
+- type: invariant
+  property: Determinant multiplicativity
+  formal: '|det(AB) - det(A)*det(B)| < eps'
+  applies_to: determinant
+
+falsification_tests:
+- id: FALSIFY-MATX-001
+  rule: matmul
+  prediction: Dimension mismatch panics or returns Err
+  test: 'matmul(Matrix::new(2,3), Matrix::new(4,2))'
+  if_fails: Missing dimension guard on matmul entry
+- id: FALSIFY-MATX-002
+  rule: inverse
+  prediction: Singular matrix returns Err
+  test: 'inverse(Matrix::zeros(3,3))'
+  if_fails: No singularity check before LU pivot
+- id: FALSIFY-MATX-003
+  rule: cholesky
+  prediction: Non-positive-definite matrix returns Err
+  test: 'cholesky(Matrix::from([[-1.0, 0.0],[0.0, 1.0]]))'
+  if_fails: Missing positive-definite guard; sqrt of negative
+- id: FALSIFY-MATX-004
+  rule: matmul
+  prediction: 1x1 matmul equals scalar multiply
+  test: 'assert_eq!(matmul([[a]], [[b]]), [[a*b]])'
+  if_fails: Off-by-one in k-loop accumulation
+- id: FALSIFY-MATX-005
+  rule: transpose
+  prediction: Double transpose is identity
+  test: 'assert_eq!(A.transpose().transpose(), A)'
+  if_fails: Index mapping error in transpose
+
+kani_harnesses:
+- id: KANI-MATX-001
+  obligation: Matmul dimension and correctness
+  property: output shape == (m, n) for valid inputs
+  bound: 4
+  strategy: bounded_int
+  harness: verify_matmul_shape
+- id: KANI-MATX-002
+  obligation: Inverse round-trip
+  property: '|A * inv(A) - I| < 1e-8'
+  bound: 3
+  strategy: bounded_int
+  harness: verify_inverse_roundtrip
+- id: KANI-MATX-003
+  obligation: Cholesky decomposition round-trip
+  property: '|L * L^T - A| < 1e-10'
+  bound: 3
+  strategy: bounded_int
+  harness: verify_cholesky_roundtrip
+
+qa_gate:
+  id: F-MATX-001
+  name: matrix-algebra-v1 Contract
+  checks:
+  - validation
+  - falsification

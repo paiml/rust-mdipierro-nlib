@@ -1,0 +1,160 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Descriptive and inferential statistics — mean, variance, covariance,
+    correlation, chi-squared goodness-of-fit. Covers the statistics chapter
+    of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 12 Statistics'
+  - 'Wasserman (2004) All of Statistics'
+
+equations:
+  mean:
+    formula: 'mu = (1/n) * sum_{i=1}^{n} x_i'
+    domain: 'x: &[f64], n > 0'
+    codomain: 'mu: f64'
+    preconditions:
+    - 'n > 0'
+    postconditions:
+    - 'min(x) <= mu <= max(x)'
+    invariants:
+    - 'mean([c; n]) == c for any constant c'
+    - 'mean(x + k) == mean(x) + k (shift invariance)'
+
+  variance:
+    formula: 'sigma^2 = (1/(n-1)) * sum_{i=1}^{n} (x_i - mu)^2  (Bessel correction)'
+    domain: 'x: &[f64], n > 1'
+    codomain: 'sigma^2: f64'
+    preconditions:
+    - 'n > 1'
+    postconditions:
+    - 'sigma^2 >= 0.0'
+    invariants:
+    - 'variance([c; n]) == 0 for any constant c'
+    - 'variance(a*x + b) == a^2 * variance(x)'
+    tolerance: 1.0e-12
+
+  covariance:
+    formula: 'cov(x,y) = (1/(n-1)) * sum_{i=1}^{n} (x_i - mu_x)(y_i - mu_y)'
+    domain: 'x: &[f64], y: &[f64], x.len() == y.len(), n > 1'
+    codomain: 'cov: f64'
+    preconditions:
+    - 'x.len() == y.len()'
+    - 'n > 1'
+    postconditions:
+    - 'cov(x, x) == variance(x)'
+    invariants:
+    - 'cov(x, y) == cov(y, x) (symmetric)'
+    - '|cov(x,y)| <= std(x) * std(y) (Cauchy-Schwarz)'
+    tolerance: 1.0e-12
+
+  correlation:
+    formula: 'r = cov(x, y) / (std(x) * std(y))'
+    domain: 'x: &[f64], y: &[f64], std(x) > 0 and std(y) > 0'
+    codomain: 'r: f64 in [-1, 1]'
+    preconditions:
+    - 'x.len() == y.len() && n > 1'
+    - 'std(x) > 0 && std(y) > 0'
+    postconditions:
+    - '-1.0 <= r <= 1.0'
+    invariants:
+    - 'correlation(x, x) == 1.0'
+    - 'correlation(x, -x) == -1.0'
+    tolerance: 1.0e-10
+
+  chi_squared_fit:
+    formula: 'chi2 = sum_{i=1}^{k} (O_i - E_i)^2 / E_i'
+    domain: 'O: &[f64] observed, E: &[f64] expected, k bins'
+    codomain: 'chi2: f64 test statistic'
+    preconditions:
+    - 'O.len() == E.len()'
+    - 'E_i > 0 for all i'
+    - 'k > 0'
+    postconditions:
+    - 'chi2 >= 0.0'
+    invariants:
+    - 'chi2 == 0 when O == E'
+    - 'Approximately chi-squared distributed with k-1 df under H0'
+
+proof_obligations:
+- type: bound
+  property: Variance non-negative
+  formal: 'variance(x) >= 0.0 for all x with n > 1'
+  applies_to: variance
+- type: bound
+  property: Correlation bounded
+  formal: '-1.0 <= correlation(x, y) <= 1.0'
+  applies_to: correlation
+- type: postcondition
+  property: Chi-squared non-negative
+  formal: 'chi_squared(O, E) >= 0.0'
+  applies_to: chi_squared_fit
+- type: invariant
+  property: Covariance symmetry
+  formal: 'cov(x, y) == cov(y, x)'
+  applies_to: covariance
+- type: postcondition
+  property: Mean within data range
+  formal: 'min(x) <= mean(x) <= max(x)'
+  applies_to: mean
+
+falsification_tests:
+- id: FALSIFY-STAT-001
+  rule: mean
+  prediction: Empty input returns Err
+  test: 'mean(&[])'
+  if_fails: Missing n > 0 check; division by zero
+- id: FALSIFY-STAT-002
+  rule: variance
+  prediction: Single element returns Err (n=1, Bessel div-by-zero)
+  test: 'variance(&[5.0])'
+  if_fails: Missing n > 1 check for sample variance
+- id: FALSIFY-STAT-003
+  rule: variance
+  prediction: Constant data has variance 0
+  test: 'assert_eq!(variance(&[3.0, 3.0, 3.0]), 0.0)'
+  if_fails: Floating-point accumulation error in sum-of-squares
+- id: FALSIFY-STAT-004
+  rule: correlation
+  prediction: Self-correlation is exactly 1.0
+  test: 'assert!((correlation(&x, &x) - 1.0).abs() < 1e-10)'
+  if_fails: Normalization or std computation error
+- id: FALSIFY-STAT-005
+  rule: correlation
+  prediction: Zero-variance input returns Err
+  test: 'correlation(&[5.0, 5.0], &[1.0, 2.0])'
+  if_fails: Division by zero when std(x) == 0
+- id: FALSIFY-STAT-006
+  rule: chi_squared_fit
+  prediction: Perfect fit yields chi2 == 0
+  test: 'assert_eq!(chi_squared(&[10.0, 20.0], &[10.0, 20.0]), 0.0)'
+  if_fails: Residual not zero when O == E
+
+kani_harnesses:
+- id: KANI-STAT-001
+  obligation: Variance non-negative
+  property: 'variance(x) >= 0.0'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_variance_nonneg
+- id: KANI-STAT-002
+  obligation: Correlation bounded
+  property: '-1.0 <= r <= 1.0'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_correlation_bounded
+- id: KANI-STAT-003
+  obligation: Chi-squared non-negative
+  property: 'chi2 >= 0.0'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_chi2_nonneg
+
+qa_gate:
+  id: F-STAT-001
+  name: statistics-v1 Contract
+  checks:
+  - validation
+  - falsification

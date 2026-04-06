@@ -1,0 +1,115 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Pseudo-random number generators — Linear Congruential Generator, Mersenne
+    Twister. Covers the PRNG chapter of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 9 Random Numbers'
+  - 'Knuth (1997) TAOCP Vol. 2 Seminumerical Algorithms, 3rd Ed.'
+  - 'Matsumoto & Nishimura (1998) Mersenne Twister: A 623-dimensionally equidistributed PRNG'
+
+equations:
+  lcg:
+    formula: 'x_{n+1} = (a * x_n + c) mod m'
+    domain: 'x_0: u64 seed, a: u64 multiplier, c: u64 increment, m: u64 modulus'
+    codomain: 'x_{n+1}: u64 in [0, m)'
+    preconditions:
+    - 'm > 0'
+    - 'a > 0 && a < m'
+    - 'c >= 0 && c < m'
+    - 'x_0 >= 0 && x_0 < m'
+    postconditions:
+    - '0 <= x_{n+1} < m'
+    invariants:
+    - 'Period divides m'
+    - 'Full period iff: gcd(c, m)==1, a-1 divisible by all prime factors of m, a-1 divisible by 4 if m divisible by 4'
+
+  mersenne_twister:
+    formula: |
+      MT19937: w=32, n=624, m=397, r=31
+      x_{k+n} = x_{k+m} XOR (upper(x_k) || lower(x_{k+1})) * A
+      where A = matrix with bottom row 0x9908B0DF
+      Tempering: y = x XOR (x >> u); y = y XOR ((y << s) & b); ...
+    domain: 'seed: u32'
+    codomain: 'u32 in [0, 2^32)'
+    preconditions:
+    - 'state array initialized from seed'
+    postconditions:
+    - 'output in [0, 2^32)'
+    invariants:
+    - 'Period = 2^19937 - 1 (Mersenne prime)'
+    - '623-dimensionally equidistributed'
+
+proof_obligations:
+- type: bound
+  property: LCG output range
+  formal: '0 <= lcg_next(x, a, c, m) < m'
+  applies_to: lcg
+- type: invariant
+  property: LCG deterministic
+  formal: 'lcg(seed, a, c, m, n) == lcg(seed, a, c, m, n) (same seed same sequence)'
+  applies_to: lcg
+- type: bound
+  property: MT output range
+  formal: '0 <= mt_next() < 2^32'
+  applies_to: mersenne_twister
+- type: invariant
+  property: MT deterministic
+  formal: 'mt(seed, n) == mt(seed, n)'
+  applies_to: mersenne_twister
+
+falsification_tests:
+- id: FALSIFY-RNG-001
+  rule: lcg
+  prediction: m=0 returns Err (division by zero)
+  test: 'lcg_next(1, 5, 3, 0)'
+  if_fails: Missing m > 0 precondition; mod-by-zero panic
+- id: FALSIFY-RNG-002
+  rule: lcg
+  prediction: Known MINSTD sequence
+  test: 'assert_eq!(lcg(1, 16807, 0, 2147483647), 16807)'
+  if_fails: Multiplication overflow or modulus error
+- id: FALSIFY-RNG-003
+  rule: lcg
+  prediction: Output always in [0, m)
+  test: 'for _ in 0..10000 { assert!(lcg_next(..) < m); }'
+  if_fails: Modulus not applied or overflow wrapping
+- id: FALSIFY-RNG-004
+  rule: mersenne_twister
+  prediction: Same seed produces same sequence
+  test: 'assert_eq!(MT19937::new(42).take(100), MT19937::new(42).take(100))'
+  if_fails: State initialization not deterministic
+- id: FALSIFY-RNG-005
+  rule: mersenne_twister
+  prediction: MT reference vector matches known output
+  test: 'assert_eq!(MT19937::new(5489).next(), 3499211612)'
+  if_fails: Tempering constants or twist logic incorrect
+
+kani_harnesses:
+- id: KANI-RNG-001
+  obligation: LCG output range
+  property: '0 <= output < m'
+  bound: 32
+  strategy: bounded_int
+  harness: verify_lcg_range
+- id: KANI-RNG-002
+  obligation: LCG deterministic
+  property: 'same input -> same output'
+  bound: 16
+  strategy: bounded_int
+  harness: verify_lcg_deterministic
+- id: KANI-RNG-003
+  obligation: MT output range
+  property: 'output < 2^32'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_mt_range
+
+qa_gate:
+  id: F-RNG-001
+  name: random-generators-v1 Contract
+  checks:
+  - validation
+  - falsification

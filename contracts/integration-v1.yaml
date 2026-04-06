@@ -1,0 +1,131 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Numerical quadrature — trapezoid rule, Simpson's rule, adaptive quadrature.
+    Covers the numerical integration chapter of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 7 Integration'
+  - 'Davis & Rabinowitz (1984) Methods of Numerical Integration, 2nd Ed.'
+
+equations:
+  trapezoid:
+    formula: |
+      I = h/2 * [f(a) + 2*sum_{i=1}^{n-1} f(a + i*h) + f(b)]
+      where h = (b - a) / n
+    domain: 'f: [a,b] -> R integrable, n > 0 panels'
+    codomain: 'I: f64 approximate integral'
+    preconditions:
+    - 'a < b'
+    - 'n > 0'
+    postconditions:
+    - 'Error = O(h^2) for smooth f'
+    invariants:
+    - 'Exact for linear functions'
+    - 'Converges as n -> infinity for continuous f'
+    tolerance: 1.0e-8
+
+  simpson:
+    formula: |
+      I = h/3 * [f(a) + 4*sum_{odd} f(a + i*h) + 2*sum_{even} f(a + i*h) + f(b)]
+      where h = (b - a) / n, n even
+    domain: 'f: [a,b] -> R integrable, n > 0 and n even'
+    codomain: 'I: f64 approximate integral'
+    preconditions:
+    - 'a < b'
+    - 'n > 0 && n % 2 == 0'
+    postconditions:
+    - 'Error = O(h^4) for smooth f'
+    invariants:
+    - 'Exact for polynomials up to degree 3'
+    - 'More accurate than trapezoid for same n'
+    tolerance: 1.0e-10
+
+  adaptive_quadrature:
+    formula: |
+      Q(a,b) = simpson(a,b,2);  Q2 = simpson(a,b,4)
+      if |Q2 - Q| < 15*tol: return Q2 + (Q2 - Q)/15
+      else: return Q(a, mid, tol/2) + Q(mid, b, tol/2)
+    domain: 'f: [a,b] -> R, tolerance > 0'
+    codomain: 'I: f64 approximate integral with |I - exact| < tol'
+    preconditions:
+    - 'a < b'
+    - 'tolerance > 0'
+    postconditions:
+    - '|I - exact| < tolerance (Richardson extrapolation estimate)'
+    invariants:
+    - 'Subdivides only where error is large'
+    - 'Total subintervals bounded by max_depth'
+
+proof_obligations:
+- type: postcondition
+  property: Trapezoid exact for linear functions
+  formal: 'trapezoid(a*x+b, lo, hi, n) == exact for all n >= 1'
+  applies_to: trapezoid
+- type: postcondition
+  property: Simpson exact for cubics
+  formal: 'simpson(a*x^3+b*x^2+c*x+d, lo, hi, n) == exact for all even n >= 2'
+  applies_to: simpson
+- type: invariant
+  property: Adaptive convergence
+  formal: '|adaptive(f, a, b, tol) - exact| < tol'
+  applies_to: adaptive_quadrature
+- type: bound
+  property: Trapezoid error order
+  formal: '|trap(n) - exact| / |trap(n/2) - exact| -> 0.25 as n -> inf'
+  applies_to: trapezoid
+
+falsification_tests:
+- id: FALSIFY-INTG-001
+  rule: trapezoid
+  prediction: Exact for f(x) = 3x + 1 on [0,1]
+  test: 'assert!((trapezoid(|x| 3.0*x+1.0, 0.0, 1.0, 1) - 2.5).abs() < 1e-14)'
+  if_fails: Weight or endpoint formula error in trapezoid
+- id: FALSIFY-INTG-002
+  rule: simpson
+  prediction: Odd n returns Err
+  test: 'simpson(|x| x*x, 0.0, 1.0, 3)'
+  if_fails: Missing n-even precondition check
+- id: FALSIFY-INTG-003
+  rule: simpson
+  prediction: Exact for f(x) = x^3 on [0,1]
+  test: 'assert!((simpson(|x| x.powi(3), 0.0, 1.0, 2) - 0.25).abs() < 1e-14)'
+  if_fails: Simpson weight pattern (1,4,2,4,1) is wrong
+- id: FALSIFY-INTG-004
+  rule: trapezoid
+  prediction: a >= b returns Err
+  test: 'trapezoid(|x| x, 1.0, 0.0, 10)'
+  if_fails: Missing a < b precondition check
+- id: FALSIFY-INTG-005
+  rule: adaptive_quadrature
+  prediction: Integrates 1/sqrt(x) on [0.001, 1] within tol
+  test: 'assert!((adaptive(|x| 1.0/x.sqrt(), 0.001, 1.0, 1e-6) - 1.93675).abs() < 1e-5)'
+  if_fails: Adaptive subdivision fails near singularity
+
+kani_harnesses:
+- id: KANI-INTG-001
+  obligation: Trapezoid exact for linear functions
+  property: 'error == 0 for f(x) = ax + b'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_trapezoid_linear_exact
+- id: KANI-INTG-002
+  obligation: Simpson exact for cubics
+  property: 'error == 0 for f(x) = ax^3+bx^2+cx+d'
+  bound: 4
+  strategy: bounded_int
+  harness: verify_simpson_cubic_exact
+- id: KANI-INTG-003
+  obligation: Adaptive convergence
+  property: '|result - exact| < tol'
+  bound: 16
+  strategy: bounded_int
+  harness: verify_adaptive_convergence
+
+qa_gate:
+  id: F-INTG-001
+  name: integration-v1 Contract
+  checks:
+  - validation
+  - falsification

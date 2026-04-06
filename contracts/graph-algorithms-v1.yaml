@@ -1,0 +1,161 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Graph algorithms — Dijkstra shortest path, Kruskal MST, BFS, DFS.
+    Covers the graph theory chapter of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 11 Graphs'
+  - 'Cormen et al. (2009) Introduction to Algorithms, 3rd Ed. — Part VI Graph Algorithms'
+
+equations:
+  dijkstra:
+    formula: |
+      dist[s] = 0; dist[v] = infinity for v != s
+      while Q not empty:
+        u = extract_min(Q)
+        for each neighbor v of u:
+          if dist[u] + w(u,v) < dist[v]:
+            dist[v] = dist[u] + w(u,v)
+            prev[v] = u
+    domain: 'G = (V, E, w) weighted directed graph, s source vertex'
+    codomain: 'dist: HashMap<V, f64>, prev: HashMap<V, V>'
+    preconditions:
+    - 'w(u,v) >= 0 for all edges (non-negative weights)'
+    - 's in V (source vertex exists)'
+    postconditions:
+    - 'dist[s] == 0'
+    - 'dist[v] is shortest-path distance from s to v'
+    - 'Path from prev[] is a valid shortest path'
+    invariants:
+    - 'Triangle inequality: dist[v] <= dist[u] + w(u,v)'
+    - 'Once extracted from Q, dist[u] is final'
+
+  kruskal_mst:
+    formula: |
+      Sort edges by weight ascending.
+      For each edge (u, v, w) in sorted order:
+        if find(u) != find(v):
+          union(u, v); add (u,v,w) to MST
+    domain: 'G = (V, E, w) weighted undirected connected graph'
+    codomain: 'MST: Vec<(V, V, f64)> with |V|-1 edges'
+    preconditions:
+    - 'G is connected'
+    - 'G is undirected'
+    postconditions:
+    - 'MST has exactly |V| - 1 edges'
+    - 'MST is a spanning tree (connects all vertices)'
+    - 'MST weight is minimal among all spanning trees'
+    invariants:
+    - 'Cut property: lightest crossing edge is in MST'
+
+  bfs:
+    formula: |
+      Queue Q; mark s visited; enqueue s
+      while Q not empty:
+        u = dequeue(Q)
+        for each neighbor v of u:
+          if v not visited: mark v; enqueue v; level[v] = level[u] + 1
+    domain: 'G = (V, E) graph, s source vertex'
+    codomain: 'visited order: Vec<V>, level: HashMap<V, usize>'
+    preconditions:
+    - 's in V'
+    postconditions:
+    - 'All vertices reachable from s are visited'
+    - 'level[v] is shortest hop count from s to v'
+    invariants:
+    - 'Visits vertices in non-decreasing level order'
+
+  dfs:
+    formula: |
+      Stack S (or recursion); push s
+      while S not empty:
+        u = pop(S)
+        if u not visited: mark u visited
+          for each neighbor v of u: push v
+    domain: 'G = (V, E) graph, s source vertex'
+    codomain: 'visited order: Vec<V>'
+    preconditions:
+    - 's in V'
+    postconditions:
+    - 'All vertices reachable from s are visited'
+    invariants:
+    - 'Explores depth-first: children before siblings'
+
+proof_obligations:
+- type: postcondition
+  property: Dijkstra shortest path optimality
+  formal: 'dist[v] == shortest_path_weight(s, v) for all reachable v'
+  applies_to: dijkstra
+- type: postcondition
+  property: Kruskal MST minimality
+  formal: 'weight(MST) <= weight(T) for all spanning trees T'
+  applies_to: kruskal_mst
+- type: postcondition
+  property: BFS level correctness
+  formal: 'level[v] == min hops from s to v'
+  applies_to: bfs
+- type: invariant
+  property: MST edge count
+  formal: '|MST.edges| == |V| - 1'
+  applies_to: kruskal_mst
+
+falsification_tests:
+- id: FALSIFY-GRPH-001
+  rule: dijkstra
+  prediction: Negative weight returns Err
+  test: 'dijkstra(graph_with_neg_edge, source)'
+  if_fails: Missing non-negative weight precondition check
+- id: FALSIFY-GRPH-002
+  rule: dijkstra
+  prediction: Single vertex has dist=0
+  test: 'assert_eq!(dijkstra(single_node, 0)[&0], 0.0)'
+  if_fails: Initialization of source distance wrong
+- id: FALSIFY-GRPH-003
+  rule: kruskal_mst
+  prediction: MST of triangle (1,2,3 weights) uses edges 1,2
+  test: 'assert_eq!(kruskal(triangle).total_weight(), 3.0)'
+  if_fails: Edge sorting or union-find logic error
+- id: FALSIFY-GRPH-004
+  rule: bfs
+  prediction: Disconnected vertex not in output
+  test: 'assert!(!bfs(disconnected_graph, 0).contains(&isolated))'
+  if_fails: BFS visits unreachable vertices
+- id: FALSIFY-GRPH-005
+  rule: kruskal_mst
+  prediction: Disconnected graph returns Err
+  test: 'kruskal(disconnected_graph)'
+  if_fails: Missing connected precondition check
+- id: FALSIFY-GRPH-006
+  rule: dijkstra
+  prediction: Known shortest path on 5-node graph
+  test: 'assert_eq!(dijkstra(five_node, 0)[&4], 7.0)'
+  if_fails: Priority queue or relaxation step error
+
+kani_harnesses:
+- id: KANI-GRPH-001
+  obligation: Dijkstra shortest path optimality
+  property: 'dist[v] == shortest path weight'
+  bound: 6
+  strategy: exhaustive
+  harness: verify_dijkstra_optimality
+- id: KANI-GRPH-002
+  obligation: MST edge count
+  property: '|MST| == |V| - 1'
+  bound: 6
+  strategy: exhaustive
+  harness: verify_mst_edge_count
+- id: KANI-GRPH-003
+  obligation: BFS level correctness
+  property: 'level[v] == min hops'
+  bound: 6
+  strategy: exhaustive
+  harness: verify_bfs_levels
+
+qa_gate:
+  id: F-GRPH-001
+  name: graph-algorithms-v1 Contract
+  checks:
+  - validation
+  - falsification

@@ -1,0 +1,130 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Monte Carlo methods — MC integration, bootstrap error estimation,
+    Metropolis-Hastings sampling. Covers the simulation chapter of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 10 Monte Carlo'
+  - 'Robert & Casella (2004) Monte Carlo Statistical Methods, 2nd Ed.'
+
+equations:
+  mc_integrate:
+    formula: 'I approx (b - a) / N * sum_{i=1}^{N} f(x_i) where x_i ~ Uniform(a, b)'
+    domain: 'f: [a,b] -> R, N > 0 samples'
+    codomain: 'I: f64 approximate integral'
+    preconditions:
+    - 'N > 0'
+    - 'a < b'
+    - 'f defined and bounded on [a, b]'
+    postconditions:
+    - 'E[I] = integral of f over [a, b]'
+    invariants:
+    - 'Variance = (b-a)^2 * Var(f) / N'
+    - 'Error decreases as O(1 / sqrt(N))'
+    tolerance: dependent_on_N
+
+  bootstrap_error:
+    formula: |
+      For B bootstrap resamples of size N from data:
+      theta_b = statistic(resample_b) for b = 1..B
+      se = sqrt(sum (theta_b - mean(theta))^2 / (B - 1))
+    domain: 'data: &[f64] of size N, statistic: fn(&[f64]) -> f64, B > 0'
+    codomain: 'se: f64 standard error estimate'
+    preconditions:
+    - 'N > 0'
+    - 'B > 1'
+    postconditions:
+    - 'se >= 0.0'
+    invariants:
+    - 'se converges to true SE as B -> infinity'
+
+  metropolis:
+    formula: |
+      Propose x' = x_n + delta where delta ~ proposal_dist
+      alpha = min(1, p(x') / p(x_n))
+      Accept x_{n+1} = x' with probability alpha, else x_{n+1} = x_n
+    domain: 'p: R -> R+ target density, x_0 initial state, proposal_dist'
+    codomain: 'chain: Vec<f64> of N samples from p'
+    preconditions:
+    - 'p(x) >= 0 for all x'
+    - 'N > 0 (chain length)'
+    postconditions:
+    - 'chain.len() == N'
+    - 'Stationary distribution of chain is p (ergodic theorem)'
+    invariants:
+    - 'Detailed balance: p(x)*T(x->y) = p(y)*T(y->x)'
+    - 'Acceptance ratio in (0, 1) for good mixing'
+
+proof_obligations:
+- type: invariant
+  property: MC integration convergence rate
+  formal: 'Var(I_N) = O(1/N)'
+  applies_to: mc_integrate
+- type: postcondition
+  property: Bootstrap standard error non-negative
+  formal: 'bootstrap_error(data, stat, B) >= 0.0'
+  applies_to: bootstrap_error
+- type: invariant
+  property: Metropolis detailed balance
+  formal: 'p(x)*T(x,y) == p(y)*T(y,x)'
+  applies_to: metropolis
+- type: bound
+  property: MC unbiased estimate
+  formal: 'E[I_N] == integral(f, a, b)'
+  applies_to: mc_integrate
+
+falsification_tests:
+- id: FALSIFY-MC-001
+  rule: mc_integrate
+  prediction: N=0 returns Err
+  test: 'mc_integrate(|x| x, 0.0, 1.0, 0)'
+  if_fails: Missing N > 0 precondition; division by zero
+- id: FALSIFY-MC-002
+  rule: mc_integrate
+  prediction: Integral of x on [0,1] converges to 0.5
+  test: 'assert!((mc_integrate(|x| x, 0.0, 1.0, 1_000_000) - 0.5).abs() < 0.01)'
+  if_fails: Uniform sampling or averaging formula error
+- id: FALSIFY-MC-003
+  rule: bootstrap_error
+  prediction: SE of constant data is zero
+  test: 'assert!(bootstrap_error(&[5.0; 100], mean, 1000) < 1e-10)'
+  if_fails: Resampling not preserving constant values
+- id: FALSIFY-MC-004
+  rule: metropolis
+  prediction: Chain length equals requested N
+  test: 'assert_eq!(metropolis(gaussian, 0.0, 1000).len(), 1000)'
+  if_fails: Off-by-one in chain length
+- id: FALSIFY-MC-005
+  rule: mc_integrate
+  prediction: Error decreases as O(1/sqrt(N))
+  test: 'assert!(err_1M < err_1K * 0.1)'
+  if_fails: Variance reduction not following CLT rate
+
+kani_harnesses:
+- id: KANI-MC-001
+  obligation: Bootstrap standard error non-negative
+  property: 'se >= 0.0'
+  bound: 16
+  strategy: bounded_int
+  harness: verify_bootstrap_nonneg
+- id: KANI-MC-002
+  obligation: MC unbiased estimate
+  property: 'E[I] == integral'
+  bound: 32
+  strategy: bounded_int
+  harness: verify_mc_unbiased
+- id: KANI-MC-003
+  obligation: Metropolis detailed balance
+  property: 'p(x)*T(x,y) == p(y)*T(y,x)'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_metropolis_balance
+
+qa_gate:
+  id: F-MC-001
+  name: monte-carlo-v1 Contract
+  checks:
+  - validation
+  - falsification

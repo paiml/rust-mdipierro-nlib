@@ -1,0 +1,150 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Sorting algorithms — quicksort, mergesort, heapsort.
+    Covers the sorting and searching chapter of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 3 Sorting'
+  - 'Cormen et al. (2009) Introduction to Algorithms, 3rd Ed. — Part II Sorting'
+
+equations:
+  quicksort:
+    formula: |
+      quicksort(A, lo, hi):
+        if lo < hi:
+          p = partition(A, lo, hi)  // Lomuto or Hoare
+          quicksort(A, lo, p - 1)
+          quicksort(A, p + 1, hi)
+      partition: choose pivot, rearrange so A[<p] <= pivot <= A[>p]
+    domain: 'A: &mut [T] where T: Ord'
+    codomain: 'A sorted in-place'
+    preconditions:
+    - 'A is a finite sequence'
+    postconditions:
+    - 'A[i] <= A[i+1] for all i in 0..len-1 (sorted)'
+    - 'A is a permutation of original input'
+    invariants:
+    - 'Average O(n log n), worst O(n^2)'
+    - 'In-place (O(log n) stack space)'
+
+  mergesort:
+    formula: |
+      mergesort(A):
+        if len(A) <= 1: return A
+        mid = len(A) / 2
+        L = mergesort(A[..mid])
+        R = mergesort(A[mid..])
+        return merge(L, R)
+      merge: interleave L, R maintaining sorted order
+    domain: 'A: &[T] where T: Ord'
+    codomain: 'sorted: Vec<T>'
+    preconditions:
+    - 'A is a finite sequence'
+    postconditions:
+    - 'result[i] <= result[i+1] for all i (sorted)'
+    - 'result is a permutation of A'
+    invariants:
+    - 'Always O(n log n) time'
+    - 'Stable sort (equal elements preserve order)'
+    - 'O(n) auxiliary space'
+
+  heapsort:
+    formula: |
+      heapsort(A):
+        build_max_heap(A)    // O(n)
+        for i in (1..len).rev():
+          swap(A[0], A[i])   // max to end
+          sift_down(A[..i], 0)  // restore heap
+    domain: 'A: &mut [T] where T: Ord'
+    codomain: 'A sorted in-place'
+    preconditions:
+    - 'A is a finite sequence'
+    postconditions:
+    - 'A[i] <= A[i+1] for all i (sorted)'
+    - 'A is a permutation of original input'
+    invariants:
+    - 'Always O(n log n) time (no worst case degradation)'
+    - 'In-place (O(1) auxiliary space)'
+
+proof_obligations:
+- type: postcondition
+  property: Output is sorted
+  formal: 'forall i in 0..n-1: result[i] <= result[i+1]'
+  applies_to: quicksort
+- type: postcondition
+  property: Output is a permutation of input
+  formal: 'multiset(output) == multiset(input)'
+  applies_to: quicksort
+- type: postcondition
+  property: Mergesort stability
+  formal: 'equal elements preserve original relative order'
+  applies_to: mergesort
+- type: postcondition
+  property: Heapsort sorted output
+  formal: 'forall i: result[i] <= result[i+1]'
+  applies_to: heapsort
+- type: invariant
+  property: Permutation invariant (all sorts)
+  formal: 'multiset(output) == multiset(input) for all three sorts'
+  applies_to: mergesort
+
+falsification_tests:
+- id: FALSIFY-SORT-001
+  rule: quicksort
+  prediction: Empty input returns empty
+  test: 'let mut v: Vec<i32> = vec![]; quicksort(&mut v); assert!(v.is_empty())'
+  if_fails: Panic on empty slice in partition
+- id: FALSIFY-SORT-002
+  rule: quicksort
+  prediction: Already-sorted input stays sorted
+  test: 'let mut v = vec![1,2,3,4,5]; quicksort(&mut v); assert_eq!(v, [1,2,3,4,5])'
+  if_fails: Partition degenerates on sorted input
+- id: FALSIFY-SORT-003
+  rule: quicksort
+  prediction: All-equal elements preserved
+  test: 'let mut v = vec![7,7,7]; quicksort(&mut v); assert_eq!(v, [7,7,7])'
+  if_fails: Partition infinite loop on equal elements
+- id: FALSIFY-SORT-004
+  rule: mergesort
+  prediction: Stability for equal keys
+  test: 'assert stable pairs maintain input order after mergesort'
+  if_fails: Merge favors right over left on equal keys
+- id: FALSIFY-SORT-005
+  rule: heapsort
+  prediction: Reverse-sorted input correctly sorted
+  test: 'let mut v = vec![5,4,3,2,1]; heapsort(&mut v); assert_eq!(v, [1,2,3,4,5])'
+  if_fails: Sift-down or heap-build order error
+- id: FALSIFY-SORT-006
+  rule: quicksort
+  prediction: Single element is trivially sorted
+  test: 'let mut v = vec![42]; quicksort(&mut v); assert_eq!(v, [42])'
+  if_fails: Off-by-one in base case check
+
+kani_harnesses:
+- id: KANI-SORT-001
+  obligation: Output is sorted
+  property: 'A[i] <= A[i+1] for all i'
+  bound: 8
+  strategy: exhaustive
+  harness: verify_quicksort_sorted
+- id: KANI-SORT-002
+  obligation: Output is a permutation of input
+  property: 'multiset(out) == multiset(in)'
+  bound: 6
+  strategy: exhaustive
+  harness: verify_sort_permutation
+- id: KANI-SORT-003
+  obligation: Mergesort stability
+  property: 'equal keys preserve relative order'
+  bound: 6
+  strategy: exhaustive
+  harness: verify_mergesort_stable
+
+qa_gate:
+  id: F-SORT-001
+  name: sorting-v1 Contract
+  checks:
+  - validation
+  - falsification

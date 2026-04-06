@@ -1,0 +1,133 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Discrete Fourier Transform — DFT, FFT (Cooley-Tukey), inverse DFT.
+    Covers the spectral analysis chapter of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 8 Spectral Methods'
+  - 'Cooley & Tukey (1965) An Algorithm for the Machine Calculation of Complex Fourier Series'
+
+equations:
+  dft:
+    formula: 'X_k = sum_{n=0}^{N-1} x_n * exp(-2*pi*i*k*n / N) for k = 0..N-1'
+    domain: 'x: Complex64^N, N > 0'
+    codomain: 'X: Complex64^N'
+    preconditions:
+    - 'N > 0'
+    postconditions:
+    - 'X.len() == N'
+    - 'X[k].is_finite() for all k'
+    invariants:
+    - 'DFT is a unitary transform (up to scaling by sqrt(N))'
+    tolerance: 1.0e-10
+
+  fft:
+    formula: |
+      Cooley-Tukey radix-2 decimation-in-time:
+      X_k = E_k + W_N^k * O_k  for k = 0..N/2-1
+      X_{k+N/2} = E_k - W_N^k * O_k
+      where E = FFT(x_even), O = FFT(x_odd), W_N = exp(-2*pi*i/N)
+    domain: 'x: Complex64^N, N = 2^m for some m >= 0'
+    codomain: 'X: Complex64^N'
+    preconditions:
+    - 'N > 0'
+    - 'N is a power of 2'
+    postconditions:
+    - 'fft(x) == dft(x) within tolerance'
+    - 'X.len() == N'
+    invariants:
+    - 'O(N log N) operations vs O(N^2) for DFT'
+    - 'Numerically equivalent to DFT'
+    tolerance: 1.0e-10
+
+  inverse_dft:
+    formula: 'x_n = (1/N) * sum_{k=0}^{N-1} X_k * exp(2*pi*i*k*n / N)'
+    domain: 'X: Complex64^N, N > 0'
+    codomain: 'x: Complex64^N (recovered signal)'
+    preconditions:
+    - 'N > 0'
+    postconditions:
+    - '|idft(dft(x)) - x| < epsilon (round-trip)'
+    invariants:
+    - 'idft is the exact inverse of dft'
+    tolerance: 1.0e-10
+
+  parseval:
+    formula: 'sum |x_n|^2 = (1/N) * sum |X_k|^2'
+    domain: 'x: Complex64^N and its DFT X'
+    codomain: 'bool (equality within tolerance)'
+    preconditions:
+    - 'N > 0'
+    postconditions:
+    - 'Energy in time domain == energy in frequency domain'
+    tolerance: 1.0e-8
+
+proof_obligations:
+- type: equivalence
+  property: FFT equals DFT
+  formal: '|fft(x) - dft(x)| < 1e-10 for all x of length 2^m'
+  applies_to: fft
+- type: equivalence
+  property: IDFT round-trip
+  formal: '|idft(dft(x)) - x| < 1e-10'
+  applies_to: inverse_dft
+- type: invariant
+  property: Parseval energy conservation
+  formal: 'sum|x|^2 == (1/N)*sum|X|^2 within tolerance'
+  applies_to: parseval
+
+falsification_tests:
+- id: FALSIFY-FFT-001
+  rule: fft
+  prediction: Non-power-of-2 length returns Err
+  test: 'fft(&vec![Complex64::new(1.0, 0.0); 7])'
+  if_fails: Missing power-of-2 check on FFT input
+- id: FALSIFY-FFT-002
+  rule: inverse_dft
+  prediction: Round-trip recovers original signal
+  test: 'assert!(idft(dft(signal)).approx_eq(signal, 1e-10))'
+  if_fails: Sign error in exponent or missing 1/N normalization
+- id: FALSIFY-FFT-003
+  rule: dft
+  prediction: DFT of constant signal is delta at k=0
+  test: 'assert!(dft([c; N])[0].re.approx_eq(c*N) && dft([c; N])[1..].all_near_zero())'
+  if_fails: Twiddle factor or summation index error
+- id: FALSIFY-FFT-004
+  rule: parseval
+  prediction: Energy preserved for random signal
+  test: 'assert!((time_energy - freq_energy/N).abs() < 1e-8)'
+  if_fails: DFT normalization convention mismatch
+- id: FALSIFY-FFT-005
+  rule: fft
+  prediction: FFT matches DFT for N=16
+  test: 'assert!(fft(x).approx_eq(dft(x), 1e-10))'
+  if_fails: Butterfly or bit-reversal permutation error
+
+kani_harnesses:
+- id: KANI-FFT-001
+  obligation: FFT equals DFT
+  property: '|fft(x) - dft(x)| < eps'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_fft_dft_equivalence
+- id: KANI-FFT-002
+  obligation: IDFT round-trip
+  property: '|idft(dft(x)) - x| < eps'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_idft_roundtrip
+- id: KANI-FFT-003
+  obligation: Parseval energy conservation
+  property: 'time energy == freq energy / N'
+  bound: 8
+  strategy: bounded_int
+  harness: verify_parseval_theorem
+
+qa_gate:
+  id: F-FFT-001
+  name: fourier-transform-v1 Contract
+  checks:
+  - validation
+  - falsification

@@ -1,0 +1,139 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Root-finding algorithms — bisection, Newton-Raphson, secant, fixed-point
+    iteration. Covers the nonlinear solver chapter of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 5 Solvers'
+  - 'Burden & Faires (2015) Numerical Analysis, 10th Ed.'
+
+equations:
+  bisection:
+    formula: |
+      Given f continuous on [a,b] with f(a)*f(b) < 0:
+      c = (a + b) / 2; if f(a)*f(c) < 0 then b = c else a = c;
+      repeat until |b - a| < tolerance
+    domain: 'f: R -> R continuous, a < b, f(a)*f(b) < 0'
+    codomain: 'root: f64 such that |f(root)| < tolerance'
+    preconditions:
+    - 'a < b'
+    - 'f(a) * f(b) < 0 (sign change)'
+    - 'f is continuous on [a, b]'
+    postconditions:
+    - '|f(root)| < tolerance'
+    - 'a <= root <= b'
+    invariants:
+    - 'Interval halves each iteration: width_n = (b-a) / 2^n'
+    tolerance: 1.0e-12
+
+  newton:
+    formula: 'x_{n+1} = x_n - f(x_n) / f''(x_n)'
+    domain: 'f: R -> R differentiable, f'': R -> R, x_0 initial guess'
+    codomain: 'root: f64 such that |f(root)| < tolerance'
+    preconditions:
+    - 'f''(x_n) != 0 at each iteration'
+    - 'x_0 sufficiently close to root (basin of convergence)'
+    postconditions:
+    - '|f(root)| < tolerance'
+    invariants:
+    - 'Quadratic convergence when f''(root) != 0'
+    tolerance: 1.0e-12
+
+  secant:
+    formula: 'x_{n+1} = x_n - f(x_n) * (x_n - x_{n-1}) / (f(x_n) - f(x_{n-1}))'
+    domain: 'f: R -> R, two initial guesses x_0, x_1'
+    codomain: 'root: f64 such that |f(root)| < tolerance'
+    preconditions:
+    - 'f(x_n) != f(x_{n-1}) (no division by zero)'
+    postconditions:
+    - '|f(root)| < tolerance'
+    invariants:
+    - 'Superlinear convergence: order ~1.618 (golden ratio)'
+    tolerance: 1.0e-12
+
+  fixed_point:
+    formula: 'x_{n+1} = g(x_n) where g(x) = x - f(x)/c for some constant c'
+    domain: 'g: R -> R contractive on [a,b], |g''(x)| < 1'
+    codomain: 'x*: f64 such that g(x*) = x*'
+    preconditions:
+    - 'g maps [a,b] into [a,b]'
+    - '|g''(x)| < 1 for all x in [a,b] (contraction)'
+    postconditions:
+    - '|g(x*) - x*| < tolerance'
+    invariants:
+    - 'Linear convergence with rate |g''(x*)|'
+    tolerance: 1.0e-10
+
+proof_obligations:
+- type: postcondition
+  property: Bisection finds root within tolerance
+  formal: '|f(bisect(f, a, b))| < tol when f(a)*f(b) < 0'
+  applies_to: bisection
+- type: postcondition
+  property: Newton converges to root
+  formal: '|f(newton(f, df, x0))| < tol when f''(x*) != 0'
+  applies_to: newton
+- type: invariant
+  property: Bisection interval halving
+  formal: 'width_n == (b - a) / 2^n'
+  applies_to: bisection
+- type: postcondition
+  property: Secant method finds root
+  formal: '|f(secant(f, x0, x1))| < tol'
+  applies_to: secant
+
+falsification_tests:
+- id: FALSIFY-SOLV-001
+  rule: bisection
+  prediction: No sign change returns Err
+  test: 'bisect(|x| x*x + 1.0, -1.0, 1.0)'
+  if_fails: Missing f(a)*f(b) < 0 precondition check
+- id: FALSIFY-SOLV-002
+  rule: newton
+  prediction: Zero derivative returns Err
+  test: 'newton(|x| x*x*x, |x| 3.0*x*x, 0.0)'
+  if_fails: Division by zero when f''(x_n) == 0
+- id: FALSIFY-SOLV-003
+  rule: bisection
+  prediction: Finds sqrt(2) to 1e-12
+  test: 'assert!((bisect(|x| x*x - 2.0, 1.0, 2.0) - SQRT_2).abs() < 1e-12)'
+  if_fails: Midpoint or interval update logic is wrong
+- id: FALSIFY-SOLV-004
+  rule: newton
+  prediction: Finds cube root of 27 from x0=2
+  test: 'assert!((newton(|x| x*x*x - 27.0, |x| 3.0*x*x, 2.0) - 3.0).abs() < 1e-12)'
+  if_fails: Newton update formula sign error
+- id: FALSIFY-SOLV-005
+  rule: secant
+  prediction: Divergent pair returns Err or max-iter
+  test: 'secant(|x| x.tan(), 1.0, 1.5, 100)'
+  if_fails: No max-iteration guard on secant method
+
+kani_harnesses:
+- id: KANI-SOLV-001
+  obligation: Bisection finds root within tolerance
+  property: '|f(root)| < tol'
+  bound: 64
+  strategy: bounded_int
+  harness: verify_bisection_convergence
+- id: KANI-SOLV-002
+  obligation: Newton converges to root
+  property: '|f(root)| < tol for smooth f'
+  bound: 32
+  strategy: bounded_int
+  harness: verify_newton_convergence
+- id: KANI-SOLV-003
+  obligation: Bisection interval halving
+  property: 'width halves each step'
+  bound: 20
+  strategy: bounded_int
+  harness: verify_bisection_interval
+
+qa_gate:
+  id: F-SOLV-001
+  name: nonlinear-solvers-v1 Contract
+  checks:
+  - validation
+  - falsification

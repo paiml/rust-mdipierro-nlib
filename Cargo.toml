@@ -1,0 +1,20 @@
+[package]
+name = "nlib"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Rust port of Di Pierro's nlib — numerical algorithms with provable contracts"
+license = "MIT"
+repository = "https://github.com/paiml/rust-mdipierro-nlib"
+authors = ["PAIML Engineering"]
+keywords = ["numerical", "linear-algebra", "optimization", "monte-carlo", "provable"]
+categories = ["mathematics", "science", "algorithms"]
+
+[dependencies]
+
+[dev-dependencies]
+provable-contracts = "0.3"
+
+[build-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_yaml_ng = "0.10"

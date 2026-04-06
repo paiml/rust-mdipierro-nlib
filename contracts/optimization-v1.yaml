@@ -1,0 +1,129 @@
+metadata:
+  version: 1.0.0
+  created: '2026-04-06'
+  author: PAIML Engineering
+  description: >
+    Numerical optimization — golden-section search, Newton's method for
+    minimization, gradient descent. Covers the optimization chapter of nlib.
+  references:
+  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 6 Optimization'
+  - 'Nocedal & Wright (2006) Numerical Optimization, 2nd Ed.'
+
+equations:
+  golden_section:
+    formula: |
+      phi = (1 + sqrt(5)) / 2; rho = 2 - phi
+      x1 = a + rho*(b - a); x2 = b - rho*(b - a)
+      if f(x1) < f(x2): b = x2 else: a = x1
+      repeat until |b - a| < tolerance
+    domain: 'f: [a,b] -> R unimodal, a < b'
+    codomain: 'x*: f64 approximate minimizer'
+    preconditions:
+    - 'a < b'
+    - 'f is unimodal on [a, b]'
+    postconditions:
+    - 'a <= x* <= b'
+    - '|b - a| < tolerance at termination'
+    invariants:
+    - 'Interval shrinks by factor (2 - phi) ~ 0.618 each step'
+    tolerance: 1.0e-10
+
+  newton_optimize:
+    formula: 'x_{n+1} = x_n - f''(x_n) / f''''(x_n)'
+    domain: 'f: R -> R twice-differentiable, x_0 initial guess'
+    codomain: 'x*: f64 such that |f''(x*)| < tolerance'
+    preconditions:
+    - 'f''''(x_n) != 0 at each iteration'
+    - 'f''''(x*) > 0 for minimum (not maximum)'
+    postconditions:
+    - '|f''(x*)| < tolerance'
+    invariants:
+    - 'Quadratic convergence near minimum'
+    tolerance: 1.0e-12
+
+  gradient_descent:
+    formula: 'x_{n+1} = x_n - alpha * grad_f(x_n)'
+    domain: 'f: R^d -> R differentiable, alpha > 0 step size'
+    codomain: 'x*: R^d such that |grad_f(x*)| < tolerance'
+    preconditions:
+    - 'alpha > 0 (learning rate)'
+    - 'f is differentiable'
+    postconditions:
+    - '|grad_f(x*)| < tolerance (stationary point)'
+    - 'f(x_{n+1}) <= f(x_n) (monotone decrease with proper alpha)'
+    invariants:
+    - 'Linear convergence for strongly convex f'
+    - 'Sufficient decrease: f(x_{n+1}) <= f(x_n) - c*alpha*|grad|^2'
+    tolerance: 1.0e-8
+
+proof_obligations:
+- type: postcondition
+  property: Golden section finds minimizer
+  formal: '|b - a| < tol at termination for unimodal f'
+  applies_to: golden_section
+- type: postcondition
+  property: Newton optimization converges
+  formal: '|f''(x*)| < tol when f''''(x*) > 0'
+  applies_to: newton_optimize
+- type: invariant
+  property: Gradient descent monotone decrease
+  formal: 'f(x_{n+1}) <= f(x_n) for appropriate alpha'
+  applies_to: gradient_descent
+- type: invariant
+  property: Golden section shrink rate
+  formal: 'interval ratio == (2 - phi) per step'
+  applies_to: golden_section
+
+falsification_tests:
+- id: FALSIFY-OPT-001
+  rule: golden_section
+  prediction: Finds minimum of x^2 at x=0
+  test: 'assert!(golden_section(|x| x*x, -1.0, 1.0).abs() < 1e-10)'
+  if_fails: Golden ratio constant or interval update is wrong
+- id: FALSIFY-OPT-002
+  rule: newton_optimize
+  prediction: Zero second derivative returns Err
+  test: 'newton_opt(|x| x*x*x, |x| 3.0*x*x, |x| 6.0*x, 0.0)'
+  if_fails: No f''''(x)==0 guard; division by zero
+- id: FALSIFY-OPT-003
+  rule: gradient_descent
+  prediction: Negative alpha returns Err
+  test: 'gradient_descent(|x| x*x, |x| 2.0*x, 1.0, -0.1)'
+  if_fails: Missing alpha > 0 precondition check
+- id: FALSIFY-OPT-004
+  rule: gradient_descent
+  prediction: Finds minimum of (x-3)^2 at x=3
+  test: 'assert!((gd(|x| (x-3.0).powi(2), |x| 2.0*(x-3.0), 0.0, 0.1) - 3.0).abs() < 1e-6)'
+  if_fails: Gradient sign or step formula error
+- id: FALSIFY-OPT-005
+  rule: golden_section
+  prediction: a >= b returns Err
+  test: 'golden_section(|x| x*x, 1.0, -1.0)'
+  if_fails: Missing a < b precondition check
+
+kani_harnesses:
+- id: KANI-OPT-001
+  obligation: Golden section finds minimizer
+  property: 'interval width < tol'
+  bound: 64
+  strategy: bounded_int
+  harness: verify_golden_section_convergence
+- id: KANI-OPT-002
+  obligation: Gradient descent monotone decrease
+  property: 'f(x_{n+1}) <= f(x_n)'
+  bound: 16
+  strategy: bounded_int
+  harness: verify_gradient_descent_monotone
+- id: KANI-OPT-003
+  obligation: Newton optimization converges
+  property: '|f''(x*)| < tol'
+  bound: 32
+  strategy: bounded_int
+  harness: verify_newton_opt_convergence
+
+qa_gate:
+  id: F-OPT-001
+  name: optimization-v1 Contract
+  checks:
+  - validation
+  - falsification
