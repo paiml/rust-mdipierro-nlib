@@ -1,8 +1,11 @@
 //! Graph algorithms — contract: `graph-algorithms-v1.yaml`
 //!
 //! Di Pierro Ch. 11: Dijkstra, BFS, DFS, Kruskal MST.
+//! Uses `aprender::graph::Graph` (CSR) as the reference graph type
+//! and maintains a local adjacency-list `Graph` for nlib's mutable API.
 
 use std::collections::VecDeque;
+use aprender::graph::Graph as AprGraph;
 
 /// Weighted directed graph (adjacency list).
 #[derive(Debug, Clone)]
@@ -22,6 +25,25 @@ impl Graph {
         self.add_edge(v, u, w);
     }
     pub fn neighbors(&self, u: usize) -> &[(usize, f64)] { &self.adj[u] }
+
+    /// Convert to aprender's CSR Graph for analysis.
+    pub fn to_aprender(&self) -> AprGraph {
+        let mut edges = Vec::new();
+        for u in 0..self.n {
+            for &(v, w) in &self.adj[u] {
+                edges.push((u, v, w));
+            }
+        }
+        if edges.is_empty() {
+            // aprender needs at least self-edges to know node count
+            AprGraph::from_edges(
+                &(0..self.n).map(|i| (i, i)).collect::<Vec<_>>(),
+                true,
+            )
+        } else {
+            AprGraph::from_weighted_edges(&edges, true)
+        }
+    }
 }
 
 /// Dijkstra shortest-path. Unreachable vertices get f64::INFINITY.
@@ -196,5 +218,10 @@ mod tests {
     #[test] fn kruskal_single() { assert!(kruskal_mst(&Graph::new(1)).is_empty()); }
     #[test] fn kruskal_edge_count() {
         assert_eq!(kruskal_mst(&five_node()).len(), 4);
+    }
+    #[test] fn to_aprender_conversion() {
+        let g = triangle();
+        let apr = g.to_aprender();
+        assert!(apr.num_nodes() >= 3);
     }
 }

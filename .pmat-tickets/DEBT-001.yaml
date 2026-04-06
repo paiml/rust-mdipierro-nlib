@@ -1,0 +1,5 @@
+id: DEBT-001
+title: Initial setup — missing CI, Makefile, pmat baseline
+type: infrastructure
+severity: low
+notes: New repo, CI and baseline not yet established

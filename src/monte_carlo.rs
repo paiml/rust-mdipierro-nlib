@@ -1,20 +1,24 @@
 //! Monte Carlo methods — contract: `monte-carlo-v1.yaml`
 //!
 //! Di Pierro Ch. 10: MC integration, bootstrap error estimation.
-//! Uses internal LCG for reproducible randomness (no external deps).
+//! Uses `aprender::monte_carlo::prelude::MonteCarloRng` for reproducible
+//! randomness and internal LCG for the classic Di Pierro algorithm.
 
+use aprender::monte_carlo::prelude::MonteCarloRng;
 use crate::random::Lcg;
 
-/// Monte Carlo integration: I ≈ (b-a)/N * sum f(x_i), x_i ~ Uniform(a,b).
+/// Monte Carlo integration: I ~ (b-a)/N * sum f(x_i), x_i ~ Uniform(a,b).
+///
+/// Uses `aprender::MonteCarloRng` for uniform sample generation.
 pub fn mc_integrate(f: impl Fn(f64) -> f64, a: f64, b: f64, n: usize, rng_seed: u64) -> f64 {
     assert!(n > 0, "mc_integrate: n must be positive");
     assert!(a < b, "mc_integrate: a must be less than b");
-    let m = 2_147_483_647u64; // 2^31 - 1
-    let mut rng = Lcg::new(rng_seed % (m - 1) + 1, 16807, 0, m);
+    // Use aprender's MonteCarloRng for uniform generation
+    let mut rng = MonteCarloRng::new(rng_seed);
     let width = b - a;
     let mut sum = 0.0;
     for _ in 0..n {
-        let u = rng.next_f64();
+        let u = rng.uniform();
         let x = a + u * width;
         sum += f(x);
     }
@@ -25,7 +29,8 @@ pub fn mc_integrate(f: impl Fn(f64) -> f64, a: f64, b: f64, n: usize, rng_seed: 
 ///
 /// Resamples `data` with replacement `n_resamples` times, computes
 /// `statistic_fn` on each resample, returns the standard deviation
-/// of the bootstrap distribution.
+/// of the bootstrap distribution. Uses internal LCG for index generation
+/// to maintain exact reproducibility with prior tests.
 pub fn bootstrap_error(
     data: &[f64],
     statistic_fn: fn(&[f64]) -> f64,
@@ -65,14 +70,14 @@ mod tests {
     fn mc_integrate_x_identity() {
         // integral of x on [0,1] = 0.5
         let r = mc_integrate(|x| x, 0.0, 1.0, 100_000, 42);
-        assert!((r - 0.5).abs() < 0.02, "MC integral of x ≈ 0.5, got {r}");
+        assert!((r - 0.5).abs() < 0.02, "MC integral of x ~ 0.5, got {r}");
     }
 
     #[test]
     fn mc_integrate_x_squared() {
         // integral of x^2 on [0,1] = 1/3
         let r = mc_integrate(|x| x * x, 0.0, 1.0, 100_000, 42);
-        assert!((r - 1.0 / 3.0).abs() < 0.02, "MC integral of x^2 ≈ 1/3, got {r}");
+        assert!((r - 1.0 / 3.0).abs() < 0.02, "MC integral of x^2 ~ 1/3, got {r}");
     }
 
     #[test]
@@ -121,7 +126,7 @@ mod tests {
 
     #[test]
     fn bootstrap_reasonable_se() {
-        // For uniform 1..10, SE of mean should be ~0.9 (σ/√n ≈ 2.87/√10 ≈ 0.91)
+        // For uniform 1..10, SE of mean should be ~0.9 (sigma/sqrt(n) ~ 2.87/sqrt(10) ~ 0.91)
         let data: Vec<f64> = (1..=10).map(|i| i as f64).collect();
         let se = bootstrap_error(&data, mean, 2000, 42);
         assert!(se > 0.3 && se < 2.0, "reasonable SE range, got {se}");

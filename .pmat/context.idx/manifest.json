@@ -1,0 +1,25 @@
+{
+  "version": "1.4.0",
+  "built_at": "2026-04-06T18:43:19.480671651+00:00",
+  "project_root": "/home/noah/src/rust-mdipierro-nlib",
+  "function_count": 201,
+  "file_count": 11,
+  "languages": [
+    "Rust"
+  ],
+  "avg_tdg_score": 0.06766165,
+  "file_checksums": {
+    "src/random.rs": "fcc11322653574c838225716eac7c3e5c9af9c8e55d8dd1ddc8e67735a8be76d",
+    "src/optimize.rs": "3da7bd9bdeaa047dd5a4fdbf7dc493ad29f73c32ab3dab80bf383413d0fd73bb",
+    "src/matrix.rs": "d1d6de3c2f5cabbe0a22a4232065a2c3b571d0e9a1788402c45172793d250d56",
+    "src/lib.rs": "d0fd307e7cebc59bb544f381ab81a5df040ea49c2f4f0203b71192fa0d0a5c64",
+    "src/sort.rs": "39179143e3bd62bdda7be7fa862313beb0a3992fad8caf82b8bf697636397a69",
+    "src/monte_carlo.rs": "83237d6e4cab679b8bc9d64752bd022500a69d7e38424b64fd67e2ad8b017edc",
+    "src/stats.rs": "79a9e3346cfab5922c7d3083bd3f9df0ccbcd5e25dcc951b4227e762244d4aa2",
+    "src/integrate.rs": "fabc49e89553ba1b68fb0f9256ab4da6d3dc43f199d68a8ac2db6fa11d2afe14",
+    "src/graph.rs": "fee49dab8dbb38ad400763fd366936eefd89cd860500e9b175feefbbe15db242",
+    "src/fourier.rs": "53c956e076608356c9310dcf19d6ae0d135da9b50a8cf6bdcd1b20b94fbf1ca4",
+    "src/solve.rs": "d0d37ad8a00bc4a9b63853bdcf20ec34064504cf18e560173748b1f4b5c7f2cb"
+  },
+  "last_incremental_changes": 0
+}

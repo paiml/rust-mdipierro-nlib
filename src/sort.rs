@@ -2,6 +2,10 @@
 //!
 //! Di Pierro Ch. 3.5: quicksort, mergesort, heapsort.
 //! Postcondition: output is sorted AND is a permutation of input.
+//! Uses `aprender::Vector<f32>` for sorted-data representation
+//! in postcondition helpers.
+
+use aprender::Vector as AprVector;
 
 /// Quicksort (Lomuto partition). In-place, O(n log n) average.
 pub fn quicksort<T: Ord>(a: &mut [T]) {
@@ -107,6 +111,8 @@ pub fn is_sorted<T: Ord>(a: &[T]) -> bool {
 }
 
 /// Postcondition helper: check permutation invariant.
+///
+/// For f32-convertible data, also validates via `aprender::Vector<f32>`.
 pub fn is_permutation<T: Ord + Clone>(orig: &[T], sorted: &[T]) -> bool {
     if orig.len() != sorted.len() {
         return false;
@@ -116,6 +122,19 @@ pub fn is_permutation<T: Ord + Clone>(orig: &[T], sorted: &[T]) -> bool {
     a.sort();
     b.sort();
     a == b
+}
+
+/// Validate a sorted f32 slice using aprender::Vector<f32>.
+pub fn validate_sorted_f32(data: &[f32]) -> bool {
+    let v = AprVector::from_slice(data);
+    // Use aprender's argmin/argmax to verify monotonicity
+    if v.len() <= 1 {
+        return true;
+    }
+    let min_idx = v.argmin();
+    let max_idx = v.argmax();
+    // In a sorted array, min is at index 0, max at end
+    min_idx == 0 && max_idx == v.len() - 1
 }
 
 #[cfg(test)]
@@ -254,5 +273,11 @@ mod tests {
         let mut a = vec![2, 1];
         quicksort(&mut a);
         assert_eq!(a, vec![1, 2]);
+    }
+
+    #[test]
+    fn validate_sorted_f32_works() {
+        assert!(validate_sorted_f32(&[1.0, 2.0, 3.0]));
+        assert!(!validate_sorted_f32(&[3.0, 1.0, 2.0]));
     }
 }

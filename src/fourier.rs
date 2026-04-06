@@ -2,8 +2,10 @@
 //!
 //! Di Pierro Ch. 8: DFT, FFT (Cooley-Tukey radix-2), inverse DFT.
 //! Complex numbers represented as (re, im) f64 pairs.
+//! Uses `aprender::Matrix<f64>` to represent DFT matrix for validation.
 
 use std::f64::consts::PI;
+use aprender::Matrix as AprMatrix;
 
 /// Discrete Fourier Transform (O(N^2)).
 /// X_k = sum_{n=0}^{N-1} x_n * exp(-2*pi*i*k*n/N)
@@ -24,6 +26,25 @@ pub fn dft(x: &[(f64, f64)]) -> Vec<(f64, f64)> {
         result.push((re, im));
     }
     result
+}
+
+/// Build the DFT matrix W where W[k,n] = exp(-2*pi*i*k*n/N).
+/// Returns (real_part, imag_part) as two aprender matrices.
+pub fn dft_matrix(n: usize) -> (AprMatrix<f64>, AprMatrix<f64>) {
+    let mut re_data = vec![0.0; n * n];
+    let mut im_data = vec![0.0; n * n];
+    for k in 0..n {
+        for j in 0..n {
+            let angle = -2.0 * PI * (k as f64) * (j as f64) / (n as f64);
+            let (sin_a, cos_a) = angle.sin_cos();
+            re_data[k * n + j] = cos_a;
+            im_data[k * n + j] = sin_a;
+        }
+    }
+    (
+        AprMatrix::from_vec(n, n, re_data).expect("valid"),
+        AprMatrix::from_vec(n, n, im_data).expect("valid"),
+    )
 }
 
 /// Cooley-Tukey radix-2 FFT (O(N log N)).
@@ -110,7 +131,7 @@ mod tests {
 
     #[test]
     fn dc_component() {
-        // DFT of constant signal: X[0] = c*N, X[k>0] ≈ 0
+        // DFT of constant signal: X[0] = c*N, X[k>0] ~ 0
         let c = 3.0;
         let n = 8;
         let signal: Vec<(f64, f64)> = vec![(c, 0.0); n];
@@ -161,11 +182,17 @@ mod tests {
     #[test]
     fn dft_real_signal() {
         // Real signal: x = [1, 0, -1, 0]
-        // X[0] = sum = 0, X[1] = 1 - (-1)*exp(-pi*i) = 1+1 = 2
         let signal = vec![(1.0, 0.0), (0.0, 0.0), (-1.0, 0.0), (0.0, 0.0)];
         let result = dft(&signal);
         assert!(approx_eq(result[0].0, 0.0, 1e-10), "DC = 0");
         assert!(approx_eq(result[1].0, 2.0, 1e-10), "X[1] = 2");
         assert!(approx_eq(result[2].0, 0.0, 1e-10), "X[2] = 0");
+    }
+
+    #[test]
+    fn dft_matrix_correct_size() {
+        let (re, im) = dft_matrix(4);
+        assert_eq!(re.shape(), (4, 4));
+        assert_eq!(im.shape(), (4, 4));
     }
 }

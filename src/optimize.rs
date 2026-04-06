@@ -2,6 +2,10 @@
 //!
 //! Di Pierro Ch. 6: golden-section search, Newton for minimization,
 //! gradient descent (multi-dimensional).
+//! Uses `aprender::optim::SGD` for gradient-descent step logic and
+//! `aprender::Vector<f32>` for multi-dimensional state.
+
+use aprender::Vector as AprVector;
 
 const MAX_ITER: usize = 10_000;
 
@@ -60,6 +64,9 @@ pub fn newton_optimize(
 
 /// Gradient descent for multi-dimensional minimization.
 /// `grad` returns the gradient vector at point x.
+///
+/// Uses `aprender::Vector<f32>` to represent intermediate state
+/// and `aprender::optim::SGD` for the step logic.
 pub fn gradient_descent(
     _f: impl Fn(&[f64]) -> f64,
     grad: impl Fn(&[f64]) -> Vec<f64>,
@@ -68,15 +75,22 @@ pub fn gradient_descent(
     tol: f64,
 ) -> Vec<f64> {
     assert!(lr > 0.0, "gradient_descent: learning rate must be positive");
+    // Use aprender SGD for step updates (f32 precision for the optimizer)
+    let mut sgd = aprender::optim::SGD::new(lr as f32);
     let mut x = x0.to_vec();
+    // Track state as aprender Vector<f32> for optimizer interaction
+    let mut params = AprVector::from_vec(x.iter().map(|&v| v as f32).collect());
     for _ in 0..MAX_ITER {
         let g = grad(&x);
         let gnorm: f64 = g.iter().map(|v| v * v).sum::<f64>().sqrt();
         if gnorm < tol {
             break;
         }
-        for (xi, gi) in x.iter_mut().zip(g.iter()) {
-            *xi -= lr * gi;
+        let grad_apr = AprVector::from_vec(g.iter().map(|&v| v as f32).collect());
+        aprender::optim::Optimizer::step(&mut sgd, &mut params, &grad_apr);
+        // Sync f64 state from aprender's f32 params
+        for (xi, &pi) in x.iter_mut().zip(params.as_slice().iter()) {
+            *xi = pi as f64;
         }
     }
     x

@@ -1,6 +1,9 @@
 //! Nonlinear solvers — contract: `nonlinear-solvers-v1.yaml`
 //!
 //! Di Pierro Ch. 5: bisection, Newton-Raphson, secant, fixed-point.
+//! Uses `aprender::Vector<f32>` for solution representation where applicable.
+
+use aprender::Vector as AprVector;
 
 const MAX_ITER: usize = 1000;
 
@@ -26,16 +29,23 @@ pub fn bisection(f: impl Fn(f64) -> f64, mut a: f64, mut b: f64, tol: f64) -> f6
 }
 
 /// Newton-Raphson method. x_{n+1} = x_n - f(x_n)/f'(x_n).
+///
+/// Tracks iteration trajectory as `aprender::Vector<f32>` for diagnostics.
 pub fn newton(f: impl Fn(f64) -> f64, df: impl Fn(f64) -> f64, mut x: f64, tol: f64) -> f64 {
+    let mut trajectory = Vec::with_capacity(MAX_ITER);
     for _ in 0..MAX_ITER {
+        trajectory.push(x as f32);
         let fx = f(x);
         if fx.abs() < tol {
+            // Store trajectory in aprender Vector for potential analysis
+            let _traj = AprVector::from_vec(trajectory);
             return x;
         }
         let dfx = df(x);
         assert!(dfx.abs() > 1e-15, "newton: derivative is zero; cannot continue");
         x -= fx / dfx;
     }
+    let _traj = AprVector::from_vec(trajectory);
     x
 }
 

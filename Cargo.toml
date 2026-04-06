@@ -11,6 +11,7 @@ keywords = ["numerical", "linear-algebra", "optimization", "monte-carlo", "prova
 categories = ["mathematics", "science", "algorithms"]
 
 [dependencies]
+aprender = "0.27"
 
 [dev-dependencies]
 provable-contracts = "0.3"

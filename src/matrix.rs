@@ -1,30 +1,31 @@
 //! Dense matrix algebra — contract: `matrix-algebra-v1.yaml`
 //!
 //! Di Pierro Ch. 4.4: matmul, transpose, inverse, Cholesky, determinant.
+//! Backed by `aprender::Matrix<f64>` for storage and basic ops.
 
-/// Dense matrix in row-major order.
+use aprender::Matrix as AprMatrix;
+
+/// Dense matrix in row-major order, backed by `aprender::Matrix<f64>`.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Matrix {
-    data: Vec<f64>,
-    rows: usize,
-    cols: usize,
+    inner: AprMatrix<f64>,
 }
 
 impl Matrix {
     pub fn new(rows: usize, cols: usize, data: Vec<f64>) -> Self {
-        assert_eq!(data.len(), rows * cols);
-        Self { data, rows, cols }
+        let inner = AprMatrix::from_vec(rows, cols, data).expect("data.len() must equal rows*cols");
+        Self { inner }
     }
     pub fn zeros(rows: usize, cols: usize) -> Self {
-        Self { data: vec![0.0; rows * cols], rows, cols }
+        Self { inner: AprMatrix::from_vec(rows, cols, vec![0.0; rows * cols]).expect("valid") }
     }
     pub fn identity(n: usize) -> Self {
-        let mut m = Self::zeros(n, n);
-        for i in 0..n { m[(i, i)] = 1.0; }
-        m
+        let mut data = vec![0.0; n * n];
+        for i in 0..n { data[i * n + i] = 1.0; }
+        Self { inner: AprMatrix::from_vec(n, n, data).expect("valid") }
     }
-    pub fn rows(&self) -> usize { self.rows }
-    pub fn cols(&self) -> usize { self.cols }
+    pub fn rows(&self) -> usize { self.inner.n_rows() }
+    pub fn cols(&self) -> usize { self.inner.n_cols() }
     pub fn from_rows(rows: &[&[f64]]) -> Self {
         let ncols = rows[0].len();
         let mut data = Vec::with_capacity(rows.len() * ncols);
@@ -32,17 +33,27 @@ impl Matrix {
             assert_eq!(r.len(), ncols);
             data.extend_from_slice(r);
         }
-        Self { data, rows: rows.len(), cols: ncols }
+        Self { inner: AprMatrix::from_vec(rows.len(), ncols, data).expect("valid") }
     }
 }
 
 impl std::ops::Index<(usize, usize)> for Matrix {
     type Output = f64;
-    fn index(&self, (r, c): (usize, usize)) -> &f64 { &self.data[r * self.cols + c] }
+    fn index(&self, (r, c): (usize, usize)) -> &f64 {
+        // aprender::Matrix::get returns by value; we need a reference.
+        // Use the underlying slice via as_slice().
+        let cols = self.inner.n_cols();
+        &self.inner.as_slice()[r * cols + c]
+    }
 }
 impl std::ops::IndexMut<(usize, usize)> for Matrix {
     fn index_mut(&mut self, (r, c): (usize, usize)) -> &mut f64 {
-        &mut self.data[r * self.cols + c]
+        let cols = self.inner.n_cols();
+        let idx = r * cols + c;
+        // Safety: we need mutable slice access. Rebuild via raw pointer.
+        // aprender doesn't expose as_mut_slice on Matrix, so we reconstruct.
+        let ptr = self.inner.as_slice().as_ptr() as *mut f64;
+        unsafe { &mut *ptr.add(idx) }
     }
 }
 
@@ -62,11 +73,13 @@ pub fn matmul(a: &Matrix, b: &Matrix) -> Matrix {
 
 /// A^T[i,j] = A[j,i]
 pub fn transpose(a: &Matrix) -> Matrix {
-    let mut t = Matrix::zeros(a.cols(), a.rows());
+    let mut data = vec![0.0; a.rows() * a.cols()];
     for i in 0..a.rows() {
-        for j in 0..a.cols() { t[(j, i)] = a[(i, j)]; }
+        for j in 0..a.cols() {
+            data[j * a.rows() + i] = a[(i, j)];
+        }
     }
-    t
+    Matrix::new(a.cols(), a.rows(), data)
 }
 
 /// Gauss-Jordan elimination. Returns None if singular.
@@ -87,7 +100,9 @@ pub fn inverse(a: &Matrix) -> Option<Matrix> {
         if mx_val < 1e-14 { return None; }
         if mx_row != col {
             for j in 0..(2 * n) {
-                let tmp = aug[(col, j)]; aug[(col, j)] = aug[(mx_row, j)]; aug[(mx_row, j)] = tmp;
+                let tmp = aug[(col, j)];
+                aug[(col, j)] = aug[(mx_row, j)];
+                aug[(mx_row, j)] = tmp;
             }
         }
         let pivot = aug[(col, col)];
@@ -139,7 +154,11 @@ pub fn determinant(a: &Matrix) -> f64 {
         }
         if mx_val < 1e-14 { return 0.0; }
         if mx_row != col {
-            for j in 0..n { let tmp = m[(col, j)]; m[(col, j)] = m[(mx_row, j)]; m[(mx_row, j)] = tmp; }
+            for j in 0..n {
+                let tmp = m[(col, j)];
+                m[(col, j)] = m[(mx_row, j)];
+                m[(mx_row, j)] = tmp;
+            }
             sign = -sign;
         }
         for row in (col + 1)..n {

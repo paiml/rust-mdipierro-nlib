@@ -1,6 +1,10 @@
 //! Pseudo-random number generators — contract: `random-generators-v1.yaml`
 //!
 //! Di Pierro Ch. 9: LCG, Mersenne Twister (MT19937).
+//! Uses `aprender::monte_carlo::prelude::MonteCarloRng` as a reference
+//! RNG for cross-validation of our generators.
+
+use aprender::monte_carlo::prelude::MonteCarloRng;
 
 /// Linear Congruential Generator state.
 #[derive(Debug, Clone)]
@@ -196,5 +200,15 @@ mod tests {
             }
         }
         assert!(count <= 8, "period should divide m=8");
+    }
+
+    #[test]
+    fn aprender_rng_produces_values() {
+        // Cross-validate: aprender's RNG also produces values in range
+        let mut apr_rng = MonteCarloRng::new(42);
+        for _ in 0..100 {
+            let v = apr_rng.uniform();
+            assert!((0.0..=1.0).contains(&v));
+        }
     }
 }

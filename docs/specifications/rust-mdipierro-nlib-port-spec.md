@@ -68,18 +68,21 @@ must be copy-pasteable into a Lean 4 theorem statement.
 
 ## 2. Dependency Policy
 
-### Allowed dependencies
+### Sole dependency: aprender
 
-| Crate | Purpose | Source |
-|-------|---------|--------|
-| `aprender-tensor` | Dense/sparse tensor ops | aprender monorepo |
-| `aprender-fft` | FFT/DFT | aprender monorepo |
-| `aprender-graph` | Graph data structures | aprender monorepo |
-| `aprender-monte-carlo` | MC simulation engine | aprender monorepo |
-| `aprender-rand` | PRNG and distributions | aprender monorepo |
-| `aprender-solve` | Nonlinear solvers | aprender monorepo |
-| `aprender-sparse` | Sparse matrix ops | aprender monorepo |
-| `provable-contracts` | Contract enforcement (dev) | crates.io |
+All 10 modules use `aprender = "0.27"` as the ONLY runtime dependency.
+Each module imports at least one aprender type (`Matrix`, `Vector`,
+`MonteCarloRng`, `Graph`, `SGD`, `chisquare`). No other crates allowed.
+
+| aprender API | Used by | Purpose |
+|-------------|---------|---------|
+| `Matrix<T>` | matrix, fourier | Dense matrix storage, matmul, transpose |
+| `Vector<T>` | stats, sort, solve, optimize, integrate | Mean/variance/std, argmin/argmax |
+| `stats::chisquare` | stats | Chi-squared goodness of fit |
+| `monte_carlo::MonteCarloRng` | monte_carlo, random | Uniform RNG for MC integration |
+| `graph::Graph` | graph | Weighted/unweighted graph construction |
+| `optim::SGD` | optimize | Gradient descent parameter updates |
+| `provable-contracts` | (dev-only) | Contract enforcement |
 
 ### Forbidden dependencies
 
@@ -373,7 +376,16 @@ falsification_tests:
 - [x] 100% binding penetration (36/36 equations bound)
 - [x] `pv score` Codebase Grade A (0.93)
 - [x] 98.7% line coverage, 95.7% function coverage
-- [x] 125 tests, 0 failures, 1878 lines, zero external deps
+- [x] 129 tests, 0 failures, aprender-only dependency
+
+### Phase 6: Aprender integration — DONE
+- [x] All 10 modules use `aprender` (Matrix, Vector, MonteCarloRng, Graph, SGD, chisquare)
+- [x] matrix.rs backed by `aprender::Matrix<f64>`
+- [x] stats.rs uses `aprender::Vector<f32>` mean/variance/std + `aprender::stats::chisquare`
+- [x] monte_carlo.rs uses `aprender::monte_carlo::MonteCarloRng`
+- [x] graph.rs uses `aprender::graph::Graph`
+- [x] optimize.rs uses `aprender::optim::SGD`
+- [x] 4 new cross-validation tests (aprender vs nlib outputs agree)
 
 ---
 

@@ -1,0 +1,9 @@
+{
+  "commit_sha": null,
+  "work_item_id": "PMAT-001",
+  "prompt": "Phase 1a: sort.rs — quicksort, mergesort, heapsort with contracts",
+  "tdg_score": 0.0,
+  "repo_score": 0.0,
+  "rust_project_score": 0.0,
+  "timestamp": "2026-04-06T18:43:25.108021823Z"
+}

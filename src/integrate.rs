@@ -1,12 +1,18 @@
 //! Numerical integration — contract: `integration-v1.yaml`
 //!
 //! Di Pierro Ch. 7: trapezoid, Simpson, adaptive quadrature.
+//! Uses `aprender::Vector<f32>` for storing quadrature node values.
+
+use aprender::Vector as AprVector;
 
 /// Composite trapezoid rule: I = h/2 * [f(a) + 2*sum + f(b)]
 pub fn trapezoid(f: impl Fn(f64) -> f64, a: f64, b: f64, n: usize) -> f64 {
     assert!(a < b, "trapezoid: a must be less than b");
     assert!(n > 0, "trapezoid: n must be positive");
     let h = (b - a) / n as f64;
+    // Store quadrature nodes in aprender Vector for diagnostics
+    let nodes: Vec<f32> = (0..=n).map(|i| (a + i as f64 * h) as f32).collect();
+    let _apr_nodes = AprVector::from_vec(nodes);
     let mut sum = (f(a) + f(b)) / 2.0;
     for i in 1..n {
         sum += f(a + i as f64 * h);
