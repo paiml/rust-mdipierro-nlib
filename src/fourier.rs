@@ -197,4 +197,30 @@ mod tests {
         assert_eq!(re.shape(), (4, 4));
         assert_eq!(im.shape(), (4, 4));
     }
+
+    #[test]
+    fn dft_all_zero_input() {
+        let signal = vec![(0.0, 0.0); 8];
+        let result = dft(&signal);
+        for (re, im) in &result {
+            assert!(
+                approx_eq(*re, 0.0, 1e-14),
+                "zero input => zero spectrum (re)"
+            );
+            assert!(
+                approx_eq(*im, 0.0, 1e-14),
+                "zero input => zero spectrum (im)"
+            );
+        }
+    }
+
+    #[test]
+    fn fft_all_zero_input() {
+        let signal = vec![(0.0, 0.0); 8];
+        let result = fft(&signal);
+        for (re, im) in &result {
+            assert!(approx_eq(*re, 0.0, 1e-14));
+            assert!(approx_eq(*im, 0.0, 1e-14));
+        }
+    }
 }

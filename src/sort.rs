@@ -9,10 +9,12 @@ use aprender::Vector as AprVector;
 
 /// Quicksort (Lomuto partition). In-place, O(n log n) average.
 pub fn quicksort<T: Ord>(a: &mut [T]) {
+    contract_pre_quicksort!(a);
     if a.len() <= 1 {
         return;
     }
     qs_range(a, 0, a.len() - 1);
+    contract_post_quicksort!(a);
 }
 
 fn qs_range<T: Ord>(a: &mut [T], lo: usize, hi: usize) {

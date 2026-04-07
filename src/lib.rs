@@ -1,3 +1,4 @@
+#![allow(unused_macros)]
 //! # nlib — Numerical Algorithms in Rust
 //!
 //! Provable-contracts-first Rust port of Di Pierro's
@@ -19,6 +20,8 @@
 //! - [`graph`] — Graph algorithms (Ch. 3.7)
 //! - [`sort`] — Sorting algorithms (Ch. 3.5)
 //! - [`stats`] — Statistics and probability (Ch. 5)
+
+include!(concat!(env!("OUT_DIR"), "/generated_contracts.rs"));
 
 pub mod fourier;
 pub mod graph;

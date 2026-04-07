@@ -15,28 +15,40 @@ fn to_apr_vec(x: &[f64]) -> AprVector<f32> {
 /// Arithmetic mean: mu = (1/n) sum x_i
 pub fn mean(x: &[f64]) -> f64 {
     assert!(!x.is_empty(), "mean: input must be non-empty");
-    let v = to_apr_vec(x);
-    // aprender Vector<f32>::mean() uses f32; upcast to f64 for precision.
-    // For high precision we recompute in f64 using aprender's Vector for validation.
-    let _apr_mean = v.mean(); // prove we use aprender
-    x.iter().sum::<f64>() / x.len() as f64
+    contract_pre_mean!(x);
+    let apr_mean = to_apr_vec(x).mean() as f64;
+    let result = x.iter().sum::<f64>() / x.len() as f64;
+    debug_assert!(
+        !result.is_finite() || (apr_mean - result).abs() < 1e-5,
+        "aprender/f64 divergence in mean: apr={apr_mean}, f64={result}"
+    );
+    contract_post_mean!(result);
+    result
 }
 
 /// Population variance: sigma^2 = (1/n) sum (x_i - mu)^2
 pub fn variance(x: &[f64]) -> f64 {
     assert!(x.len() > 1, "variance: need n > 1");
-    let v = to_apr_vec(x);
-    let _apr_var = v.variance(); // use aprender for cross-check
+    let apr_var = to_apr_vec(x).variance() as f64;
     let mu = mean(x);
     let ss: f64 = x.iter().map(|&v| (v - mu).powi(2)).sum();
-    ss / x.len() as f64
+    let result = ss / x.len() as f64;
+    debug_assert!(
+        !result.is_finite() || (apr_var - result).abs() < 1e-3,
+        "aprender/f64 divergence in variance: apr={apr_var}, f64={result}"
+    );
+    result
 }
 
 /// Standard deviation: sigma = sqrt(variance)
 pub fn std_dev(x: &[f64]) -> f64 {
-    let v = to_apr_vec(x);
-    let _apr_std = v.std(); // use aprender
-    variance(x).sqrt()
+    let apr_std = to_apr_vec(x).std() as f64;
+    let result = variance(x).sqrt();
+    debug_assert!(
+        !result.is_finite() || (apr_std - result).abs() < 1e-3,
+        "aprender/f64 divergence in std_dev: apr={apr_std}, f64={result}"
+    );
+    result
 }
 
 /// Covariance: cov(X,Y) = (1/n) sum (x_i - mu_x)(y_i - mu_y)
@@ -67,19 +79,27 @@ pub fn correlation(x: &[f64], y: &[f64]) -> f64 {
 pub fn chi_squared(observed: &[f64], expected: &[f64]) -> f64 {
     assert_eq!(observed.len(), expected.len(), "chi²: lengths must match");
     assert!(!observed.is_empty(), "chi²: input must be non-empty");
-    // Delegate to aprender for validation (f32 version)
+    // Cross-check via aprender (f32 version)
     let obs32: Vec<f32> = observed.iter().map(|&v| v as f32).collect();
     let exp32: Vec<f32> = expected.iter().map(|&v| v as f32).collect();
-    let _apr = aprender::stats::chisquare(&obs32, &exp32);
+    let apr_chi2 = aprender::stats::chisquare(&obs32, &exp32)
+        .map(|r| r.statistic as f64)
+        .unwrap_or(f64::NAN);
     // Compute in f64 for precision
-    observed
+    let result: f64 = observed
         .iter()
         .zip(expected.iter())
         .map(|(&o, &e)| {
             assert!(e > 0.0, "chi²: expected values must be > 0");
             (o - e).powi(2) / e
         })
-        .sum()
+        .sum();
+    debug_assert!(
+        (apr_chi2 - result).abs() < 1e-2
+            || (apr_chi2 - result).abs() / result.abs().max(1e-15) < 1e-3,
+        "aprender/f64 divergence in chi_squared: apr={apr_chi2}, f64={result}"
+    );
+    result
 }
 
 #[cfg(test)]
@@ -181,5 +201,23 @@ mod tests {
         let x = vec![1.0, 2.0, 3.0, 4.0, 5.0];
         let y = vec![5.0, 5.0, 5.0, 5.0, 5.0];
         assert!((correlation(&x, &y) - 0.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn mean_nan_propagates() {
+        let r = mean(&[1.0, f64::NAN, 3.0]);
+        assert!(r.is_nan(), "NaN input should propagate to NaN result");
+    }
+
+    #[test]
+    fn variance_nan_propagates() {
+        let r = variance(&[1.0, f64::NAN, 3.0]);
+        assert!(r.is_nan(), "NaN input should propagate");
+    }
+
+    #[test]
+    fn mean_inf_propagates() {
+        let r = mean(&[1.0, f64::INFINITY, 3.0]);
+        assert!(r.is_infinite(), "Inf input should propagate");
     }
 }

@@ -7,17 +7,19 @@ use aprender::Vector as AprVector;
 
 /// Composite trapezoid rule: I = h/2 * [f(a) + 2*sum + f(b)]
 pub fn trapezoid(f: impl Fn(f64) -> f64, a: f64, b: f64, n: usize) -> f64 {
-    assert!(a < b, "trapezoid: a must be less than b");
-    assert!(n > 0, "trapezoid: n must be positive");
+    contract_pre_trapezoid!(a, b, n);
     let h = (b - a) / n as f64;
-    // Store quadrature nodes in aprender Vector for diagnostics
+    // Store quadrature nodes in aprender Vector for node-count validation
     let nodes: Vec<f32> = (0..=n).map(|i| (a + i as f64 * h) as f32).collect();
-    let _apr_nodes = AprVector::from_vec(nodes);
+    let apr_nodes = AprVector::from_vec(nodes);
+    debug_assert_eq!(apr_nodes.len(), n + 1, "quadrature node count mismatch");
     let mut sum = (f(a) + f(b)) / 2.0;
     for i in 1..n {
         sum += f(a + i as f64 * h);
     }
-    sum * h
+    let result = sum * h;
+    contract_post_trapezoid!(result);
+    result
 }
 
 /// Composite Simpson's 1/3 rule. Requires n even.
@@ -151,5 +153,17 @@ mod tests {
         let e_trap = (trapezoid(|x| x * x, 0.0, 1.0, 10) - exact).abs();
         let e_simp = (simpson(|x| x * x, 0.0, 1.0, 10) - exact).abs();
         assert!(e_simp < e_trap, "Simpson should be more accurate");
+    }
+
+    #[test]
+    fn trapezoid_result_is_finite() {
+        let r = trapezoid(|x| x.sin() + x.cos(), 0.0, 1.0, 100);
+        assert!(r.is_finite(), "trapezoid result must be finite");
+    }
+
+    #[test]
+    #[should_panic]
+    fn trapezoid_n_zero() {
+        trapezoid(|x| x, 0.0, 1.0, 0);
     }
 }

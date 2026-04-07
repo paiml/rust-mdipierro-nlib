@@ -79,7 +79,7 @@ impl std::ops::IndexMut<(usize, usize)> for Matrix {
 
 /// C[i,j] = sum_k A[i,k]*B[k,j]
 pub fn matmul(a: &Matrix, b: &Matrix) -> Matrix {
-    assert_eq!(a.cols(), b.rows(), "matmul: A.cols must equal B.rows");
+    contract_pre_matmul!(a, b);
     let (m, p, n) = (a.rows(), a.cols(), b.cols());
     let mut c = Matrix::zeros(m, n);
     for i in 0..m {
@@ -90,6 +90,7 @@ pub fn matmul(a: &Matrix, b: &Matrix) -> Matrix {
             }
         }
     }
+    contract_post_matmul!(&c, a, b);
     c
 }
 
@@ -349,5 +350,47 @@ mod tests {
             determinant(&a) * determinant(&b),
             1e-8
         ));
+    }
+
+    #[test]
+    fn hilbert_ill_conditioned_inverse() {
+        // Hilbert matrix H[i,j] = 1/(i+j+1), notoriously ill-conditioned
+        let n = 4;
+        let mut data = vec![0.0; n * n];
+        for i in 0..n {
+            for j in 0..n {
+                data[i * n + j] = 1.0 / (i + j + 1) as f64;
+            }
+        }
+        let h = Matrix::new(n, n, data);
+        let inv = inverse(&h);
+        // 4x4 Hilbert is invertible but ill-conditioned; inverse exists
+        assert!(inv.is_some(), "4x4 Hilbert matrix should be invertible");
+        let product = matmul(&h, &inv.unwrap());
+        let id = Matrix::identity(n);
+        // Loose tolerance due to ill-conditioning
+        assert!(
+            mat_eq(&product, &id, 1e-4),
+            "H * H^-1 ~ I (ill-conditioned)"
+        );
+    }
+
+    #[test]
+    fn singular_matrix_returns_none() {
+        // Rank-1 matrix: all rows are multiples of [1, 2, 3]
+        let a = Matrix::from_rows(&[&[1.0, 2.0, 3.0], &[2.0, 4.0, 6.0], &[3.0, 6.0, 9.0]]);
+        assert!(
+            inverse(&a).is_none(),
+            "singular matrix inverse must be None"
+        );
+    }
+
+    #[test]
+    fn matmul_result_dimensions() {
+        let a = Matrix::zeros(3, 4);
+        let b = Matrix::zeros(4, 5);
+        let c = matmul(&a, &b);
+        assert_eq!(c.rows(), 3);
+        assert_eq!(c.cols(), 5);
     }
 }

@@ -9,6 +9,7 @@ const MAX_ITER: usize = 1000;
 
 /// Bisection method. Finds root in [a,b] where f(a)*f(b) < 0.
 pub fn bisection(f: impl Fn(f64) -> f64, mut a: f64, mut b: f64, tol: f64) -> f64 {
+    contract_pre_bisection!(a, b, tol);
     assert!(a < b, "bisection: a must be less than b");
     let fa = f(a);
     let fb = f(b);
@@ -20,6 +21,7 @@ pub fn bisection(f: impl Fn(f64) -> f64, mut a: f64, mut b: f64, tol: f64) -> f6
         let c = (a + b) / 2.0;
         let fc = f(c);
         if fc.abs() < tol || (b - a) / 2.0 < tol {
+            contract_post_bisection!(c, &f, tol);
             return c;
         }
         if fa * fc < 0.0 {
@@ -28,20 +30,25 @@ pub fn bisection(f: impl Fn(f64) -> f64, mut a: f64, mut b: f64, tol: f64) -> f6
             a = c;
         }
     }
-    (a + b) / 2.0
+    let result = (a + b) / 2.0;
+    contract_post_bisection!(result, &f, tol);
+    result
 }
 
 /// Newton-Raphson method. x_{n+1} = x_n - f(x_n)/f'(x_n).
 ///
-/// Tracks iteration trajectory as `aprender::Vector<f32>` for diagnostics.
+/// Tracks iteration trajectory as `aprender::Vector<f32>` for convergence diagnostics.
 pub fn newton(f: impl Fn(f64) -> f64, df: impl Fn(f64) -> f64, mut x: f64, tol: f64) -> f64 {
     let mut trajectory = Vec::with_capacity(MAX_ITER);
     for _ in 0..MAX_ITER {
         trajectory.push(x as f32);
         let fx = f(x);
         if fx.abs() < tol {
-            // Store trajectory in aprender Vector for potential analysis
-            let _traj = AprVector::from_vec(trajectory);
+            let traj = AprVector::from_vec(trajectory);
+            debug_assert!(
+                !traj.is_empty(),
+                "trajectory must record at least one point"
+            );
             return x;
         }
         let dfx = df(x);
@@ -51,7 +58,11 @@ pub fn newton(f: impl Fn(f64) -> f64, df: impl Fn(f64) -> f64, mut x: f64, tol: 
         );
         x -= fx / dfx;
     }
-    let _traj = AprVector::from_vec(trajectory);
+    let traj = AprVector::from_vec(trajectory);
+    debug_assert!(
+        !traj.is_empty(),
+        "trajectory must record at least one point"
+    );
     x
 }
 
@@ -166,5 +177,18 @@ mod tests {
         let root = bisection(|x| x * x - 2.0, a, b, 1e-12);
         // Just verify the root is correct (halving is the mechanism)
         assert!((root * root - 2.0).abs() < 1e-10);
+    }
+
+    #[test]
+    #[should_panic(expected = "opposite signs")]
+    fn bisection_no_root_in_interval() {
+        // f(x) = x^2 + 1 has no real roots; f(0)=1, f(2)=5, same sign
+        bisection(|x| x * x + 1.0, 0.0, 2.0, 1e-12);
+    }
+
+    #[test]
+    fn newton_converges_for_tight_tol() {
+        let root = newton(|x| x * x - 4.0, |x| 2.0 * x, 10.0, 1e-14);
+        assert!((root - 2.0).abs() < 1e-12);
     }
 }
