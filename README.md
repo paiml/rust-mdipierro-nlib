@@ -75,6 +75,12 @@ is written. The contract defines:
 Contracts are validated by
 [provable-contracts](https://github.com/paiml/provable-contracts) (`pv`).
 
+**Runtime enforcement:** `build.rs` generates `contract_pre_*!` /
+`contract_post_*!` macros from YAML. These compile to `debug_assert!`
+in debug builds (zero cost in release). 5 Kani BMC harnesses prove
+invariants for all inputs within bounds. Mutation testing (80% score)
+validates test quality.
+
 ## Module Map
 
 | Module | Contract | Ch. | aprender API |
@@ -116,12 +122,14 @@ real numerical output.
 | Equations | 36 (100% bound) |
 | Proof obligations | 41 |
 | Falsification tests | 53 |
-| Kani harnesses | 30 |
-| Rust tests | 129 |
-| Line coverage | 98.7% |
-| Lines of code | 2,213 |
+| Kani BMC harnesses | 5 implemented, 30 specified |
+| Mutation score | 80% (463 caught / 577 total) |
+| Rust tests | 141 |
+| Line coverage | 98.2% |
+| Lines of code | 3,002 |
 | External deps | 1 (aprender only) |
 | Contract grade | A (0.93) |
+| Runtime enforcement | build.rs + contract_pre/post macros |
 
 ## Workflow
 
