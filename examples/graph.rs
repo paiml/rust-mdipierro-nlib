@@ -1,6 +1,6 @@
 //! Graph algorithms — Di Pierro Ch. 3.7
 //! cargo run --example graph
-use nlib::graph::{Graph, dijkstra, bfs, dfs, kruskal_mst};
+use nlib::graph::{Graph, bfs, dfs, dijkstra, kruskal_mst};
 
 fn main() {
     // Weighted graph (Di Pierro Fig. 3.12 style)

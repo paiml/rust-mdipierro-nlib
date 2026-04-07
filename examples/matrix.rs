@@ -1,6 +1,6 @@
 //! Matrix algebra — Di Pierro Ch. 4.4
 //! cargo run --example matrix
-use nlib::matrix::{Matrix, matmul, transpose, inverse, cholesky, determinant};
+use nlib::matrix::{Matrix, cholesky, determinant, inverse, matmul, transpose};
 
 fn main() {
     let a = Matrix::from_rows(&[&[1.0, 2.0], &[3.0, 4.0]]);
@@ -16,8 +16,13 @@ fn main() {
     let inv = inverse(&a).expect("invertible");
     let check = matmul(&a, &inv);
     println!("A^-1 = {:?}", inv.data());
-    println!("A*A^-1 ≈ I: [{:.4}, {:.4}; {:.4}, {:.4}]",
-        check.get(0,0), check.get(0,1), check.get(1,0), check.get(1,1));
+    println!(
+        "A*A^-1 ≈ I: [{:.4}, {:.4}; {:.4}, {:.4}]",
+        check.get(0, 0),
+        check.get(0, 1),
+        check.get(1, 0),
+        check.get(1, 1)
+    );
 
     let spd = Matrix::from_rows(&[&[4.0, 2.0], &[2.0, 3.0]]);
     let l = cholesky(&spd).expect("positive definite");

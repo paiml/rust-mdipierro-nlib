@@ -1,6 +1,6 @@
 //! Sorting algorithms — Di Pierro Ch. 3.5
 //! cargo run --example sort
-use nlib::sort::{quicksort, mergesort, heapsort, is_sorted};
+use nlib::sort::{heapsort, is_sorted, mergesort, quicksort};
 
 fn main() {
     let data = vec![38, 27, 43, 3, 9, 82, 10];

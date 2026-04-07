@@ -1,6 +1,6 @@
 //! Statistics — Di Pierro Ch. 5
 //! cargo run --example stats
-use nlib::stats::{mean, variance, std_dev, covariance, correlation, chi_squared};
+use nlib::stats::{chi_squared, correlation, covariance, mean, std_dev, variance};
 
 fn main() {
     let x = vec![2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];

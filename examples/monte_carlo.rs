@@ -1,6 +1,6 @@
 //! Monte Carlo simulation — Di Pierro Ch. 7
 //! cargo run --example monte_carlo
-use nlib::monte_carlo::{mc_integrate, bootstrap_error};
+use nlib::monte_carlo::{bootstrap_error, mc_integrate};
 use nlib::stats::mean;
 
 fn main() {
