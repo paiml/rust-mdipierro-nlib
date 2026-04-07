@@ -33,11 +33,41 @@ jobs:
       - name: Test
         run: cargo test --lib
 
+  examples:
+    name: Examples
+    runs-on: ubuntu-latest
+    needs: gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Run all examples
+        run: |
+          for ex in sort stats matrix solve optimize integrate fourier random monte_carlo graph; do
+            echo "::group::cargo run --example $ex"
+            cargo run --example "$ex"
+            echo "::endgroup::"
+          done
+
+  contracts:
+    name: Contract Validation
+    runs-on: ubuntu-latest
+    needs: gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install pv
+        run: cargo install provable-contracts-cli --version 0.3.1
+
       - name: Validate contracts
         run: |
-          cargo install provable-contracts-cli --version 0.3.1
           for f in contracts/*.yaml; do
             [ "$(basename "$f")" = "binding.yaml" ] && continue
             pv validate "$f"
           done
-          pv score contracts/ --binding contracts/binding.yaml
+
+      - name: Score contracts
+        run: pv score contracts/ --binding contracts/binding.yaml
