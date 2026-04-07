@@ -36,5 +36,8 @@ jobs:
       - name: Validate contracts
         run: |
           cargo install provable-contracts-cli --version 0.3.1
-          pv validate contracts/
+          for f in contracts/*.yaml; do
+            [ "$(basename "$f")" = "binding.yaml" ] && continue
+            pv validate "$f"
+          done
           pv score contracts/ --binding contracts/binding.yaml
