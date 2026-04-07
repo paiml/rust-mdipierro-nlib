@@ -90,6 +90,24 @@ Contracts are validated by
 | `nlib::sort` | sorting-v1 | 3.5 | `Vector<f32>` |
 | `nlib::stats` | statistics-v1 | 5 | `Vector<f32>`, `chisquare` |
 
+## Examples
+
+Every module has a runnable example. Each demonstrates the core API with
+real numerical output.
+
+| Example | Command | What it does |
+|---------|---------|-------------|
+| [sort](examples/sort.rs) | `cargo run --example sort` | Quicksort, mergesort, heapsort on the same input |
+| [stats](examples/stats.rs) | `cargo run --example stats` | Mean, variance, correlation, chi-squared |
+| [matrix](examples/matrix.rs) | `cargo run --example matrix` | Matmul, transpose, inverse, Cholesky, determinant |
+| [solve](examples/solve.rs) | `cargo run --example solve` | Bisection, Newton, secant, fixed-point root finding |
+| [optimize](examples/optimize.rs) | `cargo run --example optimize` | Golden section, Newton optimizer, gradient descent |
+| [integrate](examples/integrate.rs) | `cargo run --example integrate` | Trapezoid, Simpson, adaptive quadrature |
+| [fourier](examples/fourier.rs) | `cargo run --example fourier` | DFT, FFT, inverse DFT, roundtrip check |
+| [random](examples/random.rs) | `cargo run --example random` | LCG (MINSTD), Mersenne Twister, uniformity test |
+| [monte_carlo](examples/monte_carlo.rs) | `cargo run --example monte_carlo` | MC integration of x^2, bootstrap error estimation |
+| [graph](examples/graph.rs) | `cargo run --example graph` | Dijkstra, BFS, DFS, Kruskal MST on weighted graph |
+
 ## Metrics
 
 | Metric | Value |
