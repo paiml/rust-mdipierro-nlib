@@ -35,6 +35,13 @@ no other external crates.
 
 **Codebase: Grade A (0.93)** — 100% binding, 100% falsification, 36/36 equations.
 
+## Installation
+
+```toml
+[dependencies]
+nlib = { git = "https://github.com/paiml/rust-mdipierro-nlib" }
+```
+
 ## Quick Start
 
 ```rust

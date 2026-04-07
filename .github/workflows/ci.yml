@@ -132,3 +132,22 @@ jobs:
 
       - name: Score contracts
         run: pv score contracts/ --binding contracts/binding.yaml
+
+  comply:
+    name: PMAT Comply
+    runs-on: ubuntu-latest
+    needs: gate
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install pmat + pv
+        run: |
+          cargo install pmat
+          cargo install provable-contracts-cli --version 0.3.1
+
+      - name: Run pmat comply check
+        run: pmat comply check
