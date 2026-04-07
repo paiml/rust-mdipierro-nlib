@@ -54,8 +54,7 @@ fn adaptive_rec(f: &impl Fn(f64) -> f64, a: f64, b: f64, tol: f64, depth: usize)
     if depth == 0 || (refined - whole).abs() < 15.0 * tol {
         return refined + (refined - whole) / 15.0;
     }
-    adaptive_rec(f, a, mid, tol / 2.0, depth - 1)
-        + adaptive_rec(f, mid, b, tol / 2.0, depth - 1)
+    adaptive_rec(f, a, mid, tol / 2.0, depth - 1) + adaptive_rec(f, mid, b, tol / 2.0, depth - 1)
 }
 
 /// Raw Simpson on 2 panels (3 points).
@@ -140,7 +139,10 @@ mod tests {
         let e1 = (trapezoid(|x| x * x, 0.0, 1.0, 100) - exact).abs();
         let e2 = (trapezoid(|x| x * x, 0.0, 1.0, 200) - exact).abs();
         let ratio = e1 / e2;
-        assert!(ratio > 3.0 && ratio < 5.0, "trapezoid O(h^2): ratio={ratio}");
+        assert!(
+            ratio > 3.0 && ratio < 5.0,
+            "trapezoid O(h^2): ratio={ratio}"
+        );
     }
 
     #[test]

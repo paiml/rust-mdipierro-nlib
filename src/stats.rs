@@ -46,7 +46,11 @@ pub fn covariance(x: &[f64], y: &[f64]) -> f64 {
     let mx = mean(x);
     let my = mean(y);
     let n = x.len() as f64;
-    x.iter().zip(y.iter()).map(|(&a, &b)| (a - mx) * (b - my)).sum::<f64>() / n
+    x.iter()
+        .zip(y.iter())
+        .map(|(&a, &b)| (a - mx) * (b - my))
+        .sum::<f64>()
+        / n
 }
 
 /// Pearson correlation: rho = cov(X,Y) / (sigma_x * sigma_y)
@@ -68,7 +72,9 @@ pub fn chi_squared(observed: &[f64], expected: &[f64]) -> f64 {
     let exp32: Vec<f32> = expected.iter().map(|&v| v as f32).collect();
     let _apr = aprender::stats::chisquare(&obs32, &exp32);
     // Compute in f64 for precision
-    observed.iter().zip(expected.iter())
+    observed
+        .iter()
+        .zip(expected.iter())
         .map(|(&o, &e)| {
             assert!(e > 0.0, "chi²: expected values must be > 0");
             (o - e).powi(2) / e

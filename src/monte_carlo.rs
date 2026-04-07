@@ -4,8 +4,8 @@
 //! Uses `aprender::monte_carlo::prelude::MonteCarloRng` for reproducible
 //! randomness and internal LCG for the classic Di Pierro algorithm.
 
-use aprender::monte_carlo::prelude::MonteCarloRng;
 use crate::random::Lcg;
+use aprender::monte_carlo::prelude::MonteCarloRng;
 
 /// Monte Carlo integration: I ~ (b-a)/N * sum f(x_i), x_i ~ Uniform(a,b).
 ///
@@ -46,14 +46,17 @@ pub fn bootstrap_error(
     let mut resample = vec![0.0; n];
     for _ in 0..n_resamples {
         for slot in resample.iter_mut() {
-            let idx = (rng.next() as usize) % n;
+            let idx = (rng.next_val() as usize) % n;
             *slot = data[idx];
         }
         theta_values.push(statistic_fn(&resample));
     }
     // Standard deviation of theta_values
     let mean: f64 = theta_values.iter().sum::<f64>() / n_resamples as f64;
-    let var: f64 = theta_values.iter().map(|&t| (t - mean).powi(2)).sum::<f64>()
+    let var: f64 = theta_values
+        .iter()
+        .map(|&t| (t - mean).powi(2))
+        .sum::<f64>()
         / (n_resamples - 1) as f64;
     var.sqrt()
 }
@@ -77,7 +80,10 @@ mod tests {
     fn mc_integrate_x_squared() {
         // integral of x^2 on [0,1] = 1/3
         let r = mc_integrate(|x| x * x, 0.0, 1.0, 100_000, 42);
-        assert!((r - 1.0 / 3.0).abs() < 0.02, "MC integral of x^2 ~ 1/3, got {r}");
+        assert!(
+            (r - 1.0 / 3.0).abs() < 0.02,
+            "MC integral of x^2 ~ 1/3, got {r}"
+        );
     }
 
     #[test]

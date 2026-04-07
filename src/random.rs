@@ -4,7 +4,8 @@
 //! Uses `aprender::monte_carlo::prelude::MonteCarloRng` as a reference
 //! RNG for cross-validation of our generators.
 
-use aprender::monte_carlo::prelude::MonteCarloRng;
+#[cfg(test)]
+use aprender::monte_carlo::prelude::MonteCarloRng as AprRng;
 
 /// Linear Congruential Generator state.
 #[derive(Debug, Clone)]
@@ -22,20 +23,25 @@ impl Lcg {
         assert!(a > 0 && a < m, "lcg: multiplier a must be in (0, m)");
         assert!(c < m, "lcg: increment c must be < m");
         assert!(seed < m, "lcg: seed must be < m");
-        Self { state: seed, a, c, m }
+        Self {
+            state: seed,
+            a,
+            c,
+            m,
+        }
     }
 
-    /// Advance state and return (value, next_state).
-    pub fn next(&mut self) -> u64 {
+    /// Advance state and return next value.
+    pub fn next_val(&mut self) -> u64 {
         // Use u128 to avoid overflow
-        self.state = ((self.a as u128 * self.state as u128 + self.c as u128)
-            % self.m as u128) as u64;
+        self.state =
+            ((self.a as u128 * self.state as u128 + self.c as u128) % self.m as u128) as u64;
         self.state
     }
 
     /// Generate a f64 in [0, 1).
     pub fn next_f64(&mut self) -> f64 {
-        self.next() as f64 / self.m as f64
+        self.next_val() as f64 / self.m as f64
     }
 }
 
@@ -89,8 +95,8 @@ impl Mt19937 {
 
     fn twist(&mut self) {
         for i in 0..Self::N {
-            let x = (self.mt[i] & Self::UPPER_MASK)
-                | (self.mt[(i + 1) % Self::N] & Self::LOWER_MASK);
+            let x =
+                (self.mt[i] & Self::UPPER_MASK) | (self.mt[(i + 1) % Self::N] & Self::LOWER_MASK);
             let mut xa = x >> 1;
             if x & 1 != 0 {
                 xa ^= Self::MATRIX_A;
@@ -122,7 +128,7 @@ mod tests {
         let m = 2_147_483_647u64;
         let mut rng = Lcg::new(1, 16807, 0, m);
         for _ in 0..10_000 {
-            let v = rng.next();
+            let v = rng.next_val();
             assert!(v < m, "output must be < m");
         }
     }
@@ -133,7 +139,7 @@ mod tests {
         let mut r1 = Lcg::new(42, 16807, 0, m);
         let mut r2 = Lcg::new(42, 16807, 0, m);
         for _ in 0..100 {
-            assert_eq!(r1.next(), r2.next());
+            assert_eq!(r1.next_val(), r2.next_val());
         }
     }
 
@@ -190,10 +196,10 @@ mod tests {
     fn lcg_period() {
         // Small LCG with known full period: a=3, c=5, m=8 has period 8
         let mut rng = Lcg::new(0, 3, 5, 8);
-        let first = rng.next();
+        let first = rng.next_val();
         let mut count = 1u64;
         loop {
-            let v = rng.next();
+            let v = rng.next_val();
             count += 1;
             if v == first || count > 100 {
                 break;
@@ -205,7 +211,7 @@ mod tests {
     #[test]
     fn aprender_rng_produces_values() {
         // Cross-validate: aprender's RNG also produces values in range
-        let mut apr_rng = MonteCarloRng::new(42);
+        let mut apr_rng = AprRng::new(42);
         for _ in 0..100 {
             let v = apr_rng.uniform();
             assert!((0.0..=1.0).contains(&v));

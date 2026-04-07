@@ -120,13 +120,7 @@ mod tests {
 
     #[test]
     fn newton_opt_x_squared() {
-        let min = newton_optimize(
-            |x| x * x,
-            |x| 2.0 * x,
-            |_x| 2.0,
-            5.0,
-            1e-12,
-        );
+        let min = newton_optimize(|x| x * x, |x| 2.0 * x, |_x| 2.0, 5.0, 1e-12);
         assert!(min.abs() < 1e-10);
     }
 
@@ -145,26 +139,14 @@ mod tests {
     #[test]
     fn newton_opt_zero_second_deriv() {
         // f''(0) = 0 for f(x) = x^3 at x=0
-        let result = newton_optimize(
-            |x| x * x * x,
-            |x| 3.0 * x * x,
-            |x| 6.0 * x,
-            0.0,
-            1e-12,
-        );
+        let result = newton_optimize(|x| x * x * x, |x| 3.0 * x * x, |x| 6.0 * x, 0.0, 1e-12);
         // Should return early without crashing
         assert!(result.is_finite());
     }
 
     #[test]
     fn gd_1d() {
-        let min = gradient_descent(
-            |x| x[0] * x[0],
-            |x| vec![2.0 * x[0]],
-            &[5.0],
-            0.1,
-            1e-8,
-        );
+        let min = gradient_descent(|x| x[0] * x[0], |x| vec![2.0 * x[0]], &[5.0], 0.1, 1e-8);
         assert!(min[0].abs() < 1e-6);
     }
 

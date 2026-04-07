@@ -12,7 +12,10 @@ pub fn bisection(f: impl Fn(f64) -> f64, mut a: f64, mut b: f64, tol: f64) -> f6
     assert!(a < b, "bisection: a must be less than b");
     let fa = f(a);
     let fb = f(b);
-    assert!(fa * fb < 0.0, "bisection: f(a) and f(b) must have opposite signs");
+    assert!(
+        fa * fb < 0.0,
+        "bisection: f(a) and f(b) must have opposite signs"
+    );
     for _ in 0..MAX_ITER {
         let c = (a + b) / 2.0;
         let fc = f(c);
@@ -42,7 +45,10 @@ pub fn newton(f: impl Fn(f64) -> f64, df: impl Fn(f64) -> f64, mut x: f64, tol: 
             return x;
         }
         let dfx = df(x);
-        assert!(dfx.abs() > 1e-15, "newton: derivative is zero; cannot continue");
+        assert!(
+            dfx.abs() > 1e-15,
+            "newton: derivative is zero; cannot continue"
+        );
         x -= fx / dfx;
     }
     let _traj = AprVector::from_vec(trajectory);

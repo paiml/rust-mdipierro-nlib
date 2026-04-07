@@ -4,8 +4,8 @@
 //! Complex numbers represented as (re, im) f64 pairs.
 //! Uses `aprender::Matrix<f64>` to represent DFT matrix for validation.
 
-use std::f64::consts::PI;
 use aprender::Matrix as AprMatrix;
+use std::f64::consts::PI;
 
 /// Discrete Fourier Transform (O(N^2)).
 /// X_k = sum_{n=0}^{N-1} x_n * exp(-2*pi*i*k*n/N)
@@ -103,12 +103,15 @@ pub fn inverse_dft(x: &[(f64, f64)]) -> Vec<(f64, f64)> {
 mod tests {
     use super::*;
 
-    fn approx_eq(a: f64, b: f64, tol: f64) -> bool { (a - b).abs() < tol }
+    fn approx_eq(a: f64, b: f64, tol: f64) -> bool {
+        (a - b).abs() < tol
+    }
 
     fn cpx_approx_eq(a: &[(f64, f64)], b: &[(f64, f64)], tol: f64) -> bool {
         a.len() == b.len()
-            && a.iter().zip(b.iter()).all(|((ar, ai), (br, bi))|
-                approx_eq(*ar, *br, tol) && approx_eq(*ai, *bi, tol))
+            && a.iter()
+                .zip(b.iter())
+                .all(|((ar, ai), (br, bi))| approx_eq(*ar, *br, tol) && approx_eq(*ai, *bi, tol))
     }
 
     #[test]
@@ -116,7 +119,10 @@ mod tests {
         let signal = vec![(1.0, 0.0), (2.0, -1.0), (0.0, 3.0), (-1.0, 0.5)];
         let spectrum = dft(&signal);
         let recovered = inverse_dft(&spectrum);
-        assert!(cpx_approx_eq(&signal, &recovered, 1e-10), "idft(dft(x)) == x");
+        assert!(
+            cpx_approx_eq(&signal, &recovered, 1e-10),
+            "idft(dft(x)) == x"
+        );
     }
 
     #[test]
@@ -137,17 +143,15 @@ mod tests {
         let signal: Vec<(f64, f64)> = vec![(c, 0.0); n];
         let result = dft(&signal);
         assert!(approx_eq(result[0].0, c * n as f64, 1e-10));
-        for k in 1..n {
-            assert!(approx_eq(result[k].0, 0.0, 1e-10));
-            assert!(approx_eq(result[k].1, 0.0, 1e-10));
+        for r in &result[1..] {
+            assert!(approx_eq(r.0, 0.0, 1e-10));
+            assert!(approx_eq(r.1, 0.0, 1e-10));
         }
     }
 
     #[test]
     fn parseval_theorem() {
-        let signal: Vec<(f64, f64)> = vec![
-            (1.0, 0.0), (2.0, 0.0), (3.0, 0.0), (4.0, 0.0),
-        ];
+        let signal: Vec<(f64, f64)> = vec![(1.0, 0.0), (2.0, 0.0), (3.0, 0.0), (4.0, 0.0)];
         let spectrum = dft(&signal);
         let time_energy: f64 = signal.iter().map(|(r, i)| r * r + i * i).sum();
         let freq_energy: f64 = spectrum.iter().map(|(r, i)| r * r + i * i).sum();
@@ -171,9 +175,7 @@ mod tests {
 
     #[test]
     fn ifft_fft_roundtrip() {
-        let signal: Vec<(f64, f64)> = vec![
-            (1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0),
-        ];
+        let signal: Vec<(f64, f64)> = vec![(1.0, 0.0), (0.0, 1.0), (-1.0, 0.0), (0.0, -1.0)];
         let spectrum = fft(&signal);
         let recovered = inverse_dft(&spectrum);
         assert!(cpx_approx_eq(&signal, &recovered, 1e-10));
