@@ -47,8 +47,14 @@ fn golden_stats_mean_variance() {
     let py_mean: f64 = v["stats"]["mean"].as_f64().unwrap();
     let py_var: f64 = v["stats"]["variance"].as_f64().unwrap();
 
-    assert!(approx(nlib::stats::mean(&x), py_mean, 1e-12), "mean diverges from Python");
-    assert!(approx(nlib::stats::variance(&x), py_var, 1e-12), "variance diverges from Python");
+    assert!(
+        approx(nlib::stats::mean(&x), py_mean, 1e-12),
+        "mean diverges from Python"
+    );
+    assert!(
+        approx(nlib::stats::variance(&x), py_var, 1e-12),
+        "variance diverges from Python"
+    );
 }
 
 #[test]
@@ -59,8 +65,14 @@ fn golden_stats_correlation() {
     let py_cov: f64 = v["stats"]["covariance"].as_f64().unwrap();
     let py_corr: f64 = v["stats"]["correlation"].as_f64().unwrap();
 
-    assert!(approx(nlib::stats::covariance(&a, &b), py_cov, 1e-12), "covariance diverges");
-    assert!(approx(nlib::stats::correlation(&a, &b), py_corr, 1e-12), "correlation diverges");
+    assert!(
+        approx(nlib::stats::covariance(&a, &b), py_cov, 1e-12),
+        "covariance diverges"
+    );
+    assert!(
+        approx(nlib::stats::correlation(&a, &b), py_corr, 1e-12),
+        "correlation diverges"
+    );
 }
 
 #[test]
@@ -70,7 +82,10 @@ fn golden_stats_chi_squared() {
     let exp: Vec<f64> = serde_json::from_value(v["stats"]["expected"].clone()).unwrap();
     let py_chi2: f64 = v["stats"]["chi_squared"].as_f64().unwrap();
 
-    assert!(approx(nlib::stats::chi_squared(&obs, &exp), py_chi2, 1e-12), "chi2 diverges");
+    assert!(
+        approx(nlib::stats::chi_squared(&obs, &exp), py_chi2, 1e-12),
+        "chi2 diverges"
+    );
 }
 
 // =========================================================================
@@ -83,7 +98,10 @@ fn golden_solve_bisection() {
     let py_root: f64 = v["solve"]["bisection"]["expected"].as_f64().unwrap();
 
     let root = nlib::solve::bisection(|x| x * x - 2.0, 1.0, 2.0, 1e-14);
-    assert!(approx(root, py_root, 1e-10), "bisection sqrt(2) diverges: {root} vs {py_root}");
+    assert!(
+        approx(root, py_root, 1e-10),
+        "bisection sqrt(2) diverges: {root} vs {py_root}"
+    );
 }
 
 #[test]
@@ -92,7 +110,10 @@ fn golden_solve_fixed_point() {
     let py_fp: f64 = v["solve"]["fixed_point"]["expected"].as_f64().unwrap();
 
     let fp = nlib::solve::fixed_point(|x| x.cos(), 1.0, 1e-14);
-    assert!(approx(fp, py_fp, 1e-10), "fixed_point cos(x)=x diverges: {fp} vs {py_fp}");
+    assert!(
+        approx(fp, py_fp, 1e-10),
+        "fixed_point cos(x)=x diverges: {fp} vs {py_fp}"
+    );
 }
 
 // =========================================================================
@@ -102,10 +123,15 @@ fn golden_solve_fixed_point() {
 #[test]
 fn golden_integrate_simpson_x2() {
     let v = load_vectors();
-    let py_val: f64 = v["integrate"]["simpson_x2_0_1_50"]["expected"].as_f64().unwrap();
+    let py_val: f64 = v["integrate"]["simpson_x2_0_1_50"]["expected"]
+        .as_f64()
+        .unwrap();
 
     let result = nlib::integrate::simpson(|x| x * x, 0.0, 1.0, 50);
-    assert!(approx(result, py_val, 1e-10), "simpson x^2 diverges: {result} vs {py_val}");
+    assert!(
+        approx(result, py_val, 1e-10),
+        "simpson x^2 diverges: {result} vs {py_val}"
+    );
 }
 
 // =========================================================================
@@ -115,14 +141,21 @@ fn golden_integrate_simpson_x2() {
 #[test]
 fn golden_fourier_impulse() {
     let v = load_vectors();
-    let py_out: Vec<Vec<f64>> = serde_json::from_value(v["fourier"]["dft_impulse"]["output"].clone()).unwrap();
+    let py_out: Vec<Vec<f64>> =
+        serde_json::from_value(v["fourier"]["dft_impulse"]["output"].clone()).unwrap();
 
     let input = vec![(1.0, 0.0), (0.0, 0.0), (0.0, 0.0), (0.0, 0.0)];
     let result = nlib::fourier::dft(&input);
 
     for (k, (re, im)) in result.iter().enumerate() {
-        assert!(approx(*re, py_out[k][0], 1e-10), "DFT impulse re[{k}] diverges");
-        assert!(approx(*im, py_out[k][1], 1e-10), "DFT impulse im[{k}] diverges");
+        assert!(
+            approx(*re, py_out[k][0], 1e-10),
+            "DFT impulse re[{k}] diverges"
+        );
+        assert!(
+            approx(*im, py_out[k][1], 1e-10),
+            "DFT impulse im[{k}] diverges"
+        );
     }
 }
 
@@ -133,7 +166,10 @@ fn golden_fourier_dc() {
 
     let input = vec![(3.0, 0.0); 4];
     let result = nlib::fourier::dft(&input);
-    assert!(approx(result[0].0, py_dc, 1e-10), "DFT DC component diverges");
+    assert!(
+        approx(result[0].0, py_dc, 1e-10),
+        "DFT DC component diverges"
+    );
 }
 
 // =========================================================================
@@ -146,13 +182,17 @@ fn golden_matrix_determinant() {
     let py_det: f64 = v["matrix"]["determinant"].as_f64().unwrap();
 
     let a = nlib::matrix::Matrix::from_rows(&[&[1.0, 2.0], &[3.0, 4.0]]);
-    assert!(approx(nlib::matrix::determinant(&a), py_det, 1e-10), "det diverges");
+    assert!(
+        approx(nlib::matrix::determinant(&a), py_det, 1e-10),
+        "det diverges"
+    );
 }
 
 #[test]
 fn golden_matrix_matmul() {
     let v = load_vectors();
-    let py_c: Vec<Vec<f64>> = serde_json::from_value(v["matrix"]["matmul_AB"]["C"].clone()).unwrap();
+    let py_c: Vec<Vec<f64>> =
+        serde_json::from_value(v["matrix"]["matmul_AB"]["C"].clone()).unwrap();
     let expected: Vec<f64> = py_c.into_iter().flatten().collect();
 
     let a = nlib::matrix::Matrix::from_rows(&[&[1.0, 2.0], &[3.0, 4.0]]);
@@ -160,7 +200,10 @@ fn golden_matrix_matmul() {
     let c = nlib::matrix::matmul(&a, &b);
 
     for (i, (&rust_val, &py_val)) in c.data().iter().zip(expected.iter()).enumerate() {
-        assert!(approx(rust_val, py_val, 1e-10), "matmul[{i}] diverges: {rust_val} vs {py_val}");
+        assert!(
+            approx(rust_val, py_val, 1e-10),
+            "matmul[{i}] diverges: {rust_val} vs {py_val}"
+        );
     }
 }
 
@@ -174,7 +217,10 @@ fn golden_matrix_cholesky() {
     let l = nlib::matrix::cholesky(&a).expect("positive definite");
 
     for (i, (&rust_val, &py_val)) in l.data().iter().zip(expected.iter()).enumerate() {
-        assert!(approx(rust_val, py_val, 1e-10), "cholesky[{i}] diverges: {rust_val} vs {py_val}");
+        assert!(
+            approx(rust_val, py_val, 1e-10),
+            "cholesky[{i}] diverges: {rust_val} vs {py_val}"
+        );
     }
 }
 
@@ -185,8 +231,10 @@ fn golden_matrix_cholesky() {
 #[test]
 fn golden_graph_dijkstra() {
     let v = load_vectors();
-    let edges: Vec<Vec<f64>> = serde_json::from_value(v["graph"]["dijkstra_from_0"]["edges"].clone()).unwrap();
-    let py_dist: Vec<f64> = serde_json::from_value(v["graph"]["dijkstra_from_0"]["distances"].clone()).unwrap();
+    let edges: Vec<Vec<f64>> =
+        serde_json::from_value(v["graph"]["dijkstra_from_0"]["edges"].clone()).unwrap();
+    let py_dist: Vec<f64> =
+        serde_json::from_value(v["graph"]["dijkstra_from_0"]["distances"].clone()).unwrap();
 
     let mut g = nlib::graph::Graph::new(6);
     for e in &edges {
@@ -195,7 +243,10 @@ fn golden_graph_dijkstra() {
 
     let dist = nlib::graph::dijkstra(&g, 0);
     for (i, (&rust_d, &py_d)) in dist.iter().zip(py_dist.iter()).enumerate() {
-        assert!(approx(rust_d, py_d, 1e-10), "dijkstra[{i}] diverges: {rust_d} vs {py_d}");
+        assert!(
+            approx(rust_d, py_d, 1e-10),
+            "dijkstra[{i}] diverges: {rust_d} vs {py_d}"
+        );
     }
 }
 
@@ -206,11 +257,15 @@ fn golden_graph_dijkstra() {
 #[test]
 fn golden_random_lcg() {
     let v = load_vectors();
-    let py_vals: Vec<u64> = serde_json::from_value(v["random"]["lcg_minstd_seed1_first5"].clone()).unwrap();
+    let py_vals: Vec<u64> =
+        serde_json::from_value(v["random"]["lcg_minstd_seed1_first5"].clone()).unwrap();
 
     let mut lcg = nlib::random::Lcg::new(1, 16807, 0, 2_147_483_647);
     for (i, &py_val) in py_vals.iter().enumerate() {
         let rust_val = lcg.next_val();
-        assert_eq!(rust_val, py_val, "LCG[{i}] diverges: {rust_val} vs {py_val}");
+        assert_eq!(
+            rust_val, py_val,
+            "LCG[{i}] diverges: {rust_val} vs {py_val}"
+        );
     }
 }
