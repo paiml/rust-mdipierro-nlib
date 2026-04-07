@@ -1,0 +1,21 @@
+--- src/graph.rs
++++ replace != with == in find
+@@ -155,17 +155,17 @@
+         if mst.len() == n - 1 {
+             break;
+         }
+     }
+     mst
+ }
+ 
+ fn find(p: &mut [usize], mut x: usize) -> usize {
+-    while p[x] != x {
++    while p[x] == /* ~ changed by cargo-mutants ~ */ x {
+         p[x] = p[p[x]];
+         x = p[x];
+     }
+     x
+ }
+ fn union(p: &mut [usize], r: &mut [usize], x: usize, y: usize) {
+     if r[x] < r[y] {
+         p[x] = y;

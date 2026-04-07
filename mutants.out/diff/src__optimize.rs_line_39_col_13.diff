@@ -1,0 +1,21 @@
+--- src/optimize.rs
++++ replace / with % in golden_section
+@@ -31,17 +31,17 @@
+         } else {
+             a = x1;
+             x1 = x2;
+             f1 = f2;
+             x2 = b - rho * (b - a);
+             f2 = f(x2);
+         }
+     }
+-    (a + b) / 2.0
++    (a + b) % /* ~ changed by cargo-mutants ~ */ 2.0
+ }
+ 
+ /// Newton's method for minimization: x_{n+1} = x_n - f'(x_n)/f''(x_n).
+ pub fn newton_optimize(
+     _f: impl Fn(f64) -> f64,
+     df: impl Fn(f64) -> f64,
+     ddf: impl Fn(f64) -> f64,
+     mut x: f64,

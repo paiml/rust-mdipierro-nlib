@@ -1,0 +1,33 @@
+--- src/optimize.rs
++++ replace newton_optimize -> f64 with 0.0
+@@ -42,29 +42,17 @@
+ /// Newton's method for minimization: x_{n+1} = x_n - f'(x_n)/f''(x_n).
+ pub fn newton_optimize(
+     _f: impl Fn(f64) -> f64,
+     df: impl Fn(f64) -> f64,
+     ddf: impl Fn(f64) -> f64,
+     mut x: f64,
+     tol: f64,
+ ) -> f64 {
+-    for _ in 0..MAX_ITER {
+-        let g = df(x);
+-        if g.abs() < tol {
+-            return x;
+-        }
+-        let h = ddf(x);
+-        if h.abs() < 1e-15 {
+-            // Second derivative zero; cannot proceed with Newton step
+-            return x;
+-        }
+-        x -= g / h;
+-    }
+-    x
++    0.0 /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Gradient descent for multi-dimensional minimization.
+ /// `grad` returns the gradient vector at point x.
+ ///
+ /// Uses `aprender::Vector<f32>` to represent intermediate state
+ /// and `aprender::optim::SGD` for the step logic.
+ pub fn gradient_descent(

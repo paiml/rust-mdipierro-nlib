@@ -1,0 +1,21 @@
+--- src/fourier.rs
++++ replace * with + in dft
+@@ -16,17 +16,17 @@
+     for k in 0..n {
+         let mut re = 0.0;
+         let mut im = 0.0;
+         for (idx, &(xr, xi)) in x.iter().enumerate() {
+             let angle = -2.0 * PI * (k as f64) * (idx as f64) / (n as f64);
+             let (sin_a, cos_a) = angle.sin_cos();
+             // (xr + i*xi) * (cos + i*sin) = (xr*cos - xi*sin) + i*(xr*sin + xi*cos)
+             re += xr * cos_a - xi * sin_a;
+-            im += xr * sin_a + xi * cos_a;
++            im += xr + /* ~ changed by cargo-mutants ~ */ sin_a + xi * cos_a;
+         }
+         result.push((re, im));
+     }
+     result
+ }
+ 
+ /// Build the DFT matrix W where W[k,n] = exp(-2*pi*i*k*n/N).
+ /// Returns (real_part, imag_part) as two aprender matrices.

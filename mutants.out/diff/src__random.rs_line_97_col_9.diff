@@ -1,0 +1,30 @@
+--- src/random.rs
++++ replace Mt19937::twist with ()
+@@ -89,26 +89,17 @@
+         y ^= (y << 7) & 0x9D2C_5680;
+         y ^= (y << 15) & 0xEFC6_0000;
+         y ^= y >> 18;
+         self.index += 1;
+         y
+     }
+ 
+     fn twist(&mut self) {
+-        for i in 0..Self::N {
+-            let x =
+-                (self.mt[i] & Self::UPPER_MASK) | (self.mt[(i + 1) % Self::N] & Self::LOWER_MASK);
+-            let mut xa = x >> 1;
+-            if x & 1 != 0 {
+-                xa ^= Self::MATRIX_A;
+-            }
+-            self.mt[i] = self.mt[(i + Self::M) % Self::N] ^ xa;
+-        }
+-        self.index = 0;
++        () /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Generate f64 in [0, 1).
+     pub fn next_f64(&mut self) -> f64 {
+         self.next_u32() as f64 / (u32::MAX as f64 + 1.0)
+     }
+ }
+ 

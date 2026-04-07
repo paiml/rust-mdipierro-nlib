@@ -1,0 +1,23 @@
+--- src/random.rs
++++ replace Lcg::next_val -> u64 with 1
+@@ -29,19 +29,17 @@
+             c,
+             m,
+         }
+     }
+ 
+     /// Advance state and return next value.
+     pub fn next_val(&mut self) -> u64 {
+         // Use u128 to avoid overflow
+-        self.state =
+-            ((self.a as u128 * self.state as u128 + self.c as u128) % self.m as u128) as u64;
+-        self.state
++        1 /* ~ changed by cargo-mutants ~ */
+     }
+ 
+     /// Generate a f64 in [0, 1).
+     pub fn next_f64(&mut self) -> f64 {
+         self.next_val() as f64 / self.m as f64
+     }
+ }
+ 

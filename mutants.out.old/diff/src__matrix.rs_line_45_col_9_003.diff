@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ replace Matrix::data -> &[f64] with Vec::leak(vec![-1.0])
+@@ -37,17 +37,17 @@
+         self.inner.n_cols()
+     }
+     /// Get element at (row, col).
+     pub fn get(&self, row: usize, col: usize) -> f64 {
+         self.inner.as_slice()[row * self.cols() + col]
+     }
+     /// Get raw data as slice.
+     pub fn data(&self) -> &[f64] {
+-        self.inner.as_slice()
++        Vec::leak(vec![-1.0]) /* ~ changed by cargo-mutants ~ */
+     }
+     pub fn from_rows(rows: &[&[f64]]) -> Self {
+         let ncols = rows[0].len();
+         let mut data = Vec::with_capacity(rows.len() * ncols);
+         for r in rows {
+             assert_eq!(r.len(), ncols);
+             data.extend_from_slice(r);
+         }

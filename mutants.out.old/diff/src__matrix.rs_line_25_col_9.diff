@@ -1,0 +1,27 @@
+--- src/matrix.rs
++++ replace Matrix::identity -> Self with Default::default()
+@@ -17,23 +17,17 @@
+         Self { inner }
+     }
+     pub fn zeros(rows: usize, cols: usize) -> Self {
+         Self {
+             inner: AprMatrix::from_vec(rows, cols, vec![0.0; rows * cols]).expect("valid"),
+         }
+     }
+     pub fn identity(n: usize) -> Self {
+-        let mut data = vec![0.0; n * n];
+-        for i in 0..n {
+-            data[i * n + i] = 1.0;
+-        }
+-        Self {
+-            inner: AprMatrix::from_vec(n, n, data).expect("valid"),
+-        }
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+     pub fn rows(&self) -> usize {
+         self.inner.n_rows()
+     }
+     pub fn cols(&self) -> usize {
+         self.inner.n_cols()
+     }
+     /// Get element at (row, col).

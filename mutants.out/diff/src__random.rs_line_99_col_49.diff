@@ -1,0 +1,21 @@
+--- src/random.rs
++++ replace | with & in Mt19937::twist
+@@ -91,17 +91,17 @@
+         y ^= y >> 18;
+         self.index += 1;
+         y
+     }
+ 
+     fn twist(&mut self) {
+         for i in 0..Self::N {
+             let x =
+-                (self.mt[i] & Self::UPPER_MASK) | (self.mt[(i + 1) % Self::N] & Self::LOWER_MASK);
++                (self.mt[i] & Self::UPPER_MASK) & /* ~ changed by cargo-mutants ~ */ (self.mt[(i + 1) % Self::N] & Self::LOWER_MASK);
+             let mut xa = x >> 1;
+             if x & 1 != 0 {
+                 xa ^= Self::MATRIX_A;
+             }
+             self.mt[i] = self.mt[(i + Self::M) % Self::N] ^ xa;
+         }
+         self.index = 0;
+     }

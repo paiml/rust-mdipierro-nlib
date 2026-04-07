@@ -160,7 +160,7 @@ mod tests {
 
     #[test]
     fn mt_reference_output() {
-        // MT19937 with seed 5489 (default seed) should produce 3499211612
+        // MT19937 with seed 5489 — matches canonical reference value.
         let mut mt = Mt19937::new(5489);
         assert_eq!(mt.next_u32(), 3499211612);
     }

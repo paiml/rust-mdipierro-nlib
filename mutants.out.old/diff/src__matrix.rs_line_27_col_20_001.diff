@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ replace * with / in Matrix::identity
+@@ -19,17 +19,17 @@
+     pub fn zeros(rows: usize, cols: usize) -> Self {
+         Self {
+             inner: AprMatrix::from_vec(rows, cols, vec![0.0; rows * cols]).expect("valid"),
+         }
+     }
+     pub fn identity(n: usize) -> Self {
+         let mut data = vec![0.0; n * n];
+         for i in 0..n {
+-            data[i * n + i] = 1.0;
++            data[i / /* ~ changed by cargo-mutants ~ */ n + i] = 1.0;
+         }
+         Self {
+             inner: AprMatrix::from_vec(n, n, data).expect("valid"),
+         }
+     }
+     pub fn rows(&self) -> usize {
+         self.inner.n_rows()
+     }

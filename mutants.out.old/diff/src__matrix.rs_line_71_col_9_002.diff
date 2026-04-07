@@ -1,0 +1,26 @@
+--- src/matrix.rs
++++ replace <impl std::ops::IndexMut<(usize, usize)> for Matrix>::index_mut -> &mut f64 with Box::leak(Box::new(-1.0))
+@@ -63,22 +63,17 @@
+         // aprender::Matrix::get returns by value; we need a reference.
+         // Use the underlying slice via as_slice().
+         let cols = self.inner.n_cols();
+         &self.inner.as_slice()[r * cols + c]
+     }
+ }
+ impl std::ops::IndexMut<(usize, usize)> for Matrix {
+     fn index_mut(&mut self, (r, c): (usize, usize)) -> &mut f64 {
+-        let cols = self.inner.n_cols();
+-        let idx = r * cols + c;
+-        // Safety: we need mutable slice access. Rebuild via raw pointer.
+-        // aprender doesn't expose as_mut_slice on Matrix, so we reconstruct.
+-        let ptr = self.inner.as_slice().as_ptr() as *mut f64;
+-        unsafe { &mut *ptr.add(idx) }
++        Box::leak(Box::new(-1.0)) /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// C[i,j] = sum_k A[i,k]*B[k,j]
+ pub fn matmul(a: &Matrix, b: &Matrix) -> Matrix {
+     contract_pre_matmul!(a, b);
+     let (m, p, n) = (a.rows(), a.cols(), b.cols());
+     let mut c = Matrix::zeros(m, n);

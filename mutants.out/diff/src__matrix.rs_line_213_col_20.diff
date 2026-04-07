@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ delete - in determinant
+@@ -205,17 +205,17 @@
+             return 0.0;
+         }
+         if mx_row != col {
+             for j in 0..n {
+                 let tmp = m[(col, j)];
+                 m[(col, j)] = m[(mx_row, j)];
+                 m[(mx_row, j)] = tmp;
+             }
+-            sign = -sign;
++            sign =  /* ~ changed by cargo-mutants ~ */sign;
+         }
+         for row in (col + 1)..n {
+             let f = m[(row, col)] / m[(col, col)];
+             for j in (col + 1)..n {
+                 m[(row, j)] -= f * m[(col, j)];
+             }
+         }
+     }

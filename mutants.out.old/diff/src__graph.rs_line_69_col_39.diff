@@ -1,0 +1,21 @@
+--- src/graph.rs
++++ replace < with == in dijkstra
+@@ -61,17 +61,17 @@
+     let n = graph.n;
+     let mut dist = vec![f64::INFINITY; n];
+     let mut visited = vec![false; n];
+     dist[start] = 0.0;
+     for _ in 0..n {
+         let mut u = None;
+         let mut min_d = f64::INFINITY;
+         for v in 0..n {
+-            if !visited[v] && dist[v] < min_d {
++            if !visited[v] && dist[v] == /* ~ changed by cargo-mutants ~ */ min_d {
+                 min_d = dist[v];
+                 u = Some(v);
+             }
+         }
+         let u = match u {
+             Some(v) => v,
+             None => break,
+         };

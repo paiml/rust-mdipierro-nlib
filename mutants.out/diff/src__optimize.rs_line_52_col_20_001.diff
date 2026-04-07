@@ -1,0 +1,21 @@
+--- src/optimize.rs
++++ replace < with > in newton_optimize
+@@ -44,17 +44,17 @@
+     _f: impl Fn(f64) -> f64,
+     df: impl Fn(f64) -> f64,
+     ddf: impl Fn(f64) -> f64,
+     mut x: f64,
+     tol: f64,
+ ) -> f64 {
+     for _ in 0..MAX_ITER {
+         let g = df(x);
+-        if g.abs() < tol {
++        if g.abs() > /* ~ changed by cargo-mutants ~ */ tol {
+             return x;
+         }
+         let h = ddf(x);
+         if h.abs() < 1e-15 {
+             // Second derivative zero; cannot proceed with Newton step
+             return x;
+         }
+         x -= g / h;

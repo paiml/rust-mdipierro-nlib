@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ replace Matrix::rows -> usize with 0
+@@ -26,17 +26,17 @@
+         for i in 0..n {
+             data[i * n + i] = 1.0;
+         }
+         Self {
+             inner: AprMatrix::from_vec(n, n, data).expect("valid"),
+         }
+     }
+     pub fn rows(&self) -> usize {
+-        self.inner.n_rows()
++        0 /* ~ changed by cargo-mutants ~ */
+     }
+     pub fn cols(&self) -> usize {
+         self.inner.n_cols()
+     }
+     /// Get element at (row, col).
+     pub fn get(&self, row: usize, col: usize) -> f64 {
+         self.inner.as_slice()[row * self.cols() + col]
+     }

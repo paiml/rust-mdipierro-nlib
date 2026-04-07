@@ -1,0 +1,21 @@
+--- src/graph.rs
++++ replace += with *= in union
+@@ -167,17 +167,17 @@
+     x
+ }
+ fn union(p: &mut [usize], r: &mut [usize], x: usize, y: usize) {
+     if r[x] < r[y] {
+         p[x] = y;
+     } else {
+         p[y] = x;
+         if r[x] == r[y] {
+-            r[x] += 1;
++            r[x] *= /* ~ changed by cargo-mutants ~ */ 1;
+         }
+     }
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+     fn triangle() -> Graph {

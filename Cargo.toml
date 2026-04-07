@@ -10,6 +10,9 @@ authors = ["PAIML Engineering"]
 keywords = ["numerical", "linear-algebra", "optimization", "monte-carlo", "provable"]
 categories = ["mathematics", "science", "algorithms"]
 
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }
+
 [dependencies]
 aprender = "0.27"
 

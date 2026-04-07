@@ -58,6 +58,42 @@ jobs:
       - name: Falsify Python/Rust parity
         run: uv run tests/falsify_parity.py
 
+  kani:
+    name: Kani BMC
+    runs-on: ubuntu-latest
+    needs: gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install Kani
+        run: |
+          cargo install kani-verifier
+          cargo kani setup
+
+      - name: Verify harnesses
+        run: |
+          cargo kani --harness verify_transpose_involution
+          cargo kani --harness verify_variance_non_negative
+          cargo kani --harness verify_correlation_bounded
+          cargo kani --harness verify_quicksort_length
+
+  mutants:
+    name: Mutation Testing
+    runs-on: ubuntu-latest
+    needs: gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-mutants
+        run: cargo install cargo-mutants
+
+      - name: Run mutation testing
+        run: cargo mutants --no-shuffle -j4 -- --lib
+
   examples:
     name: Examples
     runs-on: ubuntu-latest

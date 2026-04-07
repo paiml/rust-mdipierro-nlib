@@ -1,0 +1,406 @@
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![]
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(1.0, 0.0)]
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(1.0, 1.0)]
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(1.0, -1.0)]
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(-1.0, 0.0)]
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(-1.0, 1.0)]
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(-1.0, -1.0)]
+src/fourier.rs:20:63: replace / with % in dft
+src/fourier.rs:20:63: replace / with * in dft
+src/fourier.rs:20:48: replace * with + in dft
+src/fourier.rs:20:48: replace * with / in dft
+src/fourier.rs:20:35: replace * with + in dft
+src/fourier.rs:20:35: replace * with / in dft
+src/fourier.rs:20:30: replace * with + in dft
+src/fourier.rs:20:30: replace * with / in dft
+src/fourier.rs:20:25: delete - in dft
+src/fourier.rs:23:16: replace += with -= in dft
+src/fourier.rs:23:16: replace += with *= in dft
+src/fourier.rs:23:30: replace - with + in dft
+src/fourier.rs:23:30: replace - with / in dft
+src/fourier.rs:23:22: replace * with + in dft
+src/fourier.rs:23:22: replace * with / in dft
+src/fourier.rs:23:35: replace * with + in dft
+src/fourier.rs:23:35: replace * with / in dft
+src/fourier.rs:24:16: replace += with -= in dft
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(0.0, 0.0)]
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(0.0, -1.0)]
+src/fourier.rs:13:5: replace dft -> Vec<(f64, f64)> with vec![(0.0, 1.0)]
+src/fourier.rs:24:16: replace += with *= in dft
+src/fourier.rs:24:30: replace + with - in dft
+src/fourier.rs:24:30: replace + with * in dft
+src/fourier.rs:24:22: replace * with + in dft
+src/fourier.rs:24:22: replace * with / in dft
+src/fourier.rs:24:35: replace * with + in dft
+src/fourier.rs:24:35: replace * with / in dft
+src/fourier.rs:40:27: replace + with - in dft_matrix
+src/fourier.rs:40:27: replace + with * in dft_matrix
+src/fourier.rs:41:27: replace + with - in dft_matrix
+src/fourier.rs:41:27: replace + with * in dft_matrix
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(0.0, 1.0)]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(0.0, 0.0)]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(0.0, -1.0)]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(1.0, 0.0)]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(1.0, 1.0)]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(1.0, -1.0)]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(-1.0, 0.0)]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(-1.0, 1.0)]
+src/fourier.rs:53:5: replace fft -> Vec<(f64, f64)> with vec![(-1.0, -1.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(0.0, 1.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(0.0, -1.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(1.0, 0.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(0.0, 0.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(-1.0, 1.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(-1.0, 0.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(1.0, 1.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(1.0, -1.0)]
+src/fourier.rs:60:5: replace fft_recursive -> Vec<(f64, f64)> with vec![(-1.0, -1.0)]
+src/fourier.rs:69:19: replace / with % in fft_recursive
+src/fourier.rs:61:10: replace == with != in fft_recursive
+src/fourier.rs:69:19: replace / with * in fft_recursive
+src/fourier.rs:70:44: replace / with * in fft_recursive
+src/fourier.rs:70:44: replace / with % in fft_recursive
+src/fourier.rs:70:31: replace * with + in fft_recursive
+src/fourier.rs:70:26: replace * with + in fft_recursive
+src/fourier.rs:70:31: replace * with / in fft_recursive
+src/fourier.rs:70:26: replace * with / in fft_recursive
+src/fourier.rs:70:21: delete - in fft_recursive
+src/fourier.rs:74:29: replace - with / in fft_recursive
+src/fourier.rs:74:29: replace - with + in fft_recursive
+src/fourier.rs:74:21: replace * with + in fft_recursive
+src/fourier.rs:74:21: replace * with / in fft_recursive
+src/fourier.rs:75:29: replace + with - in fft_recursive
+src/fourier.rs:74:34: replace * with + in fft_recursive
+src/fourier.rs:75:29: replace + with * in fft_recursive
+src/fourier.rs:74:34: replace * with / in fft_recursive
+src/fourier.rs:75:21: replace * with + in fft_recursive
+src/fourier.rs:75:34: replace * with + in fft_recursive
+src/fourier.rs:75:21: replace * with / in fft_recursive
+src/fourier.rs:75:34: replace * with / in fft_recursive
+src/fourier.rs:76:29: replace + with - in fft_recursive
+src/fourier.rs:76:29: replace + with * in fft_recursive
+src/fourier.rs:76:42: replace + with - in fft_recursive
+src/fourier.rs:76:42: replace + with * in fft_recursive
+src/fourier.rs:77:22: replace / with % in fft_recursive
+src/fourier.rs:77:18: replace + with - in fft_recursive
+src/fourier.rs:77:22: replace / with * in fft_recursive
+src/fourier.rs:77:18: replace + with * in fft_recursive
+src/fourier.rs:77:37: replace - with + in fft_recursive
+src/fourier.rs:77:37: replace - with / in fft_recursive
+src/fourier.rs:77:50: replace - with + in fft_recursive
+src/fourier.rs:77:50: replace - with / in fft_recursive
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(0.0, 0.0)]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(0.0, 1.0)]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(0.0, -1.0)]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(1.0, 1.0)]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(1.0, 0.0)]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(1.0, -1.0)]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(-1.0, 0.0)]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(-1.0, 1.0)]
+src/fourier.rs:84:5: replace inverse_dft -> Vec<(f64, f64)> with vec![(-1.0, -1.0)]
+src/fourier.rs:92:62: replace / with % in inverse_dft
+src/fourier.rs:92:62: replace / with * in inverse_dft
+src/fourier.rs:92:47: replace * with + in inverse_dft
+src/fourier.rs:92:47: replace * with / in inverse_dft
+src/fourier.rs:92:34: replace * with / in inverse_dft
+src/fourier.rs:92:34: replace * with + in inverse_dft
+src/fourier.rs:92:29: replace * with + in inverse_dft
+src/fourier.rs:92:29: replace * with / in inverse_dft
+src/fourier.rs:94:16: replace += with -= in inverse_dft
+src/fourier.rs:94:16: replace += with *= in inverse_dft
+src/fourier.rs:94:30: replace - with + in inverse_dft
+src/fourier.rs:94:30: replace - with / in inverse_dft
+src/fourier.rs:94:22: replace * with + in inverse_dft
+src/fourier.rs:94:22: replace * with / in inverse_dft
+src/fourier.rs:94:35: replace * with + in inverse_dft
+src/fourier.rs:94:35: replace * with / in inverse_dft
+src/fourier.rs:95:16: replace += with *= in inverse_dft
+src/fourier.rs:95:16: replace += with -= in inverse_dft
+src/fourier.rs:95:30: replace + with - in inverse_dft
+src/fourier.rs:95:30: replace + with * in inverse_dft
+src/fourier.rs:95:22: replace * with + in inverse_dft
+src/fourier.rs:95:22: replace * with / in inverse_dft
+src/fourier.rs:95:35: replace * with / in inverse_dft
+src/fourier.rs:95:35: replace * with + in inverse_dft
+src/fourier.rs:97:25: replace / with % in inverse_dft
+src/fourier.rs:97:34: replace / with % in inverse_dft
+src/fourier.rs:97:25: replace / with * in inverse_dft
+src/fourier.rs:97:34: replace / with * in inverse_dft
+src/graph.rs:25:9: replace Graph::add_edge with ()
+src/graph.rs:29:9: replace Graph::add_undirected_edge with ()
+src/graph.rs:33:9: replace Graph::neighbors -> &[(usize, f64)] with Vec::leak(Vec::new())
+src/graph.rs:33:9: replace Graph::neighbors -> &[(usize, f64)] with Vec::leak(vec![(0, 0.0)])
+src/graph.rs:33:9: replace Graph::neighbors -> &[(usize, f64)] with Vec::leak(vec![(0, 1.0)])
+src/graph.rs:33:9: replace Graph::neighbors -> &[(usize, f64)] with Vec::leak(vec![(0, -1.0)])
+src/graph.rs:33:9: replace Graph::neighbors -> &[(usize, f64)] with Vec::leak(vec![(1, 0.0)])
+src/graph.rs:33:9: replace Graph::neighbors -> &[(usize, f64)] with Vec::leak(vec![(1, 1.0)])
+src/graph.rs:33:9: replace Graph::neighbors -> &[(usize, f64)] with Vec::leak(vec![(1, -1.0)])
+src/graph.rs:55:5: replace dijkstra -> Vec<f64> with vec![0.0]
+src/graph.rs:55:5: replace dijkstra -> Vec<f64> with vec![1.0]
+src/graph.rs:55:5: replace dijkstra -> Vec<f64> with vec![]
+src/graph.rs:55:5: replace dijkstra -> Vec<f64> with vec![-1.0]
+src/graph.rs:69:16: delete ! in dijkstra
+src/graph.rs:69:28: replace && with || in dijkstra
+src/graph.rs:69:39: replace < with == in dijkstra
+src/graph.rs:69:39: replace < with > in dijkstra
+src/graph.rs:80:31: replace + with * in dijkstra
+src/graph.rs:81:20: replace < with == in dijkstra
+src/graph.rs:80:31: replace + with - in dijkstra
+src/graph.rs:81:20: replace < with > in dijkstra
+src/graph.rs:91:5: replace bfs -> Vec<usize> with vec![]
+src/graph.rs:91:5: replace bfs -> Vec<usize> with vec![0]
+src/graph.rs:91:5: replace bfs -> Vec<usize> with vec![1]
+src/graph.rs:102:16: delete ! in bfs
+src/graph.rs:113:5: replace dfs -> Vec<usize> with vec![0]
+src/graph.rs:113:5: replace dfs -> Vec<usize> with vec![]
+src/graph.rs:113:5: replace dfs -> Vec<usize> with vec![1]
+src/graph.rs:126:16: delete ! in dfs
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(0, 0, 0.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(0, 0, -1.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(0, 0, 1.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(0, 1, 0.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(0, 1, 1.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(0, 1, -1.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(1, 0, 0.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(1, 0, 1.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(1, 0, -1.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(1, 1, 0.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(1, 1, 1.0)]
+src/graph.rs:136:5: replace kruskal_mst -> Vec<(usize, usize, f64)> with vec![(1, 1, -1.0)]
+src/graph.rs:140:18: replace < with == in kruskal_mst
+src/graph.rs:151:15: replace != with == in kruskal_mst
+src/graph.rs:155:22: replace == with != in kruskal_mst
+src/graph.rs:163:5: replace find -> usize with 0
+src/graph.rs:163:5: replace find -> usize with 1
+src/graph.rs:170:5: replace union with ()
+src/graph.rs:175:18: replace += with -= in union
+src/integrate.rs:10:5: replace trapezoid -> f64 with 0.0
+src/integrate.rs:10:5: replace trapezoid -> f64 with 1.0
+src/integrate.rs:10:5: replace trapezoid -> f64 with -1.0
+src/integrate.rs:11:21: replace / with % in trapezoid
+src/integrate.rs:11:21: replace / with * in trapezoid
+src/integrate.rs:11:16: replace - with / in trapezoid
+src/integrate.rs:16:33: replace / with % in trapezoid
+src/integrate.rs:16:33: replace / with * in trapezoid
+src/integrate.rs:16:25: replace + with - in trapezoid
+src/integrate.rs:16:25: replace + with * in trapezoid
+src/integrate.rs:18:13: replace += with -= in trapezoid
+src/integrate.rs:18:13: replace += with *= in trapezoid
+src/integrate.rs:18:20: replace + with - in trapezoid
+src/integrate.rs:18:20: replace + with * in trapezoid
+src/integrate.rs:18:31: replace * with + in trapezoid
+src/integrate.rs:18:31: replace * with / in trapezoid
+src/integrate.rs:20:22: replace * with + in trapezoid
+src/integrate.rs:20:22: replace * with / in trapezoid
+src/integrate.rs:27:5: replace simpson -> f64 with 0.0
+src/integrate.rs:27:5: replace simpson -> f64 with 1.0
+src/integrate.rs:27:5: replace simpson -> f64 with -1.0
+src/integrate.rs:30:21: replace / with % in simpson
+src/integrate.rs:30:21: replace / with * in simpson
+src/integrate.rs:30:16: replace - with / in simpson
+src/integrate.rs:31:24: replace + with - in simpson
+src/integrate.rs:31:24: replace + with * in simpson
+src/integrate.rs:33:19: replace + with - in simpson
+src/integrate.rs:33:19: replace + with * in simpson
+src/integrate.rs:33:30: replace * with + in simpson
+src/integrate.rs:33:30: replace * with / in simpson
+src/integrate.rs:34:18: replace == with != in simpson
+src/integrate.rs:34:14: replace % with / in simpson
+src/integrate.rs:34:14: replace % with + in simpson
+src/integrate.rs:35:17: replace += with -= in simpson
+src/integrate.rs:35:17: replace += with *= in simpson
+src/integrate.rs:35:24: replace * with + in simpson
+src/integrate.rs:37:17: replace += with *= in simpson
+src/integrate.rs:35:24: replace * with / in simpson
+src/integrate.rs:37:17: replace += with -= in simpson
+src/integrate.rs:37:24: replace * with + in simpson
+src/integrate.rs:40:13: replace / with % in simpson
+src/integrate.rs:37:24: replace * with / in simpson
+src/integrate.rs:40:13: replace / with * in simpson
+src/integrate.rs:40:9: replace * with + in simpson
+src/integrate.rs:45:5: replace adaptive_quadrature -> f64 with 1.0
+src/integrate.rs:45:5: replace adaptive_quadrature -> f64 with 0.0
+src/integrate.rs:40:9: replace * with / in simpson
+src/integrate.rs:45:5: replace adaptive_quadrature -> f64 with -1.0
+src/integrate.rs:51:5: replace adaptive_rec -> f64 with 0.0
+src/integrate.rs:51:5: replace adaptive_rec -> f64 with 1.0
+src/integrate.rs:51:5: replace adaptive_rec -> f64 with -1.0
+src/integrate.rs:51:23: replace / with % in adaptive_rec
+src/integrate.rs:51:23: replace / with * in adaptive_rec
+src/integrate.rs:51:18: replace + with - in adaptive_rec
+src/integrate.rs:51:18: replace + with * in adaptive_rec
+src/integrate.rs:55:24: replace + with - in adaptive_rec
+src/integrate.rs:56:14: replace == with != in adaptive_rec
+src/integrate.rs:55:24: replace + with * in adaptive_rec
+src/integrate.rs:56:46: replace < with > in adaptive_rec
+src/integrate.rs:56:53: replace * with / in adaptive_rec
+src/integrate.rs:56:53: replace * with + in adaptive_rec
+src/integrate.rs:57:24: replace + with * in adaptive_rec
+src/integrate.rs:57:35: replace - with + in adaptive_rec
+src/integrate.rs:57:35: replace - with / in adaptive_rec
+src/integrate.rs:59:51: replace + with - in adaptive_rec
+src/integrate.rs:59:51: replace + with * in adaptive_rec
+src/integrate.rs:64:5: replace simpson_raw -> f64 with 0.0
+src/integrate.rs:64:5: replace simpson_raw -> f64 with -1.0
+src/integrate.rs:64:23: replace / with % in simpson_raw
+src/integrate.rs:64:23: replace / with * in simpson_raw
+src/integrate.rs:64:5: replace simpson_raw -> f64 with 1.0
+src/integrate.rs:64:18: replace + with - in simpson_raw
+src/integrate.rs:64:18: replace + with * in simpson_raw
+src/integrate.rs:65:21: replace / with % in simpson_raw
+src/integrate.rs:65:16: replace - with + in simpson_raw
+src/integrate.rs:65:16: replace - with / in simpson_raw
+src/integrate.rs:66:7: replace * with / in simpson_raw
+src/integrate.rs:65:21: replace / with * in simpson_raw
+src/integrate.rs:66:7: replace * with + in simpson_raw
+src/integrate.rs:66:30: replace + with - in simpson_raw
+src/integrate.rs:66:15: replace + with - in simpson_raw
+src/integrate.rs:66:30: replace + with * in simpson_raw
+src/integrate.rs:66:15: replace + with * in simpson_raw
+src/integrate.rs:66:21: replace * with + in simpson_raw
+src/integrate.rs:66:21: replace * with / in simpson_raw
+src/matrix.rs:27:24: replace + with * in Matrix::identity
+src/matrix.rs:27:20: replace * with + in Matrix::identity
+src/matrix.rs:27:24: replace + with - in Matrix::identity
+src/matrix.rs:27:20: replace * with / in Matrix::identity
+src/matrix.rs:34:9: replace Matrix::rows -> usize with 0
+src/matrix.rs:34:9: replace Matrix::rows -> usize with 1
+src/matrix.rs:37:9: replace Matrix::cols -> usize with 0
+src/matrix.rs:37:9: replace Matrix::cols -> usize with 1
+src/matrix.rs:65:9: replace <impl std::ops::Index<(usize, usize)> for Matrix>::index -> &f64 with Box::leak(Box::new(1.0))
+src/matrix.rs:65:9: replace <impl std::ops::Index<(usize, usize)> for Matrix>::index -> &f64 with Box::leak(Box::new(-1.0))
+src/matrix.rs:66:41: replace + with - in <impl std::ops::Index<(usize, usize)> for Matrix>::index
+src/matrix.rs:65:9: replace <impl std::ops::Index<(usize, usize)> for Matrix>::index -> &f64 with Box::leak(Box::new(0.0))
+src/matrix.rs:66:41: replace + with * in <impl std::ops::Index<(usize, usize)> for Matrix>::index
+src/matrix.rs:66:34: replace * with / in <impl std::ops::Index<(usize, usize)> for Matrix>::index
+src/matrix.rs:66:34: replace * with + in <impl std::ops::Index<(usize, usize)> for Matrix>::index
+src/matrix.rs:71:9: replace <impl std::ops::IndexMut<(usize, usize)> for Matrix>::index_mut -> &mut f64 with Box::leak(Box::new(0.0))
+src/matrix.rs:71:9: replace <impl std::ops::IndexMut<(usize, usize)> for Matrix>::index_mut -> &mut f64 with Box::leak(Box::new(1.0))
+src/matrix.rs:71:9: replace <impl std::ops::IndexMut<(usize, usize)> for Matrix>::index_mut -> &mut f64 with Box::leak(Box::new(-1.0))
+src/matrix.rs:72:28: replace + with * in <impl std::ops::IndexMut<(usize, usize)> for Matrix>::index_mut
+src/matrix.rs:72:28: replace + with - in <impl std::ops::IndexMut<(usize, usize)> for Matrix>::index_mut
+src/matrix.rs:72:21: replace * with + in <impl std::ops::IndexMut<(usize, usize)> for Matrix>::index_mut
+src/matrix.rs:72:21: replace * with / in <impl std::ops::IndexMut<(usize, usize)> for Matrix>::index_mut
+src/matrix.rs:89:27: replace += with -= in matmul
+src/matrix.rs:89:27: replace += with *= in matmul
+src/matrix.rs:89:35: replace * with / in matmul
+src/matrix.rs:89:35: replace * with + in matmul
+src/matrix.rs:102:31: replace + with - in transpose
+src/matrix.rs:102:20: replace * with + in transpose
+src/matrix.rs:102:20: replace * with / in transpose
+src/matrix.rs:110:5: replace inverse -> Option<Matrix> with None
+src/matrix.rs:102:31: replace + with * in transpose
+src/matrix.rs:112:38: replace * with + in inverse
+src/matrix.rs:112:38: replace * with / in inverse
+src/matrix.rs:117:19: replace + with * in inverse
+src/matrix.rs:117:19: replace + with - in inverse
+src/matrix.rs:121:25: replace + with - in inverse
+src/matrix.rs:123:18: replace > with < in inverse
+src/matrix.rs:128:19: replace < with == in inverse
+src/matrix.rs:128:19: replace < with > in inverse
+src/matrix.rs:132:28: replace * with + in inverse
+src/matrix.rs:139:24: replace * with + in inverse
+src/matrix.rs:139:24: replace * with / in inverse
+src/matrix.rs:140:27: replace /= with %= in inverse
+src/matrix.rs:140:27: replace /= with *= in inverse
+src/matrix.rs:143:20: replace == with != in inverse
+src/matrix.rs:147:28: replace * with + in inverse
+src/matrix.rs:147:28: replace * with / in inverse
+src/matrix.rs:148:31: replace -= with += in inverse
+src/matrix.rs:148:31: replace -= with /= in inverse
+src/matrix.rs:155:37: replace + with * in inverse
+src/matrix.rs:148:36: replace * with / in inverse
+src/matrix.rs:155:37: replace + with - in inverse
+src/matrix.rs:148:36: replace * with + in inverse
+src/matrix.rs:168:51: replace * with / in cholesky
+src/matrix.rs:168:51: replace * with + in cholesky
+src/matrix.rs:163:5: replace cholesky -> Option<Matrix> with None
+src/matrix.rs:169:18: replace == with != in cholesky
+src/matrix.rs:170:35: replace - with / in cholesky
+src/matrix.rs:170:35: replace - with + in cholesky
+src/matrix.rs:171:22: replace <= with > in cholesky
+src/matrix.rs:176:36: replace < with > in cholesky
+src/matrix.rs:179:45: replace / with * in cholesky
+src/matrix.rs:179:45: replace / with % in cholesky
+src/matrix.rs:179:40: replace - with + in cholesky
+src/matrix.rs:188:5: replace determinant -> f64 with 0.0
+src/matrix.rs:179:40: replace - with / in cholesky
+src/matrix.rs:188:5: replace determinant -> f64 with 1.0
+src/matrix.rs:188:5: replace determinant -> f64 with -1.0
+src/matrix.rs:190:10: replace == with != in determinant
+src/matrix.rs:197:25: replace + with - in determinant
+src/matrix.rs:199:18: replace > with < in determinant
+src/matrix.rs:204:19: replace < with > in determinant
+src/matrix.rs:207:19: replace != with == in determinant
+src/matrix.rs:215:25: replace + with - in determinant
+src/matrix.rs:215:25: replace + with * in determinant
+src/matrix.rs:213:20: delete - in determinant
+src/matrix.rs:216:35: replace / with % in determinant
+src/matrix.rs:217:27: replace + with - in determinant
+src/matrix.rs:218:29: replace -= with += in determinant
+src/matrix.rs:216:35: replace / with * in determinant
+src/matrix.rs:218:29: replace -= with /= in determinant
+src/matrix.rs:218:34: replace * with / in determinant
+src/matrix.rs:218:34: replace * with + in determinant
+src/matrix.rs:222:36: replace * with + in determinant
+src/monte_carlo.rs:14:5: replace mc_integrate -> f64 with 0.0
+src/monte_carlo.rs:14:5: replace mc_integrate -> f64 with 1.0
+src/monte_carlo.rs:14:5: replace mc_integrate -> f64 with -1.0
+src/matrix.rs:222:36: replace * with / in determinant
+src/monte_carlo.rs:22:19: replace + with - in mc_integrate
+src/monte_carlo.rs:18:19: replace - with / in mc_integrate
+src/monte_carlo.rs:22:19: replace + with * in mc_integrate
+src/monte_carlo.rs:22:23: replace * with + in mc_integrate
+src/monte_carlo.rs:23:13: replace += with *= in mc_integrate
+src/monte_carlo.rs:23:13: replace += with -= in mc_integrate
+src/monte_carlo.rs:25:17: replace / with % in mc_integrate
+src/monte_carlo.rs:25:17: replace / with * in mc_integrate
+src/monte_carlo.rs:25:11: replace * with + in mc_integrate
+src/monte_carlo.rs:40:5: replace bootstrap_error -> f64 with 0.0
+src/monte_carlo.rs:25:11: replace * with / in mc_integrate
+src/monte_carlo.rs:40:5: replace bootstrap_error -> f64 with -1.0
+src/monte_carlo.rs:40:5: replace bootstrap_error -> f64 with 1.0
+src/monte_carlo.rs:43:37: replace % with + in bootstrap_error
+src/monte_carlo.rs:55:54: replace / with * in bootstrap_error
+src/monte_carlo.rs:49:49: replace % with + in bootstrap_error
+src/monte_carlo.rs:55:54: replace / with % in bootstrap_error
+src/monte_carlo.rs:49:49: replace % with / in bootstrap_error
+src/monte_carlo.rs:60:9: replace / with % in bootstrap_error
+src/monte_carlo.rs:60:9: replace / with * in bootstrap_error
+src/monte_carlo.rs:58:22: replace - with + in bootstrap_error
+src/monte_carlo.rs:58:22: replace - with / in bootstrap_error
+src/optimize.rs:14:5: replace golden_section -> f64 with 0.0
+src/optimize.rs:14:5: replace golden_section -> f64 with 1.0
+src/optimize.rs:14:5: replace golden_section -> f64 with -1.0
+src/optimize.rs:15:38: replace / with % in golden_section
+src/optimize.rs:15:38: replace / with * in golden_section
+src/optimize.rs:15:20: replace + with - in golden_section
+src/optimize.rs:16:19: replace - with + in golden_section
+src/optimize.rs:15:20: replace + with * in golden_section
+src/optimize.rs:16:19: replace - with / in golden_section
+src/optimize.rs:17:20: replace + with - in golden_section
+src/optimize.rs:17:20: replace + with * in golden_section
+src/optimize.rs:17:26: replace * with + in golden_section
+src/optimize.rs:17:26: replace * with / in golden_section
+src/optimize.rs:17:31: replace - with + in golden_section
+src/optimize.rs:18:20: replace - with + in golden_section
+src/optimize.rs:17:31: replace - with / in golden_section
+src/optimize.rs:18:20: replace - with / in golden_section
+src/optimize.rs:18:26: replace * with + in golden_section
+src/optimize.rs:18:26: replace * with / in golden_section
+src/optimize.rs:18:31: replace - with / in golden_section
+src/optimize.rs:18:31: replace - with + in golden_section
+src/optimize.rs:22:26: replace < with > in golden_section
+src/optimize.rs:25:15: replace < with == in golden_section
+src/optimize.rs:25:15: replace < with > in golden_section
+src/optimize.rs:29:20: replace + with * in golden_section
+src/optimize.rs:29:20: replace + with - in golden_section
+src/optimize.rs:29:26: replace * with / in golden_section
+src/optimize.rs:29:26: replace * with + in golden_section
+src/optimize.rs:29:31: replace - with / in golden_section
+src/optimize.rs:29:31: replace - with + in golden_section
+src/optimize.rs:35:20: replace - with + in golden_section

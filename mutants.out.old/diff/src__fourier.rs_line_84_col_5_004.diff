@@ -1,0 +1,36 @@
+--- src/fourier.rs
++++ replace inverse_dft -> Vec<(f64, f64)> with vec![(1.0, 0.0)]
+@@ -76,32 +76,17 @@
+         result[k] = (e[k].0 + tr, e[k].1 + ti);
+         result[k + n / 2] = (e[k].0 - tr, e[k].1 - ti);
+     }
+     result
+ }
+ 
+ /// Inverse DFT: x_n = (1/N) sum_{k=0}^{N-1} X_k * exp(+2*pi*i*k*n/N)
+ pub fn inverse_dft(x: &[(f64, f64)]) -> Vec<(f64, f64)> {
+-    let n = x.len();
+-    assert!(n > 0, "inverse_dft: input must be non-empty");
+-    let mut result = Vec::with_capacity(n);
+-    let nf = n as f64;
+-    for idx in 0..n {
+-        let mut re = 0.0;
+-        let mut im = 0.0;
+-        for (k, &(xr, xi)) in x.iter().enumerate() {
+-            let angle = 2.0 * PI * (k as f64) * (idx as f64) / nf;
+-            let (sin_a, cos_a) = angle.sin_cos();
+-            re += xr * cos_a - xi * sin_a;
+-            im += xr * sin_a + xi * cos_a;
+-        }
+-        result.push((re / nf, im / nf));
+-    }
+-    result
++    vec![(1.0, 0.0)] /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
+     fn approx_eq(a: f64, b: f64, tol: f64) -> bool {
+         (a - b).abs() < tol

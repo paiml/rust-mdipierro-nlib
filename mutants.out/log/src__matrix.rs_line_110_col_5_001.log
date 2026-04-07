@@ -1,0 +1,264 @@
+
+*** src/matrix.rs:110:5: replace inverse -> Option<Matrix> with Some(Default::default())
+
+*** mutation diff:
+--- src/matrix.rs
++++ replace inverse -> Option<Matrix> with Some(Default::default())
+@@ -102,65 +102,17 @@
+             data[j * a.rows() + i] = a[(i, j)];
+         }
+     }
+     Matrix::new(a.cols(), a.rows(), data)
+ }
+ 
+ /// Gauss-Jordan elimination. Returns None if singular.
+ pub fn inverse(a: &Matrix) -> Option<Matrix> {
+-    assert_eq!(a.rows(), a.cols(), "inverse: must be square");
+-    let n = a.rows();
+-    let mut aug = Matrix::zeros(n, 2 * n);
+-    for i in 0..n {
+-        for j in 0..n {
+-            aug[(i, j)] = a[(i, j)];
+-        }
+-        aug[(i, n + i)] = 1.0;
+-    }
+-    for col in 0..n {
+-        let (mut mx_row, mut mx_val) = (col, aug[(col, col)].abs());
+-        for row in (col + 1)..n {
+-            let v = aug[(row, col)].abs();
+-            if v > mx_val {
+-                mx_val = v;
+-                mx_row = row;
+-            }
+-        }
+-        if mx_val < 1e-14 {
+-            return None;
+-        }
+-        if mx_row != col {
+-            for j in 0..(2 * n) {
+-                let tmp = aug[(col, j)];
+-                aug[(col, j)] = aug[(mx_row, j)];
+-                aug[(mx_row, j)] = tmp;
+-            }
+-        }
+-        let pivot = aug[(col, col)];
+-        for j in 0..(2 * n) {
+-            aug[(col, j)] /= pivot;
+-        }
+-        for row in 0..n {
+-            if row == col {
+-                continue;
+-            }
+-            let f = aug[(row, col)];
+-            for j in 0..(2 * n) {
+-                aug[(row, j)] -= f * aug[(col, j)];
+-            }
+-        }
+-    }
+-    let mut inv = Matrix::zeros(n, n);
+-    for i in 0..n {
+-        for j in 0..n {
+-            inv[(i, j)] = aug[(i, n + j)];
+-        }
+-    }
+-    Some(inv)
++    Some(Default::default()) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Cholesky: A = L*L^T. Returns None if not SPD.
+ pub fn cholesky(a: &Matrix) -> Option<Matrix> {
+     assert_eq!(a.rows(), a.cols(), "cholesky: must be square");
+     let n = a.rows();
+     let mut l = Matrix::zeros(n, n);
+     for i in 0..n {
+
+
+*** /home/noah/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo test --no-run --verbose --package=nlib@0.1.0
+    Blocking waiting for file lock on artifact directory
+       Fresh unicode-ident v1.0.24
+       Fresh proc-macro2 v1.0.106
+       Fresh equivalent v1.0.2
+       Fresh hashbrown v0.16.1
+       Fresh itoa v1.0.18
+       Fresh unsafe-libyaml v0.2.11
+       Fresh ryu v1.0.23
+       Fresh shlex v1.3.0
+       Fresh cfg-if v1.0.4
+       Fresh find-msvc-tools v0.1.9
+       Fresh autocfg v1.5.0
+       Fresh pkg-config v0.3.32
+       Fresh memchr v2.8.0
+       Fresh toml_write v0.1.2
+       Fresh winnow v0.7.15
+       Fresh iana-time-zone v0.1.65
+       Fresh either v1.15.0
+       Fresh memo-map v0.3.3
+       Fresh lz4_flex v0.11.6
+       Fresh regex-syntax v0.8.10
+       Fresh quote v1.0.45
+       Fresh serde_core v1.0.228
+       Fresh indexmap v2.13.1
+       Fresh aho-corasick v1.1.4
+       Fresh syn v2.0.117
+       Fresh libc v0.2.184
+       Fresh crossbeam-utils v0.8.21
+       Fresh zmij v1.0.21
+       Fresh anyhow v1.0.102
+       Fresh regex-automata v0.4.14
+       Fresh serde_derive v1.0.228
+       Fresh jobserver v0.1.34
+       Fresh zerocopy-derive v0.8.48
+       Fresh num-traits v0.2.19
+       Fresh crossbeam-epoch v0.9.18
+       Fresh thiserror-impl v2.0.18
+       Fresh getrandom v0.3.4
+       Fresh serde_json v1.0.149
+       Fresh provable-contracts-macros v0.2.2
+       Fresh hostname v0.4.2
+       Fresh num_cpus v1.17.0
+       Fresh memmap2 v0.9.10
+       Fresh provable-contracts-macros v0.1.1
+       Fresh provable-contracts-macros v0.3.1
+       Fresh regex v1.12.3
+       Fresh serde v1.0.228
+       Fresh cc v1.2.59
+       Fresh zerocopy v0.8.48
+       Fresh rand_core v0.9.5
+       Fresh crossbeam-deque v0.8.6
+       Fresh thiserror v2.0.18
+       Fresh rmp v0.8.15
+       Fresh chrono v0.4.44
+       Fresh serde_yaml_ng v0.10.0
+       Fresh toml_datetime v0.6.11
+       Fresh serde_spanned v0.6.9
+       Fresh ppv-lite86 v0.2.21
+       Fresh half v2.7.1
+       Fresh rayon-core v1.13.0
+       Fresh serde_yaml v0.9.34+deprecated
+       Fresh bincode v1.3.3
+       Fresh rmp-serde v1.3.1
+       Fresh minijinja v2.19.0
+       Fresh toml_edit v0.22.27
+       Fresh trueno-quant v0.1.0
+       Fresh rand_chacha v0.9.0
+       Fresh rayon v1.11.0
+       Fresh zstd-sys v2.0.16+zstd.1.5.7
+       Fresh toml v0.8.23
+       Fresh rand v0.9.2
+       Fresh zstd-safe v7.2.4
+       Fresh trueno v0.16.5
+       Fresh provable-contracts v0.3.1
+       Fresh zstd v0.13.3
+       Fresh batuta-common v0.1.0
+       Fresh aprender v0.27.1
+warning: unused variable: `a`
+   --> src/matrix.rs:109:16
+    |
+109 | pub fn inverse(a: &Matrix) -> Option<Matrix> {
+    |                ^ help: if this is intentional, prefix it with an underscore: `_a`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+warning: `nlib` (lib) generated 1 warning (run `cargo fix --lib -p nlib` to apply 1 suggestion)
+warning: `nlib` (lib test) generated 1 warning (1 duplicate)
+       Fresh nlib v0.1.0 (/tmp/cargo-mutants-rust-mdipierro-nlib-OSQvv7.tmp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.82s
+  Executable `/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/nlib-afb3e2747419bddf`
+  Executable `/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/golden_vectors-328bf7c904e9cbf0`
+
+*** result: Success
+
+*** /home/noah/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo test --verbose --package=nlib@0.1.0 --lib
+    Blocking waiting for file lock on artifact directory
+       Fresh unicode-ident v1.0.24
+       Fresh proc-macro2 v1.0.106
+       Fresh equivalent v1.0.2
+       Fresh hashbrown v0.16.1
+       Fresh itoa v1.0.18
+       Fresh unsafe-libyaml v0.2.11
+       Fresh ryu v1.0.23
+       Fresh shlex v1.3.0
+       Fresh find-msvc-tools v0.1.9
+       Fresh cfg-if v1.0.4
+       Fresh autocfg v1.5.0
+       Fresh pkg-config v0.3.32
+       Fresh memchr v2.8.0
+       Fresh winnow v0.7.15
+       Fresh toml_write v0.1.2
+       Fresh iana-time-zone v0.1.65
+       Fresh regex-syntax v0.8.10
+       Fresh either v1.15.0
+       Fresh lz4_flex v0.11.6
+       Fresh memo-map v0.3.3
+       Fresh quote v1.0.45
+       Fresh indexmap v2.13.1
+       Fresh aho-corasick v1.1.4
+       Fresh syn v2.0.117
+       Fresh serde_core v1.0.228
+       Fresh libc v0.2.184
+       Fresh crossbeam-utils v0.8.21
+       Fresh zmij v1.0.21
+       Fresh anyhow v1.0.102
+       Fresh regex-automata v0.4.14
+       Fresh serde_derive v1.0.228
+       Fresh jobserver v0.1.34
+       Fresh zerocopy-derive v0.8.48
+       Fresh num-traits v0.2.19
+       Fresh thiserror-impl v2.0.18
+       Fresh getrandom v0.3.4
+       Fresh crossbeam-epoch v0.9.18
+       Fresh serde_json v1.0.149
+       Fresh num_cpus v1.17.0
+       Fresh hostname v0.4.2
+       Fresh provable-contracts-macros v0.2.2
+       Fresh memmap2 v0.9.10
+       Fresh provable-contracts-macros v0.1.1
+       Fresh regex v1.12.3
+       Fresh provable-contracts-macros v0.3.1
+       Fresh serde v1.0.228
+       Fresh cc v1.2.59
+       Fresh zerocopy v0.8.48
+       Fresh crossbeam-deque v0.8.6
+       Fresh rand_core v0.9.5
+       Fresh thiserror v2.0.18
+       Fresh chrono v0.4.44
+       Fresh rmp v0.8.15
+       Fresh serde_yaml_ng v0.10.0
+       Fresh toml_datetime v0.6.11
+       Fresh serde_spanned v0.6.9
+       Fresh ppv-lite86 v0.2.21
+       Fresh serde_yaml v0.9.34+deprecated
+       Fresh half v2.7.1
+       Fresh rayon-core v1.13.0
+       Fresh minijinja v2.19.0
+       Fresh rmp-serde v1.3.1
+       Fresh bincode v1.3.3
+       Fresh toml_edit v0.22.27
+       Fresh trueno-quant v0.1.0
+       Fresh rand_chacha v0.9.0
+       Fresh rayon v1.11.0
+       Fresh zstd-sys v2.0.16+zstd.1.5.7
+       Fresh toml v0.8.23
+       Fresh rand v0.9.2
+       Fresh zstd-safe v7.2.4
+       Fresh trueno v0.16.5
+       Fresh provable-contracts v0.3.1
+       Fresh zstd v0.13.3
+       Fresh batuta-common v0.1.0
+       Fresh aprender v0.27.1
+       Fresh nlib v0.1.0 (/tmp/cargo-mutants-rust-mdipierro-nlib-OSQvv7.tmp)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.83s
+     Running `/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/nlib-afb3e2747419bddf`
+
+running 141 tests
+test fourier::tests::dft_all_zero_input ... ok
+test fourier::tests::dc_component ... ok
+test fourier::tests::dft_real_signal ... ok
+malloc(): invalid size (unsorted)
+test fourier::tests::dft_matrix_correct_size ... ok
+error: test failed, to rerun pass `-p nlib --lib`
+
+Caused by:
+  process didn't exit successfully: `/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/nlib-afb3e2747419bddf` (signal: 6, SIGABRT: process abort signal)
+
+*** result: Failure(101)

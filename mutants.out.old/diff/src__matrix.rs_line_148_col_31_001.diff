@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ replace -= with /= in inverse
+@@ -140,17 +140,17 @@
+             aug[(col, j)] /= pivot;
+         }
+         for row in 0..n {
+             if row == col {
+                 continue;
+             }
+             let f = aug[(row, col)];
+             for j in 0..(2 * n) {
+-                aug[(row, j)] -= f * aug[(col, j)];
++                aug[(row, j)] /= /* ~ changed by cargo-mutants ~ */ f * aug[(col, j)];
+             }
+         }
+     }
+     let mut inv = Matrix::zeros(n, n);
+     for i in 0..n {
+         for j in 0..n {
+             inv[(i, j)] = aug[(i, n + j)];
+         }

@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ replace > with >= in inverse
+@@ -115,17 +115,17 @@
+             aug[(i, j)] = a[(i, j)];
+         }
+         aug[(i, n + i)] = 1.0;
+     }
+     for col in 0..n {
+         let (mut mx_row, mut mx_val) = (col, aug[(col, col)].abs());
+         for row in (col + 1)..n {
+             let v = aug[(row, col)].abs();
+-            if v > mx_val {
++            if v >= /* ~ changed by cargo-mutants ~ */ mx_val {
+                 mx_val = v;
+                 mx_row = row;
+             }
+         }
+         if mx_val < 1e-14 {
+             return None;
+         }
+         if mx_row != col {

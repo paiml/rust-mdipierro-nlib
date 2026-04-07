@@ -1,0 +1,21 @@
+--- src/random.rs
++++ replace >> with << in Mt19937::next_u32
+@@ -83,17 +83,17 @@
+         if self.index >= Self::N {
+             self.twist();
+         }
+         let mut y = self.mt[self.index];
+         // Tempering
+         y ^= y >> 11;
+         y ^= (y << 7) & 0x9D2C_5680;
+         y ^= (y << 15) & 0xEFC6_0000;
+-        y ^= y >> 18;
++        y ^= y << /* ~ changed by cargo-mutants ~ */ 18;
+         self.index += 1;
+         y
+     }
+ 
+     fn twist(&mut self) {
+         for i in 0..Self::N {
+             let x =
+                 (self.mt[i] & Self::UPPER_MASK) | (self.mt[(i + 1) % Self::N] & Self::LOWER_MASK);

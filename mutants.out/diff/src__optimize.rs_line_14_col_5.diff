@@ -1,0 +1,46 @@
+--- src/optimize.rs
++++ replace golden_section -> f64 with 0.0
+@@ -6,42 +6,17 @@
+ //! `aprender::Vector<f32>` for multi-dimensional state.
+ 
+ use aprender::Vector as AprVector;
+ 
+ const MAX_ITER: usize = 10_000;
+ 
+ /// Golden-section search for minimum of unimodal f on [a,b].
+ pub fn golden_section(f: impl Fn(f64) -> f64, mut a: f64, mut b: f64, tol: f64) -> f64 {
+-    assert!(a < b, "golden_section: a must be less than b");
+-    let phi = (1.0 + 5.0_f64.sqrt()) / 2.0;
+-    let rho = 2.0 - phi; // ~0.618
+-    let mut x1 = a + rho * (b - a);
+-    let mut x2 = b - rho * (b - a);
+-    let mut f1 = f(x1);
+-    let mut f2 = f(x2);
+-    for _ in 0..MAX_ITER {
+-        if (b - a).abs() < tol {
+-            break;
+-        }
+-        if f1 < f2 {
+-            b = x2;
+-            x2 = x1;
+-            f2 = f1;
+-            x1 = a + rho * (b - a);
+-            f1 = f(x1);
+-        } else {
+-            a = x1;
+-            x1 = x2;
+-            f1 = f2;
+-            x2 = b - rho * (b - a);
+-            f2 = f(x2);
+-        }
+-    }
+-    (a + b) / 2.0
++    0.0 /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Newton's method for minimization: x_{n+1} = x_n - f'(x_n)/f''(x_n).
+ pub fn newton_optimize(
+     _f: impl Fn(f64) -> f64,
+     df: impl Fn(f64) -> f64,
+     ddf: impl Fn(f64) -> f64,
+     mut x: f64,

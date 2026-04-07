@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ replace * with / in inverse
+@@ -104,17 +104,17 @@
+     }
+     Matrix::new(a.cols(), a.rows(), data)
+ }
+ 
+ /// Gauss-Jordan elimination. Returns None if singular.
+ pub fn inverse(a: &Matrix) -> Option<Matrix> {
+     assert_eq!(a.rows(), a.cols(), "inverse: must be square");
+     let n = a.rows();
+-    let mut aug = Matrix::zeros(n, 2 * n);
++    let mut aug = Matrix::zeros(n, 2 / /* ~ changed by cargo-mutants ~ */ n);
+     for i in 0..n {
+         for j in 0..n {
+             aug[(i, j)] = a[(i, j)];
+         }
+         aug[(i, n + i)] = 1.0;
+     }
+     for col in 0..n {
+         let (mut mx_row, mut mx_val) = (col, aug[(col, col)].abs());

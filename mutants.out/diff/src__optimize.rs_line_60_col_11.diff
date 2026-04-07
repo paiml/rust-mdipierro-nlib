@@ -1,0 +1,21 @@
+--- src/optimize.rs
++++ replace -= with += in newton_optimize
+@@ -52,17 +52,17 @@
+         if g.abs() < tol {
+             return x;
+         }
+         let h = ddf(x);
+         if h.abs() < 1e-15 {
+             // Second derivative zero; cannot proceed with Newton step
+             return x;
+         }
+-        x -= g / h;
++        x += /* ~ changed by cargo-mutants ~ */ g / h;
+     }
+     x
+ }
+ 
+ /// Gradient descent for multi-dimensional minimization.
+ /// `grad` returns the gradient vector at point x.
+ ///
+ /// Uses `aprender::Vector<f32>` to represent intermediate state

@@ -1,0 +1,21 @@
+--- src/fourier.rs
++++ replace + with - in dft_matrix
+@@ -32,17 +32,17 @@
+ /// Returns (real_part, imag_part) as two aprender matrices.
+ pub fn dft_matrix(n: usize) -> (AprMatrix<f64>, AprMatrix<f64>) {
+     let mut re_data = vec![0.0; n * n];
+     let mut im_data = vec![0.0; n * n];
+     for k in 0..n {
+         for j in 0..n {
+             let angle = -2.0 * PI * (k as f64) * (j as f64) / (n as f64);
+             let (sin_a, cos_a) = angle.sin_cos();
+-            re_data[k * n + j] = cos_a;
++            re_data[k * n - /* ~ changed by cargo-mutants ~ */ j] = cos_a;
+             im_data[k * n + j] = sin_a;
+         }
+     }
+     (
+         AprMatrix::from_vec(n, n, re_data).expect("valid"),
+         AprMatrix::from_vec(n, n, im_data).expect("valid"),
+     )
+ }

@@ -1,0 +1,21 @@
+--- src/graph.rs
++++ replace < with > in kruskal_mst
+@@ -132,17 +132,17 @@
+ }
+ 
+ /// Kruskal MST. Returns edges (u, v, weight).
+ pub fn kruskal_mst(graph: &Graph) -> Vec<(usize, usize, f64)> {
+     let n = graph.n;
+     let mut edges: Vec<(usize, usize, f64)> = Vec::new();
+     for u in 0..n {
+         for &(v, w) in graph.neighbors(u) {
+-            if u < v {
++            if u > /* ~ changed by cargo-mutants ~ */ v {
+                 edges.push((u, v, w));
+             }
+         }
+     }
+     edges.sort_by(|a, b| a.2.partial_cmp(&b.2).unwrap());
+     let mut parent: Vec<usize> = (0..n).collect();
+     let mut rank = vec![0usize; n];
+     let mut mst = Vec::new();

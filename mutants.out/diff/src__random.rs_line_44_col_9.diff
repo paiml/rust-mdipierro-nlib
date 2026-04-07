@@ -1,0 +1,21 @@
+--- src/random.rs
++++ replace Lcg::next_f64 -> f64 with 0.0
+@@ -36,17 +36,17 @@
+         // Use u128 to avoid overflow
+         self.state =
+             ((self.a as u128 * self.state as u128 + self.c as u128) % self.m as u128) as u64;
+         self.state
+     }
+ 
+     /// Generate a f64 in [0, 1).
+     pub fn next_f64(&mut self) -> f64 {
+-        self.next_val() as f64 / self.m as f64
++        0.0 /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// Returns (value, next_state) for a single LCG step.
+ pub fn lcg_next(state: u64, a: u64, c: u64, m: u64) -> (u64, u64) {
+     assert!(m > 0, "lcg_next: modulus m must be > 0");
+     let next = ((a as u128 * state as u128 + c as u128) % m as u128) as u64;
+     (next, next)

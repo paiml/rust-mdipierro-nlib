@@ -1,0 +1,32 @@
+--- src/graph.rs
++++ replace Graph::to_aprender -> AprGraph with Default::default()
+@@ -30,28 +30,17 @@
+         self.add_edge(v, u, w);
+     }
+     pub fn neighbors(&self, u: usize) -> &[(usize, f64)] {
+         &self.adj[u]
+     }
+ 
+     /// Convert to aprender's CSR Graph for analysis.
+     pub fn to_aprender(&self) -> AprGraph {
+-        let mut edges = Vec::new();
+-        for u in 0..self.n {
+-            for &(v, w) in &self.adj[u] {
+-                edges.push((u, v, w));
+-            }
+-        }
+-        if edges.is_empty() {
+-            // aprender needs at least self-edges to know node count
+-            AprGraph::from_edges(&(0..self.n).map(|i| (i, i)).collect::<Vec<_>>(), true)
+-        } else {
+-            AprGraph::from_weighted_edges(&edges, true)
+-        }
++        Default::default() /* ~ changed by cargo-mutants ~ */
+     }
+ }
+ 
+ /// Dijkstra shortest-path. Unreachable vertices get f64::INFINITY.
+ pub fn dijkstra(graph: &Graph, start: usize) -> Vec<f64> {
+     assert!(start < graph.n, "start out of range");
+     for u in 0..graph.n {
+         for &(_, w) in graph.neighbors(u) {

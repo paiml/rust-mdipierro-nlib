@@ -1,0 +1,42 @@
+--- src/monte_carlo.rs
++++ replace bootstrap_error -> f64 with -1.0
+@@ -32,38 +32,17 @@
+ /// of the bootstrap distribution. Uses internal LCG for index generation
+ /// to maintain exact reproducibility with prior tests.
+ pub fn bootstrap_error(
+     data: &[f64],
+     statistic_fn: fn(&[f64]) -> f64,
+     n_resamples: usize,
+     rng_seed: u64,
+ ) -> f64 {
+-    assert!(!data.is_empty(), "bootstrap_error: data must be non-empty");
+-    assert!(n_resamples > 1, "bootstrap_error: need > 1 resamples");
+-    let m = 2_147_483_647u64;
+-    let mut rng = Lcg::new(rng_seed % (m - 1) + 1, 16807, 0, m);
+-    let n = data.len();
+-    let mut theta_values = Vec::with_capacity(n_resamples);
+-    let mut resample = vec![0.0; n];
+-    for _ in 0..n_resamples {
+-        for slot in resample.iter_mut() {
+-            let idx = (rng.next_val() as usize) % n;
+-            *slot = data[idx];
+-        }
+-        theta_values.push(statistic_fn(&resample));
+-    }
+-    // Standard deviation of theta_values
+-    let mean: f64 = theta_values.iter().sum::<f64>() / n_resamples as f64;
+-    let var: f64 = theta_values
+-        .iter()
+-        .map(|&t| (t - mean).powi(2))
+-        .sum::<f64>()
+-        / (n_resamples - 1) as f64;
+-    var.sqrt()
++    -1.0 /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
+     fn mean(x: &[f64]) -> f64 {
+         x.iter().sum::<f64>() / x.len() as f64

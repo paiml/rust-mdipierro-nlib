@@ -1,0 +1,55 @@
+--- src/matrix.rs
++++ replace determinant -> f64 with -1.0
+@@ -180,51 +180,17 @@
+             }
+         }
+     }
+     Some(l)
+ }
+ 
+ /// Determinant via LU with partial pivoting.
+ pub fn determinant(a: &Matrix) -> f64 {
+-    assert_eq!(a.rows(), a.cols(), "determinant: must be square");
+-    let n = a.rows();
+-    if n == 0 {
+-        return 1.0;
+-    }
+-    let mut m = a.clone();
+-    let mut sign = 1.0_f64;
+-    for col in 0..n {
+-        let (mut mx_row, mut mx_val) = (col, m[(col, col)].abs());
+-        for row in (col + 1)..n {
+-            let v = m[(row, col)].abs();
+-            if v > mx_val {
+-                mx_val = v;
+-                mx_row = row;
+-            }
+-        }
+-        if mx_val < 1e-14 {
+-            return 0.0;
+-        }
+-        if mx_row != col {
+-            for j in 0..n {
+-                let tmp = m[(col, j)];
+-                m[(col, j)] = m[(mx_row, j)];
+-                m[(mx_row, j)] = tmp;
+-            }
+-            sign = -sign;
+-        }
+-        for row in (col + 1)..n {
+-            let f = m[(row, col)] / m[(col, col)];
+-            for j in (col + 1)..n {
+-                m[(row, j)] -= f * m[(col, j)];
+-            }
+-        }
+-    }
+-    (0..n).fold(sign, |acc, i| acc * m[(i, i)])
++    -1.0 /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+     fn approx(a: f64, b: f64, t: f64) -> bool {
+         (a - b).abs() < t
+     }

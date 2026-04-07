@@ -1,0 +1,21 @@
+--- src/graph.rs
++++ replace < with <= in dijkstra
+@@ -73,17 +73,17 @@
+         }
+         let u = match u {
+             Some(v) => v,
+             None => break,
+         };
+         visited[u] = true;
+         for &(v, w) in graph.neighbors(u) {
+             let alt = dist[u] + w;
+-            if alt < dist[v] {
++            if alt <= /* ~ changed by cargo-mutants ~ */ dist[v] {
+                 dist[v] = alt;
+             }
+         }
+     }
+     dist
+ }
+ 
+ /// BFS traversal order from `start`.

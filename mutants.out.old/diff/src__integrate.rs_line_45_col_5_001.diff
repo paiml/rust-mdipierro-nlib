@@ -1,0 +1,23 @@
+--- src/integrate.rs
++++ replace adaptive_quadrature -> f64 with 1.0
+@@ -37,19 +37,17 @@
+             sum += 4.0 * f(x);
+         }
+     }
+     sum * h / 3.0
+ }
+ 
+ /// Adaptive Simpson quadrature with Richardson extrapolation.
+ pub fn adaptive_quadrature(f: impl Fn(f64) -> f64, a: f64, b: f64, tol: f64) -> f64 {
+-    assert!(a < b, "adaptive_quadrature: a must be less than b");
+-    assert!(tol > 0.0, "adaptive_quadrature: tolerance must be positive");
+-    adaptive_rec(&f, a, b, tol, 20)
++    1.0 /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn adaptive_rec(f: &impl Fn(f64) -> f64, a: f64, b: f64, tol: f64, depth: usize) -> f64 {
+     let mid = (a + b) / 2.0;
+     let whole = simpson_raw(f, a, b);
+     let left = simpson_raw(f, a, mid);
+     let right = simpson_raw(f, mid, b);
+     let refined = left + right;

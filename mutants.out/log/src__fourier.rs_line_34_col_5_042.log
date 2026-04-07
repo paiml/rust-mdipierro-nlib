@@ -1,0 +1,194 @@
+
+*** src/fourier.rs:34:5: replace dft_matrix -> (AprMatrix<f64>, AprMatrix<f64>) with (AprMatrix::from_iter([1.0]), AprMatrix::new(0.0))
+
+*** mutation diff:
+--- src/fourier.rs
++++ replace dft_matrix -> (AprMatrix<f64>, AprMatrix<f64>) with (AprMatrix::from_iter([1.0]), AprMatrix::new(0.0))
+@@ -26,30 +26,17 @@
+         result.push((re, im));
+     }
+     result
+ }
+ 
+ /// Build the DFT matrix W where W[k,n] = exp(-2*pi*i*k*n/N).
+ /// Returns (real_part, imag_part) as two aprender matrices.
+ pub fn dft_matrix(n: usize) -> (AprMatrix<f64>, AprMatrix<f64>) {
+-    let mut re_data = vec![0.0; n * n];
+-    let mut im_data = vec![0.0; n * n];
+-    for k in 0..n {
+-        for j in 0..n {
+-            let angle = -2.0 * PI * (k as f64) * (j as f64) / (n as f64);
+-            let (sin_a, cos_a) = angle.sin_cos();
+-            re_data[k * n + j] = cos_a;
+-            im_data[k * n + j] = sin_a;
+-        }
+-    }
+-    (
+-        AprMatrix::from_vec(n, n, re_data).expect("valid"),
+-        AprMatrix::from_vec(n, n, im_data).expect("valid"),
+-    )
++    (AprMatrix::from_iter([1.0]), AprMatrix::new(0.0)) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Cooley-Tukey radix-2 FFT (O(N log N)).
+ /// Input length must be a power of 2.
+ pub fn fft(x: &[(f64, f64)]) -> Vec<(f64, f64)> {
+     let n = x.len();
+     assert!(n > 0, "fft: input must be non-empty");
+     assert!(n & (n - 1) == 0, "fft: input length must be a power of 2");
+
+
+*** /home/noah/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo test --no-run --verbose --package=nlib@0.1.0
+    Blocking waiting for file lock on artifact directory
+       Fresh unicode-ident v1.0.24
+       Fresh proc-macro2 v1.0.106
+       Fresh hashbrown v0.16.1
+       Fresh equivalent v1.0.2
+       Fresh indexmap v2.13.1
+       Fresh itoa v1.0.18
+       Fresh ryu v1.0.23
+       Fresh unsafe-libyaml v0.2.11
+       Fresh find-msvc-tools v0.1.9
+       Fresh shlex v1.3.0
+       Fresh cfg-if v1.0.4
+       Fresh pkg-config v0.3.32
+       Fresh autocfg v1.5.0
+       Fresh memchr v2.8.0
+       Fresh toml_write v0.1.2
+       Fresh winnow v0.7.15
+       Fresh iana-time-zone v0.1.65
+       Fresh lz4_flex v0.11.6
+       Fresh regex-syntax v0.8.10
+       Fresh either v1.15.0
+       Fresh memo-map v0.3.3
+       Fresh quote v1.0.45
+       Fresh serde_core v1.0.228
+       Fresh libc v0.2.184
+       Fresh aho-corasick v1.1.4
+       Fresh syn v2.0.117
+       Fresh jobserver v0.1.34
+       Fresh crossbeam-utils v0.8.21
+       Fresh getrandom v0.3.4
+       Fresh zmij v1.0.21
+       Fresh anyhow v1.0.102
+       Fresh hostname v0.4.2
+       Fresh num_cpus v1.17.0
+       Fresh regex-automata v0.4.14
+       Fresh memmap2 v0.9.10
+       Fresh serde_derive v1.0.228
+       Fresh cc v1.2.59
+       Fresh zerocopy-derive v0.8.48
+       Fresh num-traits v0.2.19
+       Fresh thiserror-impl v2.0.18
+       Fresh crossbeam-epoch v0.9.18
+       Fresh serde_json v1.0.149
+       Fresh rand_core v0.9.5
+       Fresh provable-contracts-macros v0.2.2
+       Fresh provable-contracts-macros v0.1.1
+       Fresh provable-contracts-macros v0.3.1
+       Fresh regex v1.12.3
+       Fresh serde v1.0.228
+       Fresh zerocopy v0.8.48
+       Fresh crossbeam-deque v0.8.6
+       Fresh thiserror v2.0.18
+       Fresh rmp v0.8.15
+       Fresh chrono v0.4.44
+       Fresh serde_yaml_ng v0.10.0
+       Fresh toml_datetime v0.6.11
+       Fresh serde_spanned v0.6.9
+       Fresh ppv-lite86 v0.2.21
+       Fresh half v2.7.1
+       Fresh rayon-core v1.13.0
+       Fresh serde_yaml v0.9.34+deprecated
+       Fresh bincode v1.3.3
+       Fresh rmp-serde v1.3.1
+       Fresh minijinja v2.19.0
+       Fresh zstd-sys v2.0.16+zstd.1.5.7
+       Fresh toml_edit v0.22.27
+       Fresh rand_chacha v0.9.0
+       Fresh trueno-quant v0.1.0
+       Fresh rayon v1.11.0
+       Fresh zstd-safe v7.2.4
+       Fresh toml v0.8.23
+       Fresh rand v0.9.2
+       Fresh zstd v0.13.3
+       Fresh trueno v0.16.5
+       Fresh provable-contracts v0.3.1
+       Fresh batuta-common v0.1.0
+       Fresh aprender v0.27.1
+       Dirty nlib v0.1.0 (/tmp/cargo-mutants-rust-mdipierro-nlib-OSQvv7.tmp): couldn't read metadata for file `/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libnlib-1bae53fbb45e0a35.rlib`
+   Compiling nlib v0.1.0 (/tmp/cargo-mutants-rust-mdipierro-nlib-OSQvv7.tmp)
+     Running `/home/noah/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name nlib --edition=2024 src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=758b8f65759aed54 -C extra-filename=-afb3e2747419bddf --out-dir /mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps -C incremental=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/incremental -L dependency=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps --extern aprender=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libaprender-a14e1e9adf43aa05.rlib --extern provable_contracts=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libprovable_contracts-ac30f8fb28155649.rlib --extern serde=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libserde-cdc9f970ba08a88d.rlib --extern serde_json=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libserde_json-03c27675fcdb3aef.rlib -L native=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/build/zstd-sys-fccbedab690a263b/out`
+     Running `/home/noah/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name nlib --edition=2024 src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=0d1f0a151b9ad688 -C extra-filename=-1bae53fbb45e0a35 --out-dir /mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps -C incremental=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/incremental -L dependency=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps --extern aprender=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libaprender-a14e1e9adf43aa05.rmeta -L native=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/build/zstd-sys-fccbedab690a263b/out`
+error[E0599]: no function or associated item named `from_iter` found for struct `aprender::Matrix<T>` in the current scope
+   --> src/fourier.rs:34:17
+    |
+ 34 |     (AprMatrix::from_iter([1.0]), AprMatrix::new(0.0)) /* ~ changed by cargo-mutants ~ */
+    |                 ^^^^^^^^^ function or associated item not found in `aprender::Matrix<_>`
+    |
+note: if you're trying to build a new `aprender::Matrix<_>` consider using one of the following associated functions:
+      aprender::Matrix::<T>::from_vec
+      aprender::Matrix::<f32>::zeros
+      aprender::Matrix::<f32>::ones
+      aprender::Matrix::<f32>::eye
+   --> /home/noah/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aprender-0.27.1/src/primitives/matrix.rs:29:5
+    |
+ 29 |     pub fn from_vec(rows: usize, cols: usize, data: Vec<T>) -> Result<Self, &'static str> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+100 |     pub fn zeros(rows: usize, cols: usize) -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+110 |     pub fn ones(rows: usize, cols: usize) -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+120 |     pub fn eye(n: usize) -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: there is an associated function `from_vec` with a similar name
+   --> /home/noah/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aprender-0.27.1/src/primitives/matrix.rs:29:5
+    |
+ 29 |     pub fn from_vec(rows: usize, cols: usize, data: Vec<T>) -> Result<Self, &'static str> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no function or associated item named `new` found for struct `aprender::Matrix<T>` in the current scope
+   --> src/fourier.rs:34:46
+    |
+ 34 |     (AprMatrix::from_iter([1.0]), AprMatrix::new(0.0)) /* ~ changed by cargo-mutants ~ */
+    |                                              ^^^ function or associated item not found in `aprender::Matrix<_>`
+    |
+note: if you're trying to build a new `aprender::Matrix<_>` consider using one of the following associated functions:
+      aprender::Matrix::<T>::from_vec
+      aprender::Matrix::<f32>::zeros
+      aprender::Matrix::<f32>::ones
+      aprender::Matrix::<f32>::eye
+   --> /home/noah/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aprender-0.27.1/src/primitives/matrix.rs:29:5
+    |
+ 29 |     pub fn from_vec(rows: usize, cols: usize, data: Vec<T>) -> Result<Self, &'static str> {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+100 |     pub fn zeros(rows: usize, cols: usize) -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+110 |     pub fn ones(rows: usize, cols: usize) -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+120 |     pub fn eye(n: usize) -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: there is a method `ne` with a similar name
+    |
+ 34 -     (AprMatrix::from_iter([1.0]), AprMatrix::new(0.0)) /* ~ changed by cargo-mutants ~ */
+ 34 +     (AprMatrix::from_iter([1.0]), AprMatrix::ne(0.0)) /* ~ changed by cargo-mutants ~ */
+    |
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `nlib` (lib) due to 2 previous errors
+
+Caused by:
+  process didn't exit successfully: `/home/noah/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name nlib --edition=2024 src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=0d1f0a151b9ad688 -C extra-filename=-1bae53fbb45e0a35 --out-dir /mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps -C incremental=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/incremental -L dependency=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps --extern aprender=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libaprender-a14e1e9adf43aa05.rmeta -L native=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/build/zstd-sys-fccbedab690a263b/out` (exit status: 1)
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `nlib` (lib test) due to 2 previous errors
+
+Caused by:
+  process didn't exit successfully: `/home/noah/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name nlib --edition=2024 src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=758b8f65759aed54 -C extra-filename=-afb3e2747419bddf --out-dir /mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps -C incremental=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/incremental -L dependency=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps --extern aprender=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libaprender-a14e1e9adf43aa05.rlib --extern provable_contracts=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libprovable_contracts-ac30f8fb28155649.rlib --extern serde=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libserde-cdc9f970ba08a88d.rlib --extern serde_json=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/deps/libserde_json-03c27675fcdb3aef.rlib -L native=/mnt/nvme-raid0/targets/rust-mdipierro-nlib/debug/build/zstd-sys-fccbedab690a263b/out` (exit status: 1)
+
+*** result: Failure(101)

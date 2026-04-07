@@ -1,0 +1,21 @@
+--- src/integrate.rs
++++ replace + with * in simpson_raw
+@@ -58,17 +58,17 @@
+     }
+     adaptive_rec(f, a, mid, tol / 2.0, depth - 1) + adaptive_rec(f, mid, b, tol / 2.0, depth - 1)
+ }
+ 
+ /// Raw Simpson on 2 panels (3 points).
+ fn simpson_raw(f: &impl Fn(f64) -> f64, a: f64, b: f64) -> f64 {
+     let mid = (a + b) / 2.0;
+     let h = (b - a) / 6.0;
+-    h * (f(a) + 4.0 * f(mid) + f(b))
++    h * (f(a) + 4.0 * f(mid) * /* ~ changed by cargo-mutants ~ */ f(b))
+ }
+ 
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+ 
+     #[test]
+     fn trapezoid_linear() {

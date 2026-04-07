@@ -1,0 +1,22 @@
+--- src/graph.rs
++++ replace Graph::add_undirected_edge with ()
+@@ -21,18 +21,17 @@
+             adj: vec![vec![]; n],
+         }
+     }
+     pub fn add_edge(&mut self, u: usize, v: usize, w: f64) {
+         assert!(u < self.n && v < self.n, "vertex out of range");
+         self.adj[u].push((v, w));
+     }
+     pub fn add_undirected_edge(&mut self, u: usize, v: usize, w: f64) {
+-        self.add_edge(u, v, w);
+-        self.add_edge(v, u, w);
++        () /* ~ changed by cargo-mutants ~ */
+     }
+     pub fn neighbors(&self, u: usize) -> &[(usize, f64)] {
+         &self.adj[u]
+     }
+ 
+     /// Convert to aprender's CSR Graph for analysis.
+     pub fn to_aprender(&self) -> AprGraph {
+         let mut edges = Vec::new();

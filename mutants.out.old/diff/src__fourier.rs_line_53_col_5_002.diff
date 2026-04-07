@@ -1,0 +1,24 @@
+--- src/fourier.rs
++++ replace fft -> Vec<(f64, f64)> with vec![(0.0, 1.0)]
+@@ -45,20 +45,17 @@
+         AprMatrix::from_vec(n, n, re_data).expect("valid"),
+         AprMatrix::from_vec(n, n, im_data).expect("valid"),
+     )
+ }
+ 
+ /// Cooley-Tukey radix-2 FFT (O(N log N)).
+ /// Input length must be a power of 2.
+ pub fn fft(x: &[(f64, f64)]) -> Vec<(f64, f64)> {
+-    let n = x.len();
+-    assert!(n > 0, "fft: input must be non-empty");
+-    assert!(n & (n - 1) == 0, "fft: input length must be a power of 2");
+-    fft_recursive(x)
++    vec![(0.0, 1.0)] /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ fn fft_recursive(x: &[(f64, f64)]) -> Vec<(f64, f64)> {
+     let n = x.len();
+     if n == 1 {
+         return vec![x[0]];
+     }
+     let even: Vec<(f64, f64)> = x.iter().step_by(2).copied().collect();

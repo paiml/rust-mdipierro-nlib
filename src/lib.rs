@@ -33,3 +33,6 @@ pub mod random;
 pub mod solve;
 pub mod sort;
 pub mod stats;
+
+#[cfg(kani)]
+mod kani_harnesses;

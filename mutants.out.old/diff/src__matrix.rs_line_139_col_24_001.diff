@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ replace * with / in inverse
+@@ -131,17 +131,17 @@
+         if mx_row != col {
+             for j in 0..(2 * n) {
+                 let tmp = aug[(col, j)];
+                 aug[(col, j)] = aug[(mx_row, j)];
+                 aug[(mx_row, j)] = tmp;
+             }
+         }
+         let pivot = aug[(col, col)];
+-        for j in 0..(2 * n) {
++        for j in 0..(2 / /* ~ changed by cargo-mutants ~ */ n) {
+             aug[(col, j)] /= pivot;
+         }
+         for row in 0..n {
+             if row == col {
+                 continue;
+             }
+             let f = aug[(row, col)];
+             for j in 0..(2 * n) {

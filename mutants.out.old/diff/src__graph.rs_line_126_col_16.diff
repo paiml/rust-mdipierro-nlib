@@ -1,0 +1,21 @@
+--- src/graph.rs
++++ delete ! in dfs
+@@ -118,17 +118,17 @@
+         if visited[u] {
+             continue;
+         }
+         visited[u] = true;
+         order.push(u);
+         let mut nbrs: Vec<usize> = graph.neighbors(u).iter().map(|&(v, _)| v).collect();
+         nbrs.sort();
+         for v in nbrs.into_iter().rev() {
+-            if !visited[v] {
++            if  /* ~ changed by cargo-mutants ~ */visited[v] {
+                 stack.push(v);
+             }
+         }
+     }
+     order
+ }
+ 
+ /// Kruskal MST. Returns edges (u, v, weight).

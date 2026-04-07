@@ -1,0 +1,21 @@
+--- src/matrix.rs
++++ replace += with *= in matmul
+@@ -81,17 +81,17 @@
+ pub fn matmul(a: &Matrix, b: &Matrix) -> Matrix {
+     contract_pre_matmul!(a, b);
+     let (m, p, n) = (a.rows(), a.cols(), b.cols());
+     let mut c = Matrix::zeros(m, n);
+     for i in 0..m {
+         for k in 0..p {
+             let a_ik = a[(i, k)];
+             for j in 0..n {
+-                c[(i, j)] += a_ik * b[(k, j)];
++                c[(i, j)] *= /* ~ changed by cargo-mutants ~ */ a_ik * b[(k, j)];
+             }
+         }
+     }
+     contract_post_matmul!(&c, a, b);
+     c
+ }
+ 
+ /// A^T[i,j] = A[j,i]

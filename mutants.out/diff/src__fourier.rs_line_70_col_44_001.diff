@@ -1,0 +1,21 @@
+--- src/fourier.rs
++++ replace / with * in fft_recursive
+@@ -62,17 +62,17 @@
+         return vec![x[0]];
+     }
+     let even: Vec<(f64, f64)> = x.iter().step_by(2).copied().collect();
+     let odd: Vec<(f64, f64)> = x.iter().skip(1).step_by(2).copied().collect();
+     let e = fft_recursive(&even);
+     let o = fft_recursive(&odd);
+     let mut result = vec![(0.0, 0.0); n];
+     for k in 0..n / 2 {
+-        let angle = -2.0 * PI * (k as f64) / (n as f64);
++        let angle = -2.0 * PI * (k as f64) * /* ~ changed by cargo-mutants ~ */ (n as f64);
+         let (sin_a, cos_a) = angle.sin_cos();
+         // twiddle * O[k]
+         let (or, oi) = o[k];
+         let tr = or * cos_a - oi * sin_a;
+         let ti = or * sin_a + oi * cos_a;
+         result[k] = (e[k].0 + tr, e[k].1 + ti);
+         result[k + n / 2] = (e[k].0 - tr, e[k].1 - ti);
+     }

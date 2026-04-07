@@ -1,0 +1,21 @@
+--- src/monte_carlo.rs
++++ replace * with + in mc_integrate
+@@ -17,17 +17,17 @@
+     let mut rng = MonteCarloRng::new(rng_seed);
+     let width = b - a;
+     let mut sum = 0.0;
+     for _ in 0..n {
+         let u = rng.uniform();
+         let x = a + u * width;
+         sum += f(x);
+     }
+-    width * sum / n as f64
++    width + /* ~ changed by cargo-mutants ~ */ sum / n as f64
+ }
+ 
+ /// Bootstrap standard error estimate for a statistic.
+ ///
+ /// Resamples `data` with replacement `n_resamples` times, computes
+ /// `statistic_fn` on each resample, returns the standard deviation
+ /// of the bootstrap distribution. Uses internal LCG for index generation
+ /// to maintain exact reproducibility with prior tests.

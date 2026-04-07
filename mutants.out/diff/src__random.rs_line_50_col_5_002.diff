@@ -1,0 +1,23 @@
+--- src/random.rs
++++ replace lcg_next -> (u64, u64) with (1, 0)
+@@ -42,19 +42,17 @@
+     /// Generate a f64 in [0, 1).
+     pub fn next_f64(&mut self) -> f64 {
+         self.next_val() as f64 / self.m as f64
+     }
+ }
+ 
+ /// Returns (value, next_state) for a single LCG step.
+ pub fn lcg_next(state: u64, a: u64, c: u64, m: u64) -> (u64, u64) {
+-    assert!(m > 0, "lcg_next: modulus m must be > 0");
+-    let next = ((a as u128 * state as u128 + c as u128) % m as u128) as u64;
+-    (next, next)
++    (1, 0) /* ~ changed by cargo-mutants ~ */
+ }
+ 
+ /// Mersenne Twister MT19937 (32-bit).
+ #[derive(Debug, Clone)]
+ pub struct Mt19937 {
+     mt: [u32; 624],
+     index: usize,
+ }
