@@ -36,6 +36,14 @@ impl Matrix {
     pub fn cols(&self) -> usize {
         self.inner.n_cols()
     }
+    /// Get element at (row, col).
+    pub fn get(&self, row: usize, col: usize) -> f64 {
+        self.inner.as_slice()[row * self.cols() + col]
+    }
+    /// Get raw data as slice.
+    pub fn data(&self) -> &[f64] {
+        self.inner.as_slice()
+    }
     pub fn from_rows(rows: &[&[f64]]) -> Self {
         let ncols = rows[0].len();
         let mut data = Vec::with_capacity(rows.len() * ncols);
