@@ -33,6 +33,27 @@ jobs:
       - name: Test
         run: cargo test --lib
 
+  golden-vectors:
+    name: Python/Rust Parity
+    runs-on: ubuntu-latest
+    needs: gate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Regenerate golden vectors from Python
+        run: python3 tests/generate_vectors.py
+
+      - name: Check fixtures not drifted
+        run: git diff --exit-code tests/fixtures/golden_vectors.json
+
+      - name: Run golden vector tests
+        run: cargo test --test golden_vectors
+
   examples:
     name: Examples
     runs-on: ubuntu-latest
