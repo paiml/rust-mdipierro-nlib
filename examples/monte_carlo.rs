@@ -14,7 +14,7 @@ fn main() {
 
     // Bootstrap error estimation
     let data = vec![2.3, 4.1, 3.7, 5.2, 3.9, 4.5, 2.8, 3.3, 4.0, 3.6];
-    let se = bootstrap_error(&data, |s| mean(s), 10_000, 123);
+    let se = bootstrap_error(&data, mean, 10_000, 123);
     println!("\nBootstrap SE of mean({data:?}):");
     println!("  mean = {:.4}, SE = {:.4}", mean(&data), se);
 }
