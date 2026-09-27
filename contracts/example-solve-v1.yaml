@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     examples/solve.rs as an entity. The example's `--json` receipt
     (evidence/examples/solve.json) is extracted by extract:json and must
@@ -14,6 +16,8 @@ metadata:
   - 'Burden & Faires (2015) Numerical Analysis, 10th Ed.'
   depends_on:
   - nonlinear-solvers-v1
+relations:
+  depends_on: [nonlinear-solvers-v1, example-receipt-v1]
 entity:
   type: json
   ref: evidence/examples/solve.json

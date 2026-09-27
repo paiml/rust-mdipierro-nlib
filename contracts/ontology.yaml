@@ -1,0 +1,102 @@
+# Σ — this corpus's ontology declaration (ONT-001 v4.17 §4.1, row ONT-2b; GH-1).
+#
+# Everything the nlib contracts may say: concepts, the roles a `relations:` block may use, the symbols a
+# `formal:` expression may carry, the worlds, the agents, the entity types with the extractors that read
+# them, and the keys the ontology deliberately cannot express. `pv lint --gate sigma` reads it.
+#
+# Every key names its reader in `readers:` (pv source paths in paiml/aprender crates/aprender-contracts/src);
+# a key no reader claims is exit 3.
+#
+# The symbol vocabulary is measured, not invented: the 77 `formal:` expressions in contracts/*.yaml are
+# ASCII only. The function names they call most are receipt 33, to_json 12, all_pass 12, len 11, multiset 4,
+# finite 3, det 3, sqrt 2. The rest name the nlib function under contract.
+schema: ont-sigma-v1
+
+concepts:
+  Entity: {doc: "anything the ontology can name"}
+  Contract: {doc: "a pv contract file under contracts/"}
+  Code: {doc: "a Rust item in this crate: a free fn or an impl method in src/"}
+  Symbol: {doc: "a Rust symbol a binding names; the focus node of extract:code"}
+  Test: {doc: "a cargo test a contract cites as its falsifier"}
+  Proof: {doc: "a Kani harness discharging an obligation (src/kani_harnesses.rs)"}
+  Example: {doc: "a runnable examples/<name>.rs that prints a receipt"}
+  Receipt: {doc: "an example's --json receipt, tracked under evidence/examples/; the focus node of extract:json"}
+  Doc: {doc: "a prose document under contract (README.md)"}
+
+roles:
+  binds:
+    {domain: Contract, range: Code, symmetric: false, acyclic: false, doc: "the contract governs this code"}
+  falsified_by:
+    {domain: Contract, range: Test, symmetric: false, acyclic: false, doc: "the test that would refute the contract"}
+  proved_by:
+    {domain: Contract, range: Proof, symmetric: false, acyclic: false, doc: "the Kani harness discharging it"}
+  refines:
+    {domain: Contract, range: Contract, symmetric: false, acyclic: true, doc: "a stricter contract over the same subject"}
+  depends_on:
+    {domain: Contract, range: Contract, symmetric: false, acyclic: true, doc: "this contract assumes that one"}
+
+# Operators and functions a `formal:` expression may carry. A bare variable (x, n, A, dist) is not a symbol.
+symbols:
+  - {name: "==", kind: operator, doc: "equal"}
+  - {name: "!=", kind: operator, doc: "not equal"}
+  - {name: "<=", kind: operator, doc: "less or equal"}
+  - {name: ">=", kind: operator, doc: "greater or equal"}
+  - {name: "&&", kind: operator, doc: "and"}
+  - {name: "||", kind: operator, doc: "or"}
+  - {name: "|", kind: operator, doc: "absolute value or cardinality delimiter"}
+  - {name: receipt, kind: function, doc: "an example's receipt (src/receipt.rs)"}
+  - {name: all_pass, kind: predicate, doc: "every check of a receipt holds"}
+  - {name: to_json, kind: function, doc: "a receipt's canonical JSON"}
+  - {name: within, kind: predicate, doc: "finite operands within a tolerance"}
+  - {name: len, kind: function, doc: "length of a sequence"}
+  - {name: multiset, kind: function, doc: "the multiset of a sequence's elements"}
+  - {name: finite, kind: predicate, doc: "neither NaN nor infinite"}
+  - {name: det, kind: function, doc: "determinant"}
+  - {name: sqrt, kind: function, doc: "square root"}
+  - {name: min, kind: function, doc: "minimum"}
+  - {name: max, kind: function, doc: "maximum"}
+  - {name: integral, kind: function, doc: "the exact integral of f over [a, b]"}
+  - {name: O, kind: function, doc: "big-O order"}
+
+worlds:
+  committed: {doc: "the tree as committed; every contract is read in it"}
+
+agents:
+  - pv
+  - pmat
+  - human
+
+# The entity types this corpus uses: the contracts themselves, the example receipts (json), and the Rust
+# symbols binding.yaml names (code).
+entity_types:
+  - {name: pv-contract, extractor: pv_contract, implemented: true}
+  - {name: json, extractor: json, implemented: true}
+  - {name: code, extractor: code, implemented: true}
+
+extractors:
+  - {name: pv_contract, reader: ontology/extract/pv_contract.rs, implemented: true}
+  - {name: json, reader: ontology/extract/json.rs, implemented: true}
+  - {name: code, reader: ontology/extract/code.rs, implemented: true}
+
+# The class a shape with no `targetClass` targets, by entity.type. json and code have none: every shape on
+# them names its own targetClass.
+entity_type_target_class:
+  pv-contract: ont:Contract
+  json: ~
+  code: ~
+
+not_expressible:
+  - {key: taste, reader: ontology/sigma.rs}
+  - {key: urgency, reader: ontology/sigma.rs}
+  - {key: authorship_intent, reader: ontology/sigma.rs}
+
+readers:
+  concepts: ontology/sigma.rs
+  roles: lint/sigma_gate.rs, lint/relations_gate.rs
+  symbols: lint/sigma_symbols.rs
+  worlds: ontology/sigma.rs, lint/valid_under_gate.rs
+  agents: ontology/sigma.rs
+  entity_types: lint/sigma_gate.rs
+  extractors: ontology/sigma.rs
+  not_expressible: ontology/sigma.rs
+  entity_type_target_class: ontology/shapes.rs

@@ -1,0 +1,697 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ont: <https://ont.paiml.dev/v1alpha1/> .
+
+<https://ont.paiml.dev/v1alpha1/shape/example-fourier-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/FourierReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "fourier" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/fourier.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-fourier-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "6"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 6 ;
+        sh:maxCount 6 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-fourier-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-fourier-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-FOURIER-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "dft_sine_peak" "dft_sine_no_leakage" "fft_matches_dft" "idft_roundtrip" "parseval" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-graph-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/GraphReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "graph" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/graph.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-graph-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "6"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 6 ;
+        sh:maxCount 6 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-graph-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-graph-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-GRAPH-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "dijkstra_known" "dijkstra_relaxed" "bfs_visits_all" "dfs_visits_all" "mst_spanning" "mst_weight_known" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-integrate-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/IntegrateReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "integrate" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/integrate.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-integrate-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "7"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 7 ;
+        sh:maxCount 7 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-integrate-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-integrate-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-INTEGRATE-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "trapezoid_sin_0_pi" "simpson_sin_0_pi" "adaptive_sin_0_pi" "simpson_beats_trapezoid" "simpson_exact_cubic" "adaptive_exp_0_1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-matrix-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/MatrixReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "matrix" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/matrix.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-matrix-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "6"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 6 ;
+        sh:maxCount 6 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-matrix-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-matrix-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-MATRIX-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "matmul_known" "transpose_known" "inverse_identity" "cholesky_reconstructs" "cholesky_lower_triangular" "determinant_known" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-monte-carlo-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/MonteCarloReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "monte_carlo" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/monte_carlo.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-monte-carlo-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "6"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 6 ;
+        sh:maxCount 6 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-monte-carlo-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-monte-carlo-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-MONTECARLO-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "mc_clt_bound" "mean_known" "bootstrap_se_mean" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-optimize-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/OptimizeReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "optimize" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/optimize.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-optimize-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "5"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 5 ;
+        sh:maxCount 5 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-optimize-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-optimize-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-OPTIMIZE-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "golden_section_min" "newton_critical_point" "newton_is_minimum" "gradient_descent_min" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-parity-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/ParityReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "parity" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/parity.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-parity-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "23"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 23 ;
+        sh:maxCount 23 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-parity-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-parity-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-PARITY-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "solver_root" "integral" "dft" "matrix" "stats" "dijkstra" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-random-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/RandomReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "random" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/random.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-random-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "4"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 4 ;
+        sh:maxCount 4 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-random-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-random-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-RANDOM-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "minstd_known_value" "mt19937_known_value" "uniform_chi2" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-solve-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/SolveReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "solve" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/solve.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-solve-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "5"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 5 ;
+        sh:maxCount 5 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-solve-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-solve-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-SOLVE-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "bisection_sqrt2" "newton_cubic_residual" "secant_sqrt2" "solvers_agree" "fixed_point_dottie" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-sort-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/SortReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "sort" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/sort.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-sort-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "7"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 7 ;
+        sh:maxCount 7 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-sort-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-sort-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-SORT-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "quicksort_sorted" "quicksort_permutation" "mergesort_sorted" "mergesort_permutation" "heapsort_sorted" "heapsort_permutation" "sorts_agree" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-stats-v1> a sh:NodeShape ;
+    sh:targetClass <https://ont.paiml.dev/v1alpha1/ex/StatsReceipt> ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/example> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "stats" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/source> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "examples/stats.rs" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/contract> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "example-stats-v1" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/n_checks> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "6"^^<http://www.w3.org/2001/XMLSchema#integer> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/all_pass> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/checks> ;
+        sh:minCount 6 ;
+        sh:maxCount 6 ;
+        sh:node <https://ont.paiml.dev/v1alpha1/shape/example-stats-v1/node> ;
+    ] ;
+.
+
+<https://ont.paiml.dev/v1alpha1/shape/example-stats-v1/node> a sh:NodeShape ;
+    sh:closed true ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/id> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^EX-STATS-[0-9]{3}$" ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/equation> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "mean_known" "variance_population" "std_dev_known" "covariance_known" "correlation_perfect" "chi_squared_known" ) ;
+    ] ;
+    sh:property [
+        sh:path <https://ont.paiml.dev/v1alpha1/ex/holds> ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "true"^^<http://www.w3.org/2001/XMLSchema#boolean> ) ;
+    ] ;
+.
+

@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     examples/parity.rs as an entity. The example's `--json` receipt
     (evidence/examples/parity.json) is extracted by extract:json and must
@@ -14,6 +16,8 @@ metadata:
   - 'Di Pierro, M. nlib, https://github.com/mdipierro/nlib'
   depends_on:
   - nonlinear-solvers-v1
+relations:
+  depends_on: [nonlinear-solvers-v1, integration-v1, fourier-transform-v1, matrix-algebra-v1, statistics-v1, graph-algorithms-v1, example-receipt-v1]
 entity:
   type: json
   ref: evidence/examples/parity.json

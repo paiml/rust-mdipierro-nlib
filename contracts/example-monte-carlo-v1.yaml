@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     examples/monte_carlo.rs as an entity. The example's `--json` receipt
     (evidence/examples/monte_carlo.json) is extracted by extract:json and must
@@ -14,6 +16,8 @@ metadata:
   - 'Efron & Tibshirani (1993) An Introduction to the Bootstrap.'
   depends_on:
   - monte-carlo-v1
+relations:
+  depends_on: [monte-carlo-v1, example-receipt-v1]
 entity:
   type: json
   ref: evidence/examples/monte_carlo.json
