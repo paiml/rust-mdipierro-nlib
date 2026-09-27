@@ -45,7 +45,7 @@ published on crates.io — no other external crates.
 | sorting-v1 | B (0.83) | 0.7 | 1 | 0.6 | 1 | quicksort, mergesort, heapsort |
 | statistics-v1 | B (0.81) | 0.7 | 1 | 0.54 | 1 | mean, variance, covariance, correlation, chi_squared_fit |
 
-**23 contracts, 96 equations; mean contract score 0.75 (B); codebase grade A (0.93).**
+**23 contracts, 96 equations; mean contract score 0.75 (B); codebase grade B (0.89).**
 
 <!-- CONTRACT_TABLE_END -->
 
@@ -271,7 +271,7 @@ harnesses that are missing (present of declared): fourier-transform-v1 (0 of 3),
 | SHACL shapes | 12, over 12 focus nodes |
 | Kani BMC harnesses | 7 |
 | Contract grade | B (0.75 mean) |
-| Codebase grade | A (0.93) |
+| Codebase grade | B (0.89) |
 | External deps | 1 (aprender only) |
 
 <!-- CONTRACT_METRICS_END -->
