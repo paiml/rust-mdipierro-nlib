@@ -16,7 +16,7 @@ import subprocess, json, math, sys, os, importlib.util, urllib.request, tempfile
 os.environ["MPLBACKEND"] = "Agg"
 
 # === Load Di Pierro's actual nlib.py from GitHub ===
-NLIB_URL = "https://raw.githubusercontent.com/mdipierro/nlib/master/src/nlib.py"
+NLIB_URL = "https://raw.githubusercontent.com/mdipierro/nlib/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py"
 nlib_path = os.path.join(tempfile.gettempdir(), "nlib_dipierro.py")
 urllib.request.urlretrieve(NLIB_URL, nlib_path)
 spec = importlib.util.spec_from_file_location("nlib", nlib_path)
