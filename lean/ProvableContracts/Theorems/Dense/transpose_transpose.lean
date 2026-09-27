@@ -23,7 +23,7 @@ theorem transpose_shape (a : Mat α) : (transpose a).rows = a.cols ∧ (transpos
 /-- `(Aᵀ)ᵀ == A`: the same shape, and the same entry at every in-range `(i, j)`. -/
 theorem transpose_transpose (a : Mat α) :
     (transpose (transpose a)).rows = a.rows ∧ (transpose (transpose a)).cols = a.cols ∧
-      ∀ i j, i < a.rows → j < a.cols → (transpose (transpose a)).get i j = a.get j i := by
+      ∀ i j, i < a.rows → j < a.cols → (transpose (transpose a)).get i j = a.get i j := by
   refine ⟨rfl, rfl, fun i j hi hj => ?_⟩
   rw [transpose_get (transpose a) (show j < (transpose a).rows from hj), transpose_get a hi]
 

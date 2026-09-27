@@ -182,6 +182,7 @@
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.1> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.10> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.2> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.3> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.4> .
@@ -195,7 +196,6 @@
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/required_check> "gate"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/ruleset> "Green Main"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/schema> "enforcement-claims-v1"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/unplanted> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/EnforcedClaim> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/claim> "A red job blocks the merge"^^<http://www.w3.org/2001/XMLSchema#string> .
@@ -229,6 +229,17 @@
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.10> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475162"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.10> <https://ont.paiml.dev/v1alpha1/ex/red_when> "any value differs beyond its tolerance"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.10> <https://ont.paiml.dev/v1alpha1/ex/required_check> "gate"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/EnforcedClaim> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/claim> "An equation is true on every input of an exact model (L4)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-012"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/job> "lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/limit> "Each theorem is about an exact model (reals, lists in a linear order, row-major arrays), NOT the f64 code: [docs/lean-proofs.md](docs/lean-proofs.md) states each gap. At L4 or above: `statistics-v1` (L5); the other contracts have obligations no theorem covers, and Fourier, random and Monte Carlo are N/A"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "`scripts/lean_gate.sh` in the Lean Proofs job: `lake build` of `lean/` with the pinned toolchain and Mathlib; `pv` counts 9 theorems there grounded in a contract, and the contracts ratchet fails if that count falls ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5))"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/plant> "transpose_transpose restated as `(Aᵀ)ᵀ[i,j] = A[j,i]` plus a `sorry` in simpson_exact_cubic: `lake build` unsolved goals and `declaration uses sorry`, the static check names the sorry, Lean Proofs red, `gate` red"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36320956902/job/108624548190"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/red_when> "a proof that does not check; any `sorry`, `admit`, new `axiom` or `native_decide`; a cited theorem that does not exist or that `lake build` never compiles"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.11> <https://ont.paiml.dev/v1alpha1/ex/required_check> "gate"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/EnforcedClaim> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.2> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.2> <https://ont.paiml.dev/v1alpha1/ex/claim> "The ONT-G contracts gate runs every step"^^<http://www.w3.org/2001/XMLSchema#string> .
@@ -339,17 +350,6 @@
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/red_when> "fails today, and `gate` does not need it"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/required_check> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/UnplantedClaim> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/claim> "An equation is true on every input of an exact model (L4)"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-012"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/job> "lean"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/limit> "Each theorem is about an exact model (reals, lists in a linear order, row-major arrays), NOT the f64 code: [docs/lean-proofs.md](docs/lean-proofs.md) states each gap. At L4 or above: `statistics-v1` (L5); the other contracts have obligations no theorem covers, and Fourier, random and Monte Carlo are N/A"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "`scripts/lean_gate.sh` in the Lean Proofs job: `lake build` of `lean/` with the pinned toolchain and Mathlib; `pv` counts 9 theorems there grounded in a contract, and the contracts ratchet fails if that count falls ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5))"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/plant> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/red_when> "a proof that does not check; any `sorry`, `admit`, new `axiom` or `native_decide`; a cited theorem that does not exist or that `lake build` never compiles"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/required_check> "gate"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/example-fourier-v1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
 <https://ont.paiml.dev/v1alpha1/ex/example-fourier-v1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/FourierReceipt> .
 <https://ont.paiml.dev/v1alpha1/ex/example-fourier-v1> <https://ont.paiml.dev/v1alpha1/ex/all_pass> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .

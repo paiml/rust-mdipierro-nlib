@@ -134,9 +134,7 @@
       "plant": "Rust integrate scaled by 1.01: integrate_sin 2.02 against Python 1.99997, Python/Rust Parity red, `gate` red",
       "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475162",
       "limit": "Parity cannot catch a bug the two implementations share"
-    }
-  ],
-  "unplanted": [
+    },
     {
       "id": "CLAIM-012",
       "claim": "An equation is true on every input of an exact model (L4)",
@@ -145,11 +143,12 @@
       "job": "lean",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "transpose_transpose restated as `(Aᵀ)ᵀ[i,j] = A[j,i]` plus a `sorry` in simpson_exact_cubic: `lake build` unsolved goals and `declaration uses sorry`, the static check names the sorry, Lean Proofs red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36320956902/job/108624548190",
       "limit": "Each theorem is about an exact model (reals, lists in a linear order, row-major arrays), NOT the f64 code: [docs/lean-proofs.md](docs/lean-proofs.md) states each gap. At L4 or above: `statistics-v1` (L5); the other contracts have obligations no theorem covers, and Fourier, random and Monte Carlo are N/A"
     }
   ],
+  "unplanted": [],
   "not_enforced": [
     {
       "id": "CLAIM-013",
