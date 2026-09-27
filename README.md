@@ -59,7 +59,7 @@ Advisory, never blocking: `PMAT Comply (advisory)`, and the full mutation sweep 
 `scripts/ci_gate.sh --check-workflow` fails if a new job is neither needed by `gate` nor marked advisory.
 
 Each row is a claim entity in [`evidence/enforcement/claims.json`](evidence/enforcement/claims.json), closed by the SHACL shape in [`contracts/enforcement-claims-v1.yaml`](contracts/enforcement-claims-v1.yaml).
-1 claims are enforceD and proved by a plant; 10 block the merge but no plant has proved them yet; 3 are not enforced.
+1 claims are enforced and proved by a plant; 10 block the merge but no plant has proved them yet; 3 are not enforced.
 
 | Claim | Mechanism | What turns it RED | Blocks merge | Plant receipt | Honest limit |
 |-------|-----------|-------------------|--------------|---------------|--------------|
