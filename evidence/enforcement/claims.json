@@ -14,6 +14,18 @@
       "plant": "a failing step in Kani BMC, not the first job: lint-test green, kani red, `gate` red, merge BLOCKED",
       "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36314753804/job/108607643661",
       "limit": "Org admins may bypass the ruleset (\"always\"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings))"
+    },
+    {
+      "id": "CLAIM-014",
+      "claim": "The repository meets PMAT governance",
+      "mechanism": "`pmat comply check`",
+      "red_when": "fails today, and `gate` does not need it",
+      "job": "comply",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "none",
+      "plant_run": "none",
+      "limit": "Its failures are governance (branch protection needs an admin, `deny.toml`, `build.rs`, roadmap and spec schema, TDG), not contract enforcement"
     }
   ],
   "unplanted": [
@@ -162,18 +174,6 @@
       "plant": "none",
       "plant_run": "none",
       "limit": "114 missed mutants before GH-1"
-    },
-    {
-      "id": "CLAIM-014",
-      "claim": "The repository meets PMAT governance",
-      "mechanism": "`pmat comply check`",
-      "red_when": "fails today, and `gate` does not need it",
-      "job": "comply",
-      "blocks_merge": false,
-      "required_check": "none",
-      "plant": "none",
-      "plant_run": "none",
-      "limit": "Its failures are governance (branch protection needs an admin, `deny.toml`, `build.rs`, roadmap and spec schema, TDG), not contract enforcement"
     }
   ]
 }
