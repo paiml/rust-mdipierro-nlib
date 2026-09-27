@@ -12,7 +12,7 @@
       "blocks_merge": true,
       "required_check": "gate",
       "plant": "a failing step in Kani BMC, not the first job: lint-test green, kani red, `gate` red, merge BLOCKED",
-      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36314753804/job/108607643661",
+      "plant_run": "none",
       "limit": "Org admins may bypass the ruleset (\"always\"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings))"
     }
   ],

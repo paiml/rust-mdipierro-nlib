@@ -69,8 +69,8 @@ pub fn values() -> Vec<Value> {
         v(
             "integrate_sin",
             "integral",
-            nlib::integrate::adaptive_quadrature(f64::sin, 0.0, PI, AP),
-            2.0,
+            nlib::integrate::adaptive_quadrature(|x| 1.01 * x.sin(), 0.0, PI, AP),
+            2.02,
             AP,
         ),
         v(
