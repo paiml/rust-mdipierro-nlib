@@ -6,7 +6,7 @@ metadata:
     Numerical quadrature — trapezoid rule, Simpson's rule, adaptive quadrature.
     Covers the numerical integration chapter of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 7 Integration'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.10 Integration'
   - 'Davis & Rabinowitz (1984) Methods of Numerical Integration, 2nd Ed.'
 
 equations:

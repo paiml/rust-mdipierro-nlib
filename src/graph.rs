@@ -1,6 +1,6 @@
 //! Graph algorithms — contract: `graph-algorithms-v1.yaml`
 //!
-//! Di Pierro Ch. 11: Dijkstra, BFS, DFS, Kruskal MST.
+//! Di Pierro §3.7: Dijkstra, BFS, DFS, Kruskal MST.
 //! Uses `aprender::graph::Graph` (CSR) as the reference graph type
 //! and maintains a local adjacency-list `Graph` for nlib's mutable API.
 

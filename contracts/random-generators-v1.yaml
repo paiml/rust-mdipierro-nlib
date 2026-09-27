@@ -6,7 +6,7 @@ metadata:
     Pseudo-random number generators — Linear Congruential Generator, Mersenne
     Twister. Covers the PRNG chapter of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 9 Random Numbers'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §6.4 Pseudo-randomness (§6.4.1 LCG, §6.4.11 Mersenne twister)'
   - 'Knuth (1997) TAOCP Vol. 2 Seminumerical Algorithms, 3rd Ed.'
   - 'Matsumoto & Nishimura (1998) Mersenne Twister: A 623-dimensionally equidistributed PRNG'
 

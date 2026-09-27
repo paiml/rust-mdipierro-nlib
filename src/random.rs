@@ -1,6 +1,6 @@
 //! Pseudo-random number generators — contract: `random-generators-v1.yaml`
 //!
-//! Di Pierro Ch. 9: LCG, Mersenne Twister (MT19937).
+//! Di Pierro §6.4: LCG, Mersenne Twister (MT19937).
 //! Uses `aprender::monte_carlo::prelude::MonteCarloRng` as a reference
 //! RNG for cross-validation of our generators.
 

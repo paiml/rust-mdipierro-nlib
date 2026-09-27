@@ -1,6 +1,6 @@
 //! Fourier transforms — contract: `fourier-transform-v1.yaml`
 //!
-//! Di Pierro Ch. 8: DFT, FFT (Cooley-Tukey radix-2), inverse DFT.
+//! Di Pierro §4.11: DFT, FFT (Cooley-Tukey radix-2), inverse DFT.
 //! Complex numbers represented as (re, im) f64 pairs.
 //! Uses `aprender::Matrix<f64>` to represent DFT matrix for validation.
 
@@ -196,6 +196,45 @@ mod tests {
         let (re, im) = dft_matrix(4);
         assert_eq!(re.shape(), (4, 4));
         assert_eq!(im.shape(), (4, 4));
+    }
+
+    #[test]
+    fn dft_matrix_known_entries() {
+        // N=4: W[1,1] = exp(-i*pi/2) = -i; W[1,3] = exp(-3i*pi/2) = +i.
+        let (re, im) = dft_matrix(4);
+        assert!(approx_eq(re.get(1, 1), 0.0, 1e-12));
+        assert!(approx_eq(im.get(1, 1), -1.0, 1e-12));
+        assert!(approx_eq(re.get(1, 3), 0.0, 1e-12));
+        assert!(approx_eq(im.get(1, 3), 1.0, 1e-12));
+        // N=3: W[1,2] = exp(-4i*pi/3) = -1/2 + i*sqrt(3)/2.
+        let (re, im) = dft_matrix(3);
+        assert!(approx_eq(re.get(1, 2), -0.5, 1e-12));
+        assert!(approx_eq(im.get(1, 2), 3f64.sqrt() / 2.0, 1e-12));
+    }
+
+    #[test]
+    fn dft_matrix_times_signal_equals_dft() {
+        // X = W x must agree with dft(x) for an asymmetric complex signal.
+        let x = [
+            (1.0, 0.5),
+            (-2.0, 0.0),
+            (0.25, -1.0),
+            (3.0, 2.0),
+            (0.0, 1.5),
+        ];
+        let n = x.len();
+        let (re, im) = dft_matrix(n);
+        let want = dft(&x);
+        for (k, &(wr, wi)) in want.iter().enumerate() {
+            let (mut sr, mut si) = (0.0, 0.0);
+            for (j, &(xr, xi)) in x.iter().enumerate() {
+                let (mr, mi) = (re.get(k, j), im.get(k, j));
+                sr += mr * xr - mi * xi;
+                si += mr * xi + mi * xr;
+            }
+            assert!(approx_eq(sr, wr, 1e-10), "re X[{k}]");
+            assert!(approx_eq(si, wi, 1e-10), "im X[{k}]");
+        }
     }
 
     #[test]
