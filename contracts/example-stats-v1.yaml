@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     examples/stats.rs as an entity. The example's `--json` receipt
     (evidence/examples/stats.json) is extracted by extract:json and must
@@ -14,6 +16,8 @@ metadata:
   - 'Wasserman (2004) All of Statistics.'
   depends_on:
   - statistics-v1
+relations:
+  depends_on: [statistics-v1, example-receipt-v1]
 entity:
   type: json
   ref: evidence/examples/stats.json

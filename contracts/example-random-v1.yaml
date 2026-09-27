@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     examples/random.rs as an entity. The example's `--json` receipt
     (evidence/examples/random.json) is extracted by extract:json and must
@@ -14,6 +16,8 @@ metadata:
   - 'Park & Miller (1988) Random number generators: good ones are hard to find. CACM 31(10); Matsumoto & Nishimura (1998) Mersenne Twister. ACM TOMACS 8(1).'
   depends_on:
   - random-generators-v1
+relations:
+  depends_on: [random-generators-v1, example-receipt-v1]
 entity:
   type: json
   ref: evidence/examples/random.json

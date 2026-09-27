@@ -1,0 +1,39 @@
+{
+  "schema": "ont.paiml.dev/census/v1alpha1",
+  "git_sha": null,
+  "n_files": 22,
+  "n_parsed": 22,
+  "n_parse_errors": 0,
+  "parse_errors": [],
+  "quarantined_n": 0,
+  "by_kind": {
+    "kernel": 22
+  },
+  "by_entity_type": {
+    "json": 11
+  },
+  "by_anchoring": {
+    "unanchored": 11,
+    "class": 0,
+    "instance": 11
+  },
+  "id_set_sha256": "9c7a2ad474ac0a8ba934f010e55a64021aff1124735377f1c868837912e01916",
+  "declared_external": [
+    {
+      "name": "nlib",
+      "repo": "mdipierro/nlib",
+      "ref": "5db3a42f24907e21559d6546ff3489578e2e4ad9",
+      "head": "5db3a42f24",
+      "n_files": 19,
+      "mark": "[V 2026-09-27]",
+      "counted_by": "gh api 'repos/mdipierro/nlib/git/trees/5db3a42f24907e21559d6546ff3489578e2e4ad9?recursive=1' --jq '[.tree[] | select(.type==\"blob\") | .path | select(startswith(\"src/\") and endswith(\".py\"))] | length'",
+      "note": "Massimo Di Pierro's Python library: the reference implementation this crate ports, and the oracle tests/falsify_parity.py checks the Rust results against. Its src/nlib.py has 1941 lines, 63 top-level functions and 16 classes [V 2026-09-27]. It carries no provable contracts of its own; the 22 under contracts/ are this crate's [V 2026-09-27]."
+    }
+  ],
+  "timing": {
+    "census_cpu_ms_p50": null,
+    "lint_cpu_ms_p50": null,
+    "host_class": null,
+    "n_runs": 5
+  }
+}

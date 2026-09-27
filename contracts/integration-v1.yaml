@@ -2,6 +2,9 @@ metadata:
   version: 1.0.0
   created: '2026-04-06'
   author: PAIML Engineering
+  kind: kernel
+  valid_under:
+    world: committed
   description: >
     Numerical quadrature — trapezoid rule, Simpson's rule, adaptive quadrature.
     Covers the numerical integration chapter of nlib.

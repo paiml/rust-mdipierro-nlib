@@ -155,22 +155,19 @@ jobs:
           cargo install --locked --git https://github.com/paiml/aprender --rev "$rev" aprender-contracts-cli
           pv --version
 
-      - name: Validate contracts
-        run: |
-          for f in contracts/*.yaml; do
-            [ "$(basename "$f")" = "binding.yaml" ] && continue
-            pv validate "$f"
-          done
-
       - name: Score contracts
         run: pv score contracts/ --binding contracts/binding.yaml
 
-      - name: Lint contracts
-        run: pv lint contracts/
+      # ONT-G: the gate proves itself first (16 cases against a stub pv, incl.
+      # a mutant that must go green without the shapes_n probe).
+      - name: Contracts gate self-test
+        run: bash scripts/contracts_gate.sh --self-test
 
-      # Fails closed: exit 1 on any shape violation, 2 when no shape is armed.
-      - name: SHACL shapes gate
-        run: pv lint contracts/ --gate shapes
+      # Every step runs, whatever an earlier one says: lint (all armed gates,
+      # with --binding/--crate-dir), shapes (fails closed), regen, README sync,
+      # provenance, and a diff of the generated census/extract files.
+      - name: Contracts gate
+        run: bash scripts/contracts_gate.sh
 
   # Advisory until the repo-governance findings (branch protection, deny.toml,
   # roadmap/spec schema) are closed; see docs/ontology-conformance.md.

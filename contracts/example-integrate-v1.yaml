@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     examples/integrate.rs as an entity. The example's `--json` receipt
     (evidence/examples/integrate.json) is extracted by extract:json and must
@@ -14,6 +16,8 @@ metadata:
   - 'Davis & Rabinowitz (1984) Methods of Numerical Integration, 2nd Ed.'
   depends_on:
   - integration-v1
+relations:
+  depends_on: [integration-v1, example-receipt-v1]
 entity:
   type: json
   ref: evidence/examples/integrate.json

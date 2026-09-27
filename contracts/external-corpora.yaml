@@ -1,0 +1,28 @@
+# contracts/external-corpora.yaml — ONT-001 v4.17 (ONT-1, R-10)
+#
+# The corpus this crate ports is NOT under contracts/ and is therefore NOT in
+# `pv census`'s cardinality. It is declared here so the census cannot be read as
+# "every contract that exists", and each figure names the command that counted
+# it, so it can be re-measured rather than believed. `pv census` copies these
+# entries into census.json's `declared_external[]` and never runs `counted_by`
+# (a census is reproducible offline).
+#
+# Every numeric claim carries a mark (scripts/lint-provenance.sh): [V date] is
+# measured on that date by the command named.
+schema: ont.paiml.dev/external-corpora/v1alpha1
+corpora:
+  - name: nlib
+    repo: mdipierro/nlib
+    ref: 5db3a42f24907e21559d6546ff3489578e2e4ad9
+    head: 5db3a42f24  # [V 2026-09-27] master at that date
+    n_files: 19  # [V 2026-09-27] Python files under src/
+    mark: '[V 2026-09-27]'
+    counted_by: >-
+      gh api 'repos/mdipierro/nlib/git/trees/5db3a42f24907e21559d6546ff3489578e2e4ad9?recursive=1'
+      --jq '[.tree[] | select(.type=="blob") | .path | select(startswith("src/") and endswith(".py"))] | length'
+    note: >-
+      Massimo Di Pierro's Python library: the reference implementation this
+      crate ports, and the oracle tests/falsify_parity.py checks the Rust
+      results against. Its src/nlib.py has 1941 lines, 63 top-level functions
+      and 16 classes [V 2026-09-27]. It carries no provable contracts of its
+      own; the 22 under contracts/ are this crate's [V 2026-09-27].

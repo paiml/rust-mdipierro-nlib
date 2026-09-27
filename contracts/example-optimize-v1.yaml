@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     examples/optimize.rs as an entity. The example's `--json` receipt
     (evidence/examples/optimize.json) is extracted by extract:json and must
@@ -14,6 +16,8 @@ metadata:
   - 'Nocedal & Wright (2006) Numerical Optimization, 2nd Ed.'
   depends_on:
   - optimization-v1
+relations:
+  depends_on: [optimization-v1, example-receipt-v1]
 entity:
   type: json
   ref: evidence/examples/optimize.json

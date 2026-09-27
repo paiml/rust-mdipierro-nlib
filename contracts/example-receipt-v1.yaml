@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     src/receipt.rs, the receipt every example emits with `--json`. The
     eleven example-*-v1 contracts extract those receipts as JSON entities and

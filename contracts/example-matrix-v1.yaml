@@ -3,6 +3,8 @@ metadata:
   created: '2026-09-27'
   author: PAIML Engineering
   kind: kernel
+  valid_under:
+    world: committed
   description: >
     examples/matrix.rs as an entity. The example's `--json` receipt
     (evidence/examples/matrix.json) is extracted by extract:json and must
@@ -14,6 +16,8 @@ metadata:
   - 'Golub & Van Loan (2013) Matrix Computations, 4th Ed.'
   depends_on:
   - matrix-algebra-v1
+relations:
+  depends_on: [matrix-algebra-v1, example-receipt-v1]
 entity:
   type: json
   ref: evidence/examples/matrix.json

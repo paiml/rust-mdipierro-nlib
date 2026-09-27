@@ -1,3 +1,12 @@
+# Bindings from contract equations to nlib functions.
+#
+# pv score counts a contract as drifted when its last commit is newer than this
+# file's (codebase dimension "drift"). Whoever changes a contract re-checks its
+# bindings here (`pv lint contracts/ --gate shapes` resolves every symbol) and
+# commits this file with it; otherwise the codebase grade falls and the
+# generated README goes stale in the contracts gate.
+#
+# Last re-verified with the GH-1 ontology change: 96 of 96 symbols resolve.
 version: 1.0.0
 target_crate: nlib
 bindings:
