@@ -75,7 +75,7 @@
       "required_check": "gate",
       "plant": "none",
       "plant_run": "none",
-      "limit": "Levels today: 1 at L1, 22 at L3. pv credits a declared harness toward L3 without checking that it exists"
+      "limit": "Levels today: 1 at L2, 22 at L3. pv credits a declared harness toward L3 without checking that it exists"
     },
     {
       "id": "CLAIM-007",

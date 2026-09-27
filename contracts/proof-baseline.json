@@ -1,7 +1,7 @@
 {
   "_spec": "GH-1 scope c: proof levels from contracts/proof-status.json only rise; scripts/proof_ratchet.sh fails the contracts gate on a drop. Raise a level here in the PR that raises it.",
   "levels": {
-    "enforcement-claims-v1": "L1",
+    "enforcement-claims-v1": "L2",
     "example-fourier-v1": "L3",
     "example-graph-v1": "L3",
     "example-integrate-v1": "L3",

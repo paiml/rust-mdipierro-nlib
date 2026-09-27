@@ -181,3 +181,42 @@ shape:
         minCount: 1
         maxCount: 1
         in: [none]
+
+proof_obligations:
+- type: invariant
+  property: An enforced claim cites the CI job in which its planted fault turned a required check red
+- type: invariant
+  property: A claim that blocks nothing is never presented as enforced
+- type: invariant
+  property: Every claim class is closed
+- type: equivalence
+  property: README.md is the generator's output, byte for byte
+
+falsification_tests:
+- id: FALSIFY-CLAIMS-001
+  rule: enforced
+  prediction: An enforced claim with no plant run, or a plant run that is not a CI job URL, violates the shape
+  test: bash scripts/readme_sync.sh --self-test
+  if_fails: A claim no plant ever proved could be presented as enforced
+- id: FALSIFY-CLAIMS-002
+  rule: not_enforced
+  prediction: An advisory job presented as enforced, or a not-enforced claim that blocks the merge, is refused by the shape and by the job check against ci.yml
+  test: bash scripts/readme_sync.sh --self-test
+  if_fails: An advisory check could be presented as enforced
+- id: FALSIFY-CLAIMS-003
+  rule: closed
+  prediction: A claim with an extra key, no limit, or a malformed id violates the shape
+  test: bash scripts/readme_sync.sh --self-test
+  if_fails: A claim could drop its honest limit
+- id: FALSIFY-CLAIMS-004
+  rule: generated
+  prediction: One hand-edited README.md byte fails readme_sync.sh --check
+  test: bash scripts/readme_sync.sh --self-test
+  if_fails: A hand edit could survive in the README
+
+qa_gate:
+  id: F-CLAIMS-001
+  name: enforcement-claims-v1 Contract
+  checks:
+  - validation
+  - falsification

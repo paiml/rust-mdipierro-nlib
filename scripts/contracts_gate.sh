@@ -92,6 +92,8 @@ step_shapes() {
     rc=$?
     shapes_verdict "$rc" "$json" "$err"
     rc=$?
+    # Name each violation, so a red run says which entity broke which shape.
+    [ "$rc" = 0 ] || jq -r '.findings[]? | select(.rule_id == "PV-ONT-011") | "  \(.message)"' "$json" 2>/dev/null
     rm -f "$json" "$err"
     return "$rc"
 }
@@ -125,6 +127,10 @@ step_regen() {
 step_readme() {
     local rc=0
     PV="$PV" bash scripts/readme_sync.sh --check || rc=1
+    PV="$PV" bash scripts/readme_sync.sh --self-test >/dev/null || {
+        echo "FAIL: readme_sync.sh --self-test"
+        rc=1
+    }
     bash scripts/example_links.sh --self-test >/dev/null || {
         echo "FAIL: example_links.sh --self-test"
         rc=1

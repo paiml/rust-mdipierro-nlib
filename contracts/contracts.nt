@@ -289,7 +289,7 @@
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.4> <https://ont.paiml.dev/v1alpha1/ex/claim> "Proof levels only rise; phantom Kani references only fall"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.4> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-006"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.4> <https://ont.paiml.dev/v1alpha1/ex/job> "contracts"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.4> <https://ont.paiml.dev/v1alpha1/ex/limit> "Levels today: 1 at L1, 22 at L3. pv credits a declared harness toward L3 without checking that it exists"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.4> <https://ont.paiml.dev/v1alpha1/ex/limit> "Levels today: 1 at L2, 22 at L3. pv credits a declared harness toward L3 without checking that it exists"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.4> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "`scripts/proof_ratchet.sh` against `contracts/proof-baseline.json`"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.4> <https://ont.paiml.dev/v1alpha1/ex/plant> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.4> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "none"^^<http://www.w3.org/2001/XMLSchema#string> .

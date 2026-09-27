@@ -31,6 +31,7 @@
 #   --write  write evidence/enforcement/claims.json and README.md (idempotent)
 #   --print  print both; write nothing
 #   --check  exit 0 iff both already equal what --write produces, byte for byte, else 1
+#   --self-test  plant each claim fault in a scratch copy; every one must be caught
 #
 # A template without every marker pair is exit 3, never a silent no-op. A measure
 # that reads empty or zero is a failure (ONT R-2: zero is a decline).
@@ -52,7 +53,7 @@ die() {
 }
 
 usage() {
-    printf 'usage: bash scripts/readme_sync.sh [--write|--print|--check]\n' >&2
+    printf 'usage: bash scripts/readme_sync.sh [--write|--print|--check|--self-test]\n' >&2
     exit 2
 }
 
@@ -122,7 +123,7 @@ measure() {
             if [[ -n "$eqs" ]]; then
                 n=$(printf '%s' "$eqs" | awk -F', ' '{ print NF }')
             elif grep -qxF '  kind: schema' "$cf"; then
-                eqs="none (a schema contract: SHACL-closed data, no proof obligations)"
+                eqs='none (a schema contract: SHACL-closed data; its obligations are tested by `scripts/readme_sync.sh --self-test`)'
                 n=0
             else
                 die "$cf has no equations"
@@ -132,7 +133,7 @@ measure() {
                 "$stem" "$grade" "$score" "$spec" "$fals" "$kani" "$bind" "$eqs"
         done < <(jq -r '.[0].scores | sort_by(.stem)[] |
             [.stem, .grade] + ([.composite, .spec_depth, .falsification_coverage, .kani_coverage, .binding_coverage]
-            | map(. * 100 | round / 100)) | @tsv' "$tmp/score.json")
+            | map(. * 100 | round / 100 | if . == 0 then 0 else . end)) | @tsv' "$tmp/score.json")
     } >"$TABLE"
     nonzero equations "$N_EQ"
     TABLE_TEXT="$(cat "$TABLE")"
@@ -182,11 +183,16 @@ measure_examples() {
 
 # The proof summary: every number is a field of the committed receipt contracts/proof-status.json.
 measure_proofs() {
-    PROOF_TEXT=$(jq -r '
+    local schemas
+    schemas=$(grep -lxF '  kind: schema' contracts/*.yaml | sed 's|^contracts/||; s|\.yaml$||' || true)
+    PROOF_TEXT=$(jq -r --arg schemas "$schemas" '
         def rank: ltrimstr("L") | tonumber;
         .totals as $t
-        | [.contracts[] | select(.obligations > 0)] as $k
-        | [.contracts[] | select(.obligations == 0) | "`\(.stem)` (\(.proof_level))"] as $none
+        | ($schemas | split("\n") | map(select(. != ""))) as $sch
+        | [.contracts[] | select(.stem as $s | $sch | index($s) | not)] as $kern
+        | [.contracts[] | select(.stem as $s | $sch | index($s))] as $sc
+        | [$kern[] | select(.obligations > 0)] as $k
+        | [$kern[] | select(.obligations == 0) | "`\(.stem)` (\(.proof_level))"] as $none
         | ([$k[].proof_level] | min_by(rank)) as $min
         | ([$k[] | select(.proof_level == $min)] | length) as $at_min
         | (["tested"] + (if $t.kani_harnesses > 0 then ["Kani model-checked"] else [] end)
@@ -196,7 +202,7 @@ measure_proofs() {
           "",
           "| Measure (`pv proof-status --verify-bindings`) | Value |",
           "|--------|-------|",
-          "| Contracts | \($t.contracts): \($k | length) with proof obligations (\($at_min) at \($min), the lowest level)\(if ($none | length) > 0 then "; \($none | length) with none, which pv reports at L1: \($none | join(", "))" else "" end) |",
+          "| Contracts | \($t.contracts): \($k | length) with proof obligations (\($at_min) at \($min), the lowest level)\(if ($sc | length) > 0 then "; \($sc | length) schema contract(s) over data, not code: \([$sc[] | "`\(.stem)` (\(.proof_level))"] | join(", "))" else "" end)\(if ($none | length) > 0 then "; \($none | length) with none, which pv reports at L1: \($none | join(", "))" else "" end) |",
           "| Levels | \([.contracts[].proof_level] | group_by(.) | map("\(.[0]): \(length)") | join(", ")) |",
           "| Proof obligations | \($t.obligations) (\($t.not_applicable) N/A) |",
           "| Falsification tests | \($t.falsification_tests) |",
@@ -388,6 +394,71 @@ rendered_readme() {
 }
 
 # same <generated> <committed> <what>: 0 iff the bytes are equal; else print the diff.
+# self_test — every claim fault the gate promises to catch, planted in a scratch copy of the repo and
+# checked with the real instruments: pv's shapes gate on the claim entities, check_claims on each
+# claim's job, and --check on a README with one byte edited. The unedited copy is the control.
+self_test() {
+    local d pass=0 fail=0
+    d=$(mktemp -d)
+    (cd "$REPO_ROOT" && cp -r contracts evidence src build.rs Cargo.toml Cargo.lock README.md "$d/") \
+        || die "cannot copy the repo into $d"
+    rm -rf "${d:?}/contracts/.pv"
+    cp "$d/evidence/enforcement/claims.json" "$d/claims.good"
+    row() { # row <message> <0|1 got> <0|1 want>
+        if [ "$2" = "$3" ]; then
+            pass=$((pass + 1))
+            printf 'ok   %s\n' "$1"
+        else
+            fail=$((fail + 1))
+            printf 'FAIL %s\n' "$1"
+        fi
+    }
+    shape() { # shape <want 0|1> <message> <jq edit>: the edit to claims.json, then pv's shapes gate
+        local got=0
+        jq "$3" "$d/claims.good" >"$d/evidence/enforcement/claims.json"
+        (cd "$d" && "$PV" lint contracts/ --gate shapes --format json >"$d/out.json" 2>/dev/null) || got=1
+        # A rejection must be the claims shape rejecting, not some other entity.
+        if [ "$got" = 1 ] && ! jq -e '[.findings[]? | select(.rule_id == "PV-ONT-011")
+                | select(.message | contains("enforcement-claims-v1"))] | length > 0' "$d/out.json" >/dev/null; then
+            got=2
+        fi
+        row "$2" "$got" "$1"
+    }
+    claims() { # claims <want 0|1> <message> <jq edit>: the edit, then check_claims
+        local got=0
+        jq "$3" "$d/claims.good" >"$d/edited.json"
+        (cd "$REPO_ROOT" && check_claims "$d/edited.json") >/dev/null 2>&1 || got=1
+        row "$2" "$got" "$1"
+    }
+    shape 0 "the committed claims conform to their shape (control)" '.'
+    shape 1 "an enforced claim with no plant run violates the shape" '.enforced[0].plant_run = "none"'
+    shape 1 "an enforced claim whose plant run is not a CI job URL violates the shape" \
+        '.enforced[0].plant_run = "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/1"'
+    shape 1 "an advisory job presented as enforced violates the shape" '.enforced[0].job = "comply"'
+    shape 1 "a not-enforced claim that says it blocks the merge violates the shape" \
+        '.not_enforced[0].blocks_merge = true'
+    shape 1 "a claim outside the enforced class that cites a plant run violates the shape" \
+        '(.unplanted // [] | length) as $n | if $n > 0 then .unplanted[0].plant_run = .enforced[0].plant_run else .not_enforced[0].plant_run = .enforced[0].plant_run end'
+    shape 1 "a claim with no honest limit violates the shape" 'del(.enforced[0].limit)'
+    shape 1 "a claim with a key the shape does not close over violates it" '.enforced[0].note = "x"'
+    shape 1 "a claim id outside CLAIM-NNN violates the shape" '.enforced[0].id = "C-1"'
+    claims 0 "the committed claims name jobs the workflow agrees with (control)" '.'
+    claims 1 "a blocking claim on a job the gate does not need is refused" '.enforced[0].job = "comply"'
+    claims 1 "a not-enforced claim on a job the gate needs is refused" '.not_enforced[0].job = "kani"'
+    claims 1 "two claims with one id are refused" '.not_enforced[0].id = .enforced[0].id'
+    cp "$REPO_ROOT/README.md" "$d/README.md"
+    local got=0
+    README_PATH="$d/README.md" bash "$REPO_ROOT/scripts/readme_sync.sh" --check >/dev/null 2>&1 || got=1
+    row "the committed README.md is what the generator produces (control)" "$got" 0
+    sed -i '2s/^./X/' "$d/README.md"
+    got=0
+    README_PATH="$d/README.md" bash "$REPO_ROOT/scripts/readme_sync.sh" --check >/dev/null 2>&1 || got=1
+    row "one hand-edited README byte fails --check" "$got" 1
+    rm -rf "${d:?}"
+    printf 'readme_sync: self-test: %d passed, %d failed\n' "$pass" "$fail"
+    [ "$fail" -eq 0 ]
+}
+
 same() {
     cmp -s "$1" "$2" && return 0
     printf 'readme_sync: %s differs from what the generator produces:\n' "$3" >&2
@@ -398,6 +469,10 @@ same() {
 mode="${1:---write}"
 case "$mode" in
     --write | --print | --check) ;;
+    --self-test)
+        self_test
+        exit
+        ;;
     *) usage ;;
 esac
 [ -f "$TEMPLATE" ] || die "no README template at $TEMPLATE" 3

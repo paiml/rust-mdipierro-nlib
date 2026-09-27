@@ -21,7 +21,7 @@ published on crates.io — no other external crates.
 
 | Contract | Grade | Spec | Falsify | Kani | Bind | Equations |
 |----------|-------|------|---------|------|------|-----------|
-| enforcement-claims-v1 | F (0.25) | 0.1 | 0 | 0 | 1 | none (a schema contract: SHACL-closed data, no proof obligations) |
+| enforcement-claims-v1 | D (0.5) | 0.1 | 1 | 0 | 1 | none (a schema contract: SHACL-closed data; its obligations are tested by `scripts/readme_sync.sh --self-test`) |
 | example-fourier-v1 | C (0.68) | 0.6 | 1 | 0.33 | 1 | dft_sine_peak, dft_sine_no_leakage, fft_matches_dft, idft_roundtrip, parseval |
 | example-graph-v1 | C (0.68) | 0.6 | 1 | 0.33 | 1 | dijkstra_known, dijkstra_relaxed, bfs_visits_all, dfs_visits_all, mst_spanning, mst_weight_known |
 | example-integrate-v1 | B (0.76) | 0.6 | 1 | 0.63 | 1 | trapezoid_sin_0_pi, simpson_sin_0_pi, adaptive_sin_0_pi, simpson_beats_trapezoid, simpson_exact_cubic, adaptive_exp_0_1 |
@@ -45,7 +45,7 @@ published on crates.io — no other external crates.
 | sorting-v1 | B (0.77) | 0.7 | 1 | 0.6 | 1 | quicksort, mergesort, heapsort |
 | statistics-v1 | B (0.76) | 0.7 | 1 | 0.54 | 1 | mean, variance, covariance, correlation, chi_squared_fit |
 
-**23 contracts, 96 equations; mean contract score 0.73 (C); codebase grade A (0.92).**
+**23 contracts, 96 equations; mean contract score 0.75 (C); codebase grade A (0.92).**
 
 <!-- CONTRACT_TABLE_END -->
 
@@ -68,7 +68,7 @@ Each row is a claim entity in [`evidence/enforcement/claims.json`](evidence/enfo
 | The ONT-G contracts gate runs every step | `scripts/contracts_gate.sh`: 6 steps, each RUN with its own status | any step fails; the later steps still run | yes | **none yet**: not proved by a plant | pv is the instrument: its defects pass through ([aprender#4531](https://github.com/paiml/aprender/issues/4531), [aprender#4521](https://github.com/paiml/aprender/issues/4521)) |
 | README.md is generated: every byte comes from `docs/README.md.in` and the ontology | `scripts/readme_sync.sh --check` regenerates the whole file and compares bytes; `scripts/example_links.sh` checks every example link | any README byte differs from the regenerated file; a link whose target does not say what the link claims | yes | **none yet**: not proved by a plant | The prose in `docs/README.md.in` is written by hand: the gate proves the README matches it, not that the prose is true |
 | Every claim in this table conforms to its closed SHACL shape | this table is rendered from `evidence/enforcement/claims.json`, closed by `contracts/enforcement-claims-v1.yaml`; the generator also checks each claim's job against `scripts/ci_gate.sh` | an enforced claim with no plant run; an advisory check presented as enforced; a claim whose job `gate` does or does not need contrary to its class | yes | **none yet**: not proved by a plant | The shape checks that a plant run is recorded, not what the run showed: the run itself is the receipt |
-| Proof levels only rise; phantom Kani references only fall | `scripts/proof_ratchet.sh` against `contracts/proof-baseline.json` | a level drops, or phantoms exceed 28 | yes | **none yet**: not proved by a plant | Levels today: 1 at L1, 22 at L3. pv credits a declared harness toward L3 without checking that it exists |
+| Proof levels only rise; phantom Kani references only fall | `scripts/proof_ratchet.sh` against `contracts/proof-baseline.json` | a level drops, or phantoms exceed 28 | yes | **none yet**: not proved by a plant | Levels today: 1 at L2, 22 at L3. pv credits a declared harness toward L3 without checking that it exists |
 | Bounded properties hold for every input within the bound | Kani BMC, 7 harnesses in `src/kani_harnesses.rs` | a counterexample | yes | **none yet**: not proved by a plant | BOUNDED: unwind 4 to 9, so no loop runs more than 8 times. Nothing is proved beyond the bound. Every declared harness exists for 12 of 22 contracts; 28 declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6)) |
 | Pre- and postconditions hold at runtime | 10 `contract_pre_*!`/`contract_post_*!` macros, written by hand in `build.rs`, at 11 call sites | an assertion panics in a debug or test build | yes | **none yet**: not proved by a plant | They expand to `debug_assert!`: release builds are NOT checked at runtime. `quicksort: input exists` (`len < usize::MAX`) can never fail |
 | The tests catch changes to the code a PR touches | `cargo mutants --in-diff` on the PR diff | a mutant on a changed line survives | yes | **none yet**: not proved by a plant | Code the PR does not touch is not re-checked |
@@ -242,10 +242,10 @@ harnesses go missing. The missing harnesses are tracked in
 
 | Measure (`pv proof-status --verify-bindings`) | Value |
 |--------|-------|
-| Contracts | 23: 22 with proof obligations (22 at L3, the lowest level); 1 with none, which pv reports at L1: `enforcement-claims-v1` (L1) |
-| Levels | L1: 1, L3: 22 |
-| Proof obligations | 77 (0 N/A) |
-| Falsification tests | 104 |
+| Contracts | 23: 22 with proof obligations (22 at L3, the lowest level); 1 schema contract(s) over data, not code: `enforcement-claims-v1` (L2) |
+| Levels | L2: 1, L3: 22 |
+| Proof obligations | 81 (0 N/A) |
+| Falsification tests | 108 |
 | Kani harnesses | 48 |
 | Lean theorems proved (grounded in an equation) | 0 (0) |
 | Bindings verified in source | 96/96 |
@@ -270,7 +270,7 @@ harnesses that are missing (present of declared): fourier-transform-v1 (0 of 3),
 | Bound symbols (extract:code) | 96 resolved, 0 unresolved |
 | SHACL shapes | 12, over 12 focus nodes |
 | Kani BMC harnesses | 7 |
-| Contract grade | C (0.73 mean) |
+| Contract grade | C (0.75 mean) |
 | Codebase grade | A (0.92) |
 | External deps | 1 (aprender only) |
 
