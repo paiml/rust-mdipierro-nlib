@@ -11,8 +11,8 @@ env:
   RUSTFLAGS: -D warnings
 
 jobs:
-  gate:
-    name: gate  # the org ruleset requires a check named `gate`
+  lint-test:
+    name: lint-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
   golden-vectors:
     name: Golden Vectors
     runs-on: ubuntu-latest
-    needs: gate
+    needs: lint-test
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -48,7 +48,7 @@ jobs:
   parity:
     name: Python/Rust Parity
     runs-on: ubuntu-latest
-    needs: gate
+    needs: lint-test
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -61,7 +61,7 @@ jobs:
   kani:
     name: Kani BMC
     runs-on: ubuntu-latest
-    needs: gate
+    needs: lint-test
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +89,7 @@ jobs:
   mutants:
     name: Mutation Testing
     runs-on: ubuntu-latest
-    needs: gate
+    needs: lint-test
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
@@ -117,7 +117,7 @@ jobs:
   examples:
     name: Examples
     runs-on: ubuntu-latest
-    needs: gate
+    needs: lint-test
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -140,7 +140,7 @@ jobs:
   contracts:
     name: Contract Validation
     runs-on: ubuntu-latest
-    needs: gate
+    needs: lint-test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -175,7 +175,7 @@ jobs:
   comply:
     name: PMAT Comply (advisory)
     runs-on: ubuntu-latest
-    needs: gate
+    needs: lint-test
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -193,3 +193,27 @@ jobs:
 
       - name: Run pmat comply check
         run: pmat comply check
+
+  # The org ruleset requires ONE check, `gate`, so this job is the only thing
+  # GitHub enforces: it runs last, whatever happened (always()), and fails
+  # unless every job it needs succeeded. Advisory jobs (PMAT Comply) stay out
+  # of `needs`. scripts/ci_gate.sh --check-workflow fails if a job is neither
+  # needed here nor marked continue-on-error, so no new job is silently optional.
+  gate:
+    name: gate
+    if: always()
+    needs: [lint-test, golden-vectors, parity, kani, mutants, examples, contracts]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Every blocking job is needed by the gate
+        run: bash scripts/ci_gate.sh --check-workflow
+
+      - name: Gate self-test
+        run: bash scripts/ci_gate.sh --self-test
+
+      - name: Every needed job succeeded
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: bash scripts/ci_gate.sh --results

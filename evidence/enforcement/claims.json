@@ -1,0 +1,178 @@
+{
+  "schema": "enforcement-claims-v1",
+  "ruleset": "Green Main",
+  "required_check": "gate",
+  "enforced": [
+    {
+      "id": "CLAIM-001",
+      "claim": "A red job blocks the merge",
+      "mechanism": "ruleset \"Green Main\" requires `gate`; `gate` runs last with `if: always()` and needs the 7 jobs `lint-test`, `Golden Vectors`, `Python/Rust Parity`, `Kani BMC`, `Mutation Testing`, `Examples`, `Contract Validation`",
+      "red_when": "any needed job failed, was cancelled or was skipped",
+      "job": "gate",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "a failing step in Kani BMC, not the first job: lint-test green, kani red, `gate` red, merge BLOCKED",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36314753804/job/108607643661",
+      "limit": "Org admins may bypass the ruleset (\"always\"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings))"
+    },
+    {
+      "id": "CLAIM-002",
+      "claim": "Each example receipt conforms to its closed SHACL shape",
+      "mechanism": "`pv lint --gate shapes` over 12 shapes and 12 focus nodes (the 11 example receipts and this table); the Examples job diffs each receipt against `evidence/examples/`",
+      "red_when": "any shape violation, or a receipt that differs from its tracked evidence",
+      "job": "examples",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "examples/integrate.json receipt edited to hold false: Examples red (falsify_exintg_002 receipt differs from evidence), `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475241",
+      "limit": "Checks the 11 examples on their fixed inputs, not the library on other inputs"
+    },
+    {
+      "id": "CLAIM-003",
+      "claim": "The ONT-G contracts gate runs every step",
+      "mechanism": "`scripts/contracts_gate.sh`: 6 steps, each RUN with its own status",
+      "red_when": "any step fails; the later steps still run",
+      "job": "contracts",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "four faults in one run (phantom baseline, README byte, claims plant run, receipt): 4 of 6 steps failed and all 6 RAN, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175",
+      "limit": "pv is the instrument: its defects pass through ([aprender#4531](https://github.com/paiml/aprender/issues/4531), [aprender#4521](https://github.com/paiml/aprender/issues/4521))"
+    },
+    {
+      "id": "CLAIM-004",
+      "claim": "README.md is generated: every byte comes from `docs/README.md.in` and the ontology",
+      "mechanism": "`scripts/readme_sync.sh --check` regenerates the whole file and compares bytes; `scripts/example_links.sh` checks every example link",
+      "red_when": "any README byte differs from the regenerated file; a link whose target does not say what the link claims",
+      "job": "contracts",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "one README byte hand-edited (`enforced` to `enforceD`), nothing else: only Contract Validation red (readme step), `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36316337423/job/108611736648",
+      "limit": "The prose in `docs/README.md.in` is written by hand: the gate proves the README matches it, not that the prose is true"
+    },
+    {
+      "id": "CLAIM-005",
+      "claim": "Every claim in this table conforms to its closed SHACL shape",
+      "mechanism": "this table is rendered from `evidence/enforcement/claims.json`, closed by `contracts/enforcement-claims-v1.yaml`; the generator also checks each claim's job against `scripts/ci_gate.sh`",
+      "red_when": "an enforced claim with no plant run; an advisory check presented as enforced; a claim whose job `gate` does or does not need contrary to its class",
+      "job": "contracts",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "the advisory PMAT claim moved into `enforced` in claims.json: the shape names `job: \"comply\" is not one of [...]`, Contract Validation red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36316963827/job/108613465055",
+      "limit": "The shape checks that a plant run is recorded, not what the run showed: the run itself is the receipt"
+    },
+    {
+      "id": "CLAIM-006",
+      "claim": "Proof levels only rise; phantom Kani references only fall",
+      "mechanism": "`scripts/proof_ratchet.sh` against `contracts/proof-baseline.json`",
+      "red_when": "a level drops, or phantoms exceed 28",
+      "job": "contracts",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "phantom baseline lowered from 28 to 27: the ratchet reports phantoms rose from 27 to 28, Contract Validation red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175",
+      "limit": "Levels today: 1 at L2, 22 at L3. pv credits a declared harness toward L3 without checking that it exists"
+    },
+    {
+      "id": "CLAIM-007",
+      "claim": "Bounded properties hold for every input within the bound",
+      "mechanism": "Kani BMC, 7 harnesses in `src/kani_harnesses.rs`",
+      "red_when": "a counterexample",
+      "job": "kani",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "a strict-order assertion added to verify_quicksort_sorted: Kani reports the assertion failed, Kani BMC red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475259",
+      "limit": "BOUNDED: unwind 4 to 9, so no loop runs more than 8 times. Nothing is proved beyond the bound. Every declared harness exists for 12 of 22 contracts; 28 declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6))"
+    },
+    {
+      "id": "CLAIM-008",
+      "claim": "Pre- and postconditions hold at runtime",
+      "mechanism": "10 `contract_pre_*!`/`contract_post_*!` macros, written by hand in `build.rs`, at 11 call sites",
+      "red_when": "an assertion panics in a debug or test build",
+      "job": "lint-test",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "the quicksort postcondition macro inverted in build.rs: 6 tests panic `postcondition violated`, lint-test red, every other job skipped, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36318164016/job/108616712665",
+      "limit": "They expand to `debug_assert!`: release builds are NOT checked at runtime. `quicksort: input exists` (`len < usize::MAX`) can never fail"
+    },
+    {
+      "id": "CLAIM-009",
+      "claim": "The tests catch changes to the code a PR touches",
+      "mechanism": "`cargo mutants --in-diff` on the PR diff",
+      "red_when": "a mutant on a changed line survives",
+      "job": "mutants",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "an untested function (plant_untested_scale) added: 2 mutants missed, Mutation Testing red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475227",
+      "limit": "Code the PR does not touch is not re-checked"
+    },
+    {
+      "id": "CLAIM-010",
+      "claim": "Values match the golden vectors from Python nlib",
+      "mechanism": "`tests/golden_vectors.rs`, 14 tests",
+      "red_when": "any value outside its tolerance",
+      "job": "golden-vectors",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "the quicksort golden vector first value changed from 3 to 4: golden_sort mismatch, Golden Vectors red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475217",
+      "limit": "Fixed inputs only"
+    },
+    {
+      "id": "CLAIM-011",
+      "claim": "The Rust values match Python nlib run live",
+      "mechanism": "`tests/falsify_parity.py` runs Di Pierro's nlib.py at a pinned commit against `cargo run --example parity`",
+      "red_when": "any value differs beyond its tolerance",
+      "job": "parity",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "Rust integrate scaled by 1.01: integrate_sin 2.02 against Python 1.99997, Python/Rust Parity red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475162",
+      "limit": "Parity cannot catch a bug the two implementations share"
+    }
+  ],
+  "unplanted": [],
+  "not_enforced": [
+    {
+      "id": "CLAIM-012",
+      "claim": "An equation is true on every input of an exact model (L4)",
+      "mechanism": "Lean 4: 0 equation(s) cite a sorry-free, in-tree Lean theorem ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5))",
+      "red_when": "nothing: no required check builds Lean yet",
+      "job": "none",
+      "blocks_merge": false,
+      "required_check": "none",
+      "plant": "none",
+      "plant_run": "none",
+      "limit": "No contract is above L3 yet"
+    },
+    {
+      "id": "CLAIM-013",
+      "claim": "The whole library survives mutation testing",
+      "mechanism": "the full `cargo mutants` sweep on `main`, a step with `continue-on-error: true`",
+      "red_when": "never blocks: it runs after the merge",
+      "job": "none",
+      "blocks_merge": false,
+      "required_check": "none",
+      "plant": "none",
+      "plant_run": "none",
+      "limit": "114 missed mutants before GH-1"
+    },
+    {
+      "id": "CLAIM-014",
+      "claim": "The repository meets PMAT governance",
+      "mechanism": "`pmat comply check`",
+      "red_when": "fails today, and `gate` does not need it",
+      "job": "comply",
+      "blocks_merge": false,
+      "required_check": "none",
+      "plant": "none",
+      "plant_run": "none",
+      "limit": "Its failures are governance (branch protection needs an admin, `deny.toml`, `build.rs`, roadmap and spec schema, TDG), not contract enforcement"
+    }
+  ]
+}

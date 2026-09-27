@@ -1,0 +1,222 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: schema
+  valid_under:
+    world: committed
+  description: >
+    The README section "What is enforced, and what is not" as ontology data
+    (GH-1). Each row is a claim entity in evidence/enforcement/claims.json,
+    which scripts/readme_sync.sh renders from contracts/enforcement-claims.src.json
+    with the measured counts substituted, and then renders the table from.
+    The shape closes each claim class. An enforced claim blocks the merge
+    through the one required check, `gate`, and cites the CI job whose
+    planted fault turned it red. An unplanted claim blocks the merge but has
+    no plant receipt yet, so it is not presented as proved. A not-enforced
+    claim blocks nothing. A claim that mixes the classes, such as an advisory
+    check presented as enforced or an enforced claim with no plant run,
+    violates the shape.
+  references:
+  - 'ONT-001 v4.17 extract:json and closed SHACL shapes'
+  - 'GH-1: a claim counts only if a planted fault turns a REQUIRED check red'
+entity:
+  type: json
+  ref: evidence/enforcement/claims.json
+vocabulary:
+  prefix: ex
+  root_class: ex:EnforcementClaims
+  nested:
+    enforced: ex:EnforcedClaim
+    unplanted: ex:UnplantedClaim
+    not_enforced: ex:NotEnforcedClaim
+shape:
+  targetClass: ex:EnforcementClaims
+  closed: true
+  properties:
+  - path: ex:schema
+    minCount: 1
+    maxCount: 1
+    in: [enforcement-claims-v1]
+  - path: ex:ruleset
+    minCount: 1
+    maxCount: 1
+    in: [Green Main]
+  - path: ex:required_check
+    minCount: 1
+    maxCount: 1
+    in: [gate]
+  - path: ex:enforced
+    minCount: 1
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^CLAIM-[0-9]{3}$'
+      - path: ex:claim
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:mechanism
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:red_when
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:limit
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:job
+        minCount: 1
+        maxCount: 1
+        in: [gate, lint-test, golden-vectors, parity, kani, mutants, examples, contracts]
+      - path: ex:blocks_merge
+        minCount: 1
+        maxCount: 1
+        in: [true]
+      - path: ex:required_check
+        minCount: 1
+        maxCount: 1
+        in: [gate]
+      - path: ex:plant
+        minCount: 1
+        maxCount: 1
+        minLength: 20
+      - path: ex:plant_run
+        minCount: 1
+        maxCount: 1
+        pattern: '^https://github\.com/paiml/rust-mdipierro-nlib/actions/runs/[0-9]+/job/[0-9]+$'
+  - path: ex:unplanted
+    minCount: 0
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^CLAIM-[0-9]{3}$'
+      - path: ex:claim
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:mechanism
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:red_when
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:limit
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:job
+        minCount: 1
+        maxCount: 1
+        in: [gate, lint-test, golden-vectors, parity, kani, mutants, examples, contracts]
+      - path: ex:blocks_merge
+        minCount: 1
+        maxCount: 1
+        in: [true]
+      - path: ex:required_check
+        minCount: 1
+        maxCount: 1
+        in: [gate]
+      - path: ex:plant
+        minCount: 1
+        maxCount: 1
+        in: [none]
+      - path: ex:plant_run
+        minCount: 1
+        maxCount: 1
+        in: [none]
+  - path: ex:not_enforced
+    minCount: 1
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^CLAIM-[0-9]{3}$'
+      - path: ex:claim
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:mechanism
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:red_when
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:limit
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:job
+        minCount: 1
+        maxCount: 1
+        in: [comply, none]
+      - path: ex:blocks_merge
+        minCount: 1
+        maxCount: 1
+        in: [false]
+      - path: ex:required_check
+        minCount: 1
+        maxCount: 1
+        in: [none]
+      - path: ex:plant
+        minCount: 1
+        maxCount: 1
+        in: [none]
+      - path: ex:plant_run
+        minCount: 1
+        maxCount: 1
+        in: [none]
+
+proof_obligations:
+- type: invariant
+  property: An enforced claim cites the CI job in which its planted fault turned a required check red
+- type: invariant
+  property: A claim that blocks nothing is never presented as enforced
+- type: invariant
+  property: Every claim class is closed
+- type: equivalence
+  property: README.md is the generator's output, byte for byte
+
+falsification_tests:
+- id: FALSIFY-CLAIMS-001
+  rule: enforced
+  prediction: An enforced claim with no plant run, or a plant run that is not a CI job URL, violates the shape
+  test: bash scripts/readme_sync.sh --self-test
+  if_fails: A claim no plant ever proved could be presented as enforced
+- id: FALSIFY-CLAIMS-002
+  rule: not_enforced
+  prediction: An advisory job presented as enforced, or a not-enforced claim that blocks the merge, is refused by the shape and by the job check against ci.yml
+  test: bash scripts/readme_sync.sh --self-test
+  if_fails: An advisory check could be presented as enforced
+- id: FALSIFY-CLAIMS-003
+  rule: closed
+  prediction: A claim with an extra key, no limit, or a malformed id violates the shape
+  test: bash scripts/readme_sync.sh --self-test
+  if_fails: A claim could drop its honest limit
+- id: FALSIFY-CLAIMS-004
+  rule: generated
+  prediction: One hand-edited README.md byte fails readme_sync.sh --check
+  test: bash scripts/readme_sync.sh --self-test
+  if_fails: A hand edit could survive in the README
+
+qa_gate:
+  id: F-CLAIMS-001
+  name: enforcement-claims-v1 Contract
+  checks:
+  - validation
+  - falsification

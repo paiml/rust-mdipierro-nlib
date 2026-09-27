@@ -2,6 +2,19 @@
   "schema_version": "1.0.0",
   "contracts": [
     {
+      "stem": "enforcement-claims-v1",
+      "proof_level": "L2",
+      "obligations": 4,
+      "not_applicable": 0,
+      "falsification_tests": 4,
+      "kani_harnesses": 0,
+      "lean_proved": 0,
+      "lean_grounded": 0,
+      "l4_self_declared": false,
+      "bindings_implemented": 0,
+      "bindings_total": 0
+    },
+    {
       "stem": "example-fourier-v1",
       "proof_level": "L3",
       "obligations": 3,
@@ -327,10 +340,10 @@
   ],
   "l4_self_declared_excluded": true,
   "totals": {
-    "contracts": 22,
-    "obligations": 77,
+    "contracts": 23,
+    "obligations": 81,
     "not_applicable": 0,
-    "falsification_tests": 104,
+    "falsification_tests": 108,
     "kani_harnesses": 48,
     "lean_proved": 0,
     "lean_grounded": 0,

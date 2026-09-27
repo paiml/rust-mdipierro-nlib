@@ -1,7 +1,7 @@
 {
   "_spec": "ONT-001 v4.17 §3.9 (armed_gates[], armed_shapes[]: monotone against merge-base(HEAD, origin/main)) and R-6 (the counters below only fall); pv lint reads this file, it never writes it",
   "armed_gates": ["validate", "audit", "score", "verify", "enforce", "enforcement-level", "duplicate-stems", "composition", "reverse-coverage", "sigma", "relations", "shapes", "valid-under", "depends-on-present"],
-  "armed_shapes": ["example-fourier-v1", "example-graph-v1", "example-integrate-v1", "example-matrix-v1", "example-monte-carlo-v1", "example-optimize-v1", "example-parity-v1", "example-random-v1", "example-solve-v1", "example-sort-v1", "example-stats-v1"],
+  "armed_shapes": ["enforcement-claims-v1", "example-fourier-v1", "example-graph-v1", "example-integrate-v1", "example-matrix-v1", "example-monte-carlo-v1", "example-optimize-v1", "example-parity-v1", "example-random-v1", "example-solve-v1", "example-sort-v1", "example-stats-v1"],
   "contracts_without_valid_under": 0,
   "contracts_without_depends_on": 11,
   "ont": {
