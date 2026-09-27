@@ -192,17 +192,17 @@
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.9> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/not_enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/not_enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/not_enforced> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/required_check> "gate"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/ruleset> "Green Main"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/schema> "enforcement-claims-v1"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1> <https://ont.paiml.dev/v1alpha1/ex/unplanted> <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/EnforcedClaim> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/claim> "A red job blocks the merge"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-001"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/job> "gate"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/limit> "Org admins may bypass the ruleset (\"always\"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings))"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "ruleset \"Green Main\" requires `gate`; `gate` runs last with `if: always()` and needs the 7 jobs `lint-test`, `Golden Vectors`, `Python/Rust Parity`, `Kani BMC`, `Mutation Testing`, `Examples`, `Contract Validation`"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "ruleset \"Green Main\" requires `gate`; `gate` runs last with `if: always()` and needs the 8 jobs `lint-test`, `Golden Vectors`, `Python/Rust Parity`, `Kani BMC`, `Mutation Testing`, `Examples`, `Contract Validation`, `Lean Proofs`"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/plant> "a failing step in Kani BMC, not the first job: lint-test green, kani red, `gate` red, merge BLOCKED"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36314753804/job/108607643661"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.0> <https://ont.paiml.dev/v1alpha1/ex/red_when> "any needed job failed, was cancelled or was skipped"^^<http://www.w3.org/2001/XMLSchema#string> .
@@ -267,7 +267,7 @@
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.5> <https://ont.paiml.dev/v1alpha1/ex/claim> "Proof levels only rise; phantom Kani references only fall"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.5> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-006"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.5> <https://ont.paiml.dev/v1alpha1/ex/job> "contracts"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.5> <https://ont.paiml.dev/v1alpha1/ex/limit> "Levels today: 1 at L2, 22 at L3. pv credits a declared harness toward L3 without checking that it exists"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.5> <https://ont.paiml.dev/v1alpha1/ex/limit> "Levels today: 1 at L2, 21 at L3, 1 at L5. pv credits a declared harness toward L3 without checking that it exists"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.5> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "`scripts/proof_ratchet.sh` against `contracts/proof-baseline.json`"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.5> <https://ont.paiml.dev/v1alpha1/ex/plant> "phantom baseline lowered from 28 to 27: the ratchet reports phantoms rose from 27 to 28, Contract Validation red, `gate` red"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.5> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175"^^<http://www.w3.org/2001/XMLSchema#string> .
@@ -319,37 +319,37 @@
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.enforced.9> <https://ont.paiml.dev/v1alpha1/ex/required_check> "gate"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/NotEnforcedClaim> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "false"^^<http://www.w3.org/2001/XMLSchema#boolean> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/claim> "An equation is true on every input of an exact model (L4)"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-012"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/claim> "The whole library survives mutation testing"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-013"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/job> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/limit> "No contract is above L3 yet"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "Lean 4: 0 equation(s) cite a sorry-free, in-tree Lean theorem ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5))"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/limit> "114 missed mutants before GH-1"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "the full `cargo mutants` sweep on `main`, a step with `continue-on-error: true`"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/plant> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/red_when> "nothing: no required check builds Lean yet"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/red_when> "never blocks: it runs after the merge"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.0> <https://ont.paiml.dev/v1alpha1/ex/required_check> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/NotEnforcedClaim> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "false"^^<http://www.w3.org/2001/XMLSchema#boolean> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/claim> "The whole library survives mutation testing"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-013"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/job> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/limit> "114 missed mutants before GH-1"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "the full `cargo mutants` sweep on `main`, a step with `continue-on-error: true`"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/claim> "The repository meets PMAT governance"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-014"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/job> "comply"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/limit> "Its failures are governance (branch protection needs an admin, `deny.toml`, `build.rs`, roadmap and spec schema, TDG), not contract enforcement"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "`pmat comply check`"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/plant> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/red_when> "never blocks: it runs after the merge"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/red_when> "fails today, and `gate` does not need it"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.1> <https://ont.paiml.dev/v1alpha1/ex/required_check> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/NotEnforcedClaim> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "false"^^<http://www.w3.org/2001/XMLSchema#boolean> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/claim> "The repository meets PMAT governance"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-014"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/job> "comply"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/limit> "Its failures are governance (branch protection needs an admin, `deny.toml`, `build.rs`, roadmap and spec schema, TDG), not contract enforcement"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "`pmat comply check`"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/plant> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/red_when> "fails today, and `gate` does not need it"^^<http://www.w3.org/2001/XMLSchema#string> .
-<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.not_enforced.2> <https://ont.paiml.dev/v1alpha1/ex/required_check> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/UnplantedClaim> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/claim> "An equation is true on every input of an exact model (L4)"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/id> "CLAIM-012"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/job> "lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/limit> "Each theorem is about an exact model (reals, lists in a linear order, row-major arrays), NOT the f64 code: [docs/lean-proofs.md](docs/lean-proofs.md) states each gap. At L4 or above: `statistics-v1` (L5); the other contracts have obligations no theorem covers, and Fourier, random and Monte Carlo are N/A"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/mechanism> "`scripts/lean_gate.sh` in the Lean Proofs job: `lake build` of `lean/` with the pinned toolchain and Mathlib; `pv` counts 9 theorems there grounded in a contract, and the contracts ratchet fails if that count falls ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5))"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/plant> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/plant_run> "none"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/red_when> "a proof that does not check; any `sorry`, `admit`, new `axiom` or `native_decide`; a cited theorem that does not exist or that `lake build` never compiles"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/ex/enforcement-claims-v1.unplanted.0> <https://ont.paiml.dev/v1alpha1/ex/required_check> "gate"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/ex/example-fourier-v1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
 <https://ont.paiml.dev/v1alpha1/ex/example-fourier-v1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/ex/FourierReceipt> .
 <https://ont.paiml.dev/v1alpha1/ex/example-fourier-v1> <https://ont.paiml.dev/v1alpha1/ex/all_pass> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
@@ -1433,3 +1433,139 @@
 <https://ont.paiml.dev/v1alpha1/symbol/nlib::stats::variance> <https://ont.paiml.dev/v1alpha1/sym/name> "variance"^^<http://www.w3.org/2001/XMLSchema#string> .
 <https://ont.paiml.dev/v1alpha1/symbol/nlib::stats::variance> <https://ont.paiml.dev/v1alpha1/sym/resolved> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 <https://ont.paiml.dev/v1alpha1/symbol/nlib::stats::variance> <https://ont.paiml.dev/v1alpha1/sym/visibility> "pub"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.the> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.the> <https://ont.paiml.dev/v1alpha1/lean/domain> "Dense"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.the> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Dense/transpose_transpose.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.the> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Dense.transpose_transpose"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.the> <https://ont.paiml.dev/v1alpha1/lean/name> "the"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.the> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_get> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_get> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_get> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_get> <https://ont.paiml.dev/v1alpha1/lean/domain> "Dense"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_get> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Dense/transpose_transpose.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_get> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Dense.transpose_transpose"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_get> <https://ont.paiml.dev/v1alpha1/lean/name> "transpose_get"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_get> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_shape> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_shape> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_shape> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_shape> <https://ont.paiml.dev/v1alpha1/lean/domain> "Dense"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_shape> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Dense/transpose_transpose.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_shape> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Dense.transpose_transpose"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_shape> <https://ont.paiml.dev/v1alpha1/lean/name> "transpose_shape"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_shape> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_transpose> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_transpose> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_transpose> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_transpose> <https://ont.paiml.dev/v1alpha1/lean/domain> "Dense"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_transpose> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Dense/transpose_transpose.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_transpose> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Dense.transpose_transpose"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_transpose> <https://ont.paiml.dev/v1alpha1/lean/name> "transpose_transpose"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Dense.transpose_transpose.transpose_transpose> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.chi_squared_nonneg.chi_squared_nonneg> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.chi_squared_nonneg.chi_squared_nonneg> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.chi_squared_nonneg.chi_squared_nonneg> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.chi_squared_nonneg.chi_squared_nonneg> <https://ont.paiml.dev/v1alpha1/lean/domain> "Descriptive"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.chi_squared_nonneg.chi_squared_nonneg> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Descriptive/chi_squared_nonneg.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.chi_squared_nonneg.chi_squared_nonneg> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Descriptive.chi_squared_nonneg"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.chi_squared_nonneg.chi_squared_nonneg> <https://ont.paiml.dev/v1alpha1/lean/name> "chi_squared_nonneg"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.chi_squared_nonneg.chi_squared_nonneg> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.abs_covariance_le> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.abs_covariance_le> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.abs_covariance_le> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.abs_covariance_le> <https://ont.paiml.dev/v1alpha1/lean/domain> "Descriptive"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.abs_covariance_le> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Descriptive/correlation_bounded.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.abs_covariance_le> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Descriptive.correlation_bounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.abs_covariance_le> <https://ont.paiml.dev/v1alpha1/lean/name> "abs_covariance_le"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.abs_covariance_le> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.correlation_bounded> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.correlation_bounded> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.correlation_bounded> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.correlation_bounded> <https://ont.paiml.dev/v1alpha1/lean/domain> "Descriptive"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.correlation_bounded> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Descriptive/correlation_bounded.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.correlation_bounded> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Descriptive.correlation_bounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.correlation_bounded> <https://ont.paiml.dev/v1alpha1/lean/name> "correlation_bounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.correlation_bounded.correlation_bounded> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.covariance_symm.covariance_symm> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.covariance_symm.covariance_symm> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.covariance_symm.covariance_symm> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.covariance_symm.covariance_symm> <https://ont.paiml.dev/v1alpha1/lean/domain> "Descriptive"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.covariance_symm.covariance_symm> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Descriptive/covariance_symm.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.covariance_symm.covariance_symm> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Descriptive.covariance_symm"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.covariance_symm.covariance_symm> <https://ont.paiml.dev/v1alpha1/lean/name> "covariance_symm"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.covariance_symm.covariance_symm> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.mean_within_range.mean_within_range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.mean_within_range.mean_within_range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.mean_within_range.mean_within_range> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.mean_within_range.mean_within_range> <https://ont.paiml.dev/v1alpha1/lean/domain> "Descriptive"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.mean_within_range.mean_within_range> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Descriptive/mean_within_range.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.mean_within_range.mean_within_range> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Descriptive.mean_within_range"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.mean_within_range.mean_within_range> <https://ont.paiml.dev/v1alpha1/lean/name> "mean_within_range"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.mean_within_range.mean_within_range> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.sampleVariance_nonneg> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.sampleVariance_nonneg> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.sampleVariance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.sampleVariance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/domain> "Descriptive"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.sampleVariance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Descriptive/variance_nonneg.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.sampleVariance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Descriptive.variance_nonneg"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.sampleVariance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/name> "sampleVariance_nonneg"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.sampleVariance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.variance_nonneg> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.variance_nonneg> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.variance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.variance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/domain> "Descriptive"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.variance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Descriptive/variance_nonneg.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.variance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Descriptive.variance_nonneg"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.variance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/name> "variance_nonneg"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Descriptive.variance_nonneg.variance_nonneg> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.simpson_exact_cubic.simpson_exact_cubic> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.simpson_exact_cubic.simpson_exact_cubic> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.simpson_exact_cubic.simpson_exact_cubic> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.simpson_exact_cubic.simpson_exact_cubic> <https://ont.paiml.dev/v1alpha1/lean/domain> "Numerical"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.simpson_exact_cubic.simpson_exact_cubic> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Numerical/simpson_exact_cubic.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.simpson_exact_cubic.simpson_exact_cubic> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Numerical.simpson_exact_cubic"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.simpson_exact_cubic.simpson_exact_cubic> <https://ont.paiml.dev/v1alpha1/lean/name> "simpson_exact_cubic"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.simpson_exact_cubic.simpson_exact_cubic> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.trapezoid_exact_linear.trapezoid_exact_linear> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.trapezoid_exact_linear.trapezoid_exact_linear> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.trapezoid_exact_linear.trapezoid_exact_linear> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.trapezoid_exact_linear.trapezoid_exact_linear> <https://ont.paiml.dev/v1alpha1/lean/domain> "Numerical"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.trapezoid_exact_linear.trapezoid_exact_linear> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Numerical/trapezoid_exact_linear.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.trapezoid_exact_linear.trapezoid_exact_linear> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Numerical.trapezoid_exact_linear"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.trapezoid_exact_linear.trapezoid_exact_linear> <https://ont.paiml.dev/v1alpha1/lean/name> "trapezoid_exact_linear"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Numerical.trapezoid_exact_linear.trapezoid_exact_linear> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.quicksort_correct> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.quicksort_correct> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.quicksort_correct> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.quicksort_correct> <https://ont.paiml.dev/v1alpha1/lean/domain> "Sorting"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.quicksort_correct> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Sorting/quicksort_correct.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.quicksort_correct> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Sorting.quicksort_correct"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.quicksort_correct> <https://ont.paiml.dev/v1alpha1/lean/name> "quicksort_correct"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.quicksort_correct> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.the> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.the> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.the> <https://ont.paiml.dev/v1alpha1/lean/domain> "Sorting"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.the> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Sorting/quicksort_correct.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.the> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Sorting.quicksort_correct"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.the> <https://ont.paiml.dev/v1alpha1/lean/name> "the"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_correct.the> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_perm.quicksort_perm> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_perm.quicksort_perm> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_perm.quicksort_perm> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_perm.quicksort_perm> <https://ont.paiml.dev/v1alpha1/lean/domain> "Sorting"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_perm.quicksort_perm> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Sorting/quicksort_perm.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_perm.quicksort_perm> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Sorting.quicksort_perm"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_perm.quicksort_perm> <https://ont.paiml.dev/v1alpha1/lean/name> "quicksort_perm"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_perm.quicksort_perm> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_sorted.quicksort_sorted> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/prov#Entity> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_sorted.quicksort_sorted> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://ont.paiml.dev/v1alpha1/Statement> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_sorted.quicksort_sorted> <https://ont.paiml.dev/v1alpha1/lean/discharge> "grounded"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_sorted.quicksort_sorted> <https://ont.paiml.dev/v1alpha1/lean/domain> "Sorting"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_sorted.quicksort_sorted> <https://ont.paiml.dev/v1alpha1/lean/file> "lean/ProvableContracts/Theorems/Sorting/quicksort_sorted.lean"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_sorted.quicksort_sorted> <https://ont.paiml.dev/v1alpha1/lean/module> "ProvableContracts.Theorems.Sorting.quicksort_sorted"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_sorted.quicksort_sorted> <https://ont.paiml.dev/v1alpha1/lean/name> "quicksort_sorted"^^<http://www.w3.org/2001/XMLSchema#string> .
+<https://ont.paiml.dev/v1alpha1/world/Sorting.quicksort_sorted.quicksort_sorted> <https://ont.paiml.dev/v1alpha1/lean/sorryFree> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .

@@ -3,3 +3,5 @@ mutants.out*
 # pv caches (rewritten by every pv run; never tracked)
 /.pv/
 /contracts/.pv/
+# Lean build output and fetched packages (Mathlib comes from its cache)
+/lean/.lake/

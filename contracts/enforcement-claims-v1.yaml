@@ -74,7 +74,7 @@ shape:
       - path: ex:job
         minCount: 1
         maxCount: 1
-        in: [gate, lint-test, golden-vectors, parity, kani, mutants, examples, contracts]
+        in: [gate, lint-test, golden-vectors, parity, kani, mutants, examples, contracts, lean]
       - path: ex:blocks_merge
         minCount: 1
         maxCount: 1
@@ -119,7 +119,7 @@ shape:
       - path: ex:job
         minCount: 1
         maxCount: 1
-        in: [gate, lint-test, golden-vectors, parity, kani, mutants, examples, contracts]
+        in: [gate, lint-test, golden-vectors, parity, kani, mutants, examples, contracts, lean]
       - path: ex:blocks_merge
         minCount: 1
         maxCount: 1

@@ -14,6 +14,7 @@ metadata:
 
 equations:
   trapezoid:
+    lean_theorem: Theorems.Numerical.trapezoid_exact_linear
     formula: |
       I = h/2 * [f(a) + 2*sum_{i=1}^{n-1} f(a + i*h) + f(b)]
       where h = (b - a) / n
@@ -30,6 +31,7 @@ equations:
     tolerance: 1.0e-8
 
   simpson:
+    lean_theorem: Theorems.Numerical.simpson_exact_cubic
     formula: |
       I = h/3 * [f(a) + 4*sum_{odd} f(a + i*h) + 2*sum_{even} f(a + i*h) + f(b)]
       where h = (b - a) / n, n even
@@ -66,10 +68,20 @@ proof_obligations:
   property: Trapezoid exact for linear functions
   formal: 'trapezoid(a*x+b, lo, hi, n) == exact for all n >= 1'
   applies_to: trapezoid
+  lean:
+    theorem: trapezoid_exact_linear
+    module: ProvableContracts.Theorems.Numerical.trapezoid_exact_linear
+    status: proved
+    notes: Stated over the exact model (see docs/lean-proofs.md), not over f64.
 - type: postcondition
   property: Simpson exact for cubics
   formal: 'simpson(a*x^3+b*x^2+c*x+d, lo, hi, n) == exact for all even n >= 2'
   applies_to: simpson
+  lean:
+    theorem: simpson_exact_cubic
+    module: ProvableContracts.Theorems.Numerical.simpson_exact_cubic
+    status: proved
+    notes: Stated over the exact model (see docs/lean-proofs.md), not over f64.
 - type: invariant
   property: Adaptive convergence
   formal: '|adaptive(f, a, b, tol) - exact| < tol'

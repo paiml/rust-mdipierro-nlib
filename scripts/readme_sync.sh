@@ -144,12 +144,38 @@ measure() {
     measure_enforcement
 }
 
-# The per-example table (GH-1 scope b, c): links in the order rust, python, contract, shape, proof
-# status. Every link target is looked up here, and a lookup that finds nothing is a failure; the
+# lean_cell <example> — the README's Lean cell for an example, from contracts/example-lean.tsv. A theorem
+# links its file, and only when the file exists, declares the theorem, holds no `sorry` token and a
+# contract equation's `lean_theorem:` names it (ONT-2a: only a grounded, sorry-free theorem counts).
+# Otherwise the cell says N/A or "not proved yet" with the reason; an example with no row is a failure.
+lean_cell() {
+    local map=contracts/example-lean.tsv ex lean why f dom
+    ex=$1
+    IFS=$'\t' read -r _ lean why < <(awk -F'\t' -v e="$ex" '$1 == e' "$map") || die "$map has no row for $ex"
+    [ -n "$why" ] || die "$map gives no reason for $ex"
+    case "$lean" in
+        N/A) printf 'N/A: %s' "$why" ;;
+        open) printf 'not proved yet: %s' "$why" ;;
+        *)
+            f=$(find lean/ProvableContracts/Theorems -name "$lean.lean" | sort)
+            [ "$(printf '%s' "$f" | grep -c .)" = 1 ] || die "$map names $lean for $ex; no single lean/ProvableContracts/Theorems/*/$lean.lean"
+            dom=$(basename "$(dirname "$f")")
+            grep -Eq "^theorem $lean([[:space:]]|$)" "$f" || die "$f declares no theorem $lean"
+            ! grep -Eq '(^|[^A-Za-z0-9_])sorry([^A-Za-z0-9_]|$)' "$f" || die "$f holds a sorry token, so it proves nothing"
+            grep -Eq "lean_theorem:[[:space:]]*Theorems\.${dom}\.${lean}[[:space:]]*$" contracts/*.yaml \
+                || die "no contract equation's lean_theorem names Theorems.$dom.$lean"
+            printf '[`%s`](%s)' "$lean" "$f"
+            ;;
+    esac
+}
+
+# The per-example table (GH-1 scope b, c; GH-5): links in the order rust, python, contract, shape, proof
+# status, then the Lean cell (lean_cell above). Every link target is looked up here, and a lookup that
+# finds nothing is a failure; the
 # gate's readme step then verifies each target independently (scripts/example_links.sh).
 measure_examples() {
     local origins=contracts/example-origins.tsv
-    local ref ex file sym line what stem shape_l proof_l level rows=""
+    local ref ex file sym line what stem shape_l proof_l level lean rows=""
     [ -f "$PROOF" ] || die "$PROOF is missing; the gate's regen step writes it"
     [ -f "$origins" ] || die "$origins is missing"
     ref=$(sed -n 's/^[[:space:]]*ref:[[:space:]]*\([0-9a-f]\{40\}\).*/\1/p' contracts/external-corpora.yaml | head -1)
@@ -165,8 +191,9 @@ measure_examples() {
         [ "$(printf '%s' "$proof_l" | grep -c .)" = 1 ] || die "$PROOF has no single row for $stem"
         level=$(jq -r --arg s "$stem" '.contracts[] | select(.stem == $s) | .proof_level' "$PROOF")
         [ -n "$level" ] || die "$PROOF records no level for $stem"
-        rows+=$(printf '| [%s](examples/%s.rs) | [`%s`](https://github.com/mdipierro/nlib/blob/%s/%s#L%s) | [%s](contracts/%s.yaml) · [shape](contracts/shapes.ttl#L%s) | [%s](%s#L%s) | `cargo run --example %s` | %s |' \
-            "$ex" "$ex" "$sym" "$ref" "$file" "$line" "$stem" "$stem" "$shape_l" "$level" "$PROOF" "$proof_l" "$ex" "$what")
+        lean=$(lean_cell "$ex") || exit 1
+        rows+=$(printf '| [%s](examples/%s.rs) | [`%s`](https://github.com/mdipierro/nlib/blob/%s/%s#L%s) | [%s](contracts/%s.yaml) · [shape](contracts/shapes.ttl#L%s) | [%s](%s#L%s) | %s | `cargo run --example %s` | %s |' \
+            "$ex" "$ex" "$sym" "$ref" "$file" "$line" "$stem" "$stem" "$shape_l" "$level" "$PROOF" "$proof_l" "$lean" "$ex" "$what")
         rows+=$'\n'
         N_EX=$((N_EX + 1))
     done < <(grep -v '^#' "$origins")
@@ -175,8 +202,8 @@ measure_examples() {
     n_rs=$(find examples -maxdepth 1 -name '*.rs' | grep -c . || true)
     [ "$n_rs" = "$N_EX" ] || die "$origins names $N_EX example(s), examples/ holds $n_rs"
     EXAMPLE_TEXT=$(
-        printf '| Example | Python original (nlib @ `%s`) | Contract · SHACL shape | Proof | Run | What it does |\n' "${ref:0:7}"
-        printf '|---------|-----------------|------------------------|-------|-----|--------------|\n'
+        printf '| Example | Python original (nlib @ `%s`) | Contract · SHACL shape | Proof | Lean | Run | What it does |\n' "${ref:0:7}"
+        printf '|---------|-----------------|------------------------|-------|------|-----|--------------|\n'
         printf '%s' "$rows"
     )
 }
@@ -253,6 +280,7 @@ measure_enforcement() {
     PH_BASE=$(jq -r '.phantom_kani_harnesses' contracts/proof-baseline.json)
     LEVELS=$(jq -r '[.contracts[].proof_level] | group_by(.) | map("\(length) at \(.[0])") | join(", ")' "$PROOF")
     LEAN=$(jq -r '.totals.lean_grounded' "$PROOF")
+    LEAN_L4=$(jq -r '[.contracts[] | select((.proof_level | ltrimstr("L") | tonumber) >= 4) | "`\(.stem)` (\(.proof_level))"] | if length == 0 then "none" else join(", ") end' "$PROOF")
     nonzero "gate needs" "$N_REQUIRED"
     nonzero "contracts gate steps" "$GATE_STEPS"
     nonzero "contract macros" "$MACROS"
@@ -275,7 +303,7 @@ render_claims() {
         --arg LEVELS "$LEVELS" --arg KANI "$KANI" --arg UNWIND_MIN "$UNWIND_MIN" --arg UNWIND_MAX "$UNWIND_MAX" \
         --arg UNWIND_LOOPS "$((UNWIND_MAX - 1))" --arg KANI_BACKED "$backed" --arg KANI_CONTRACTS "$n_k" \
         --arg PHANTOM "$phantom" --arg MACROS "$MACROS" --arg MACRO_CALLS "$MACRO_CALLS" --arg GOLDEN "$GOLDEN" \
-        --arg LEAN "$LEAN" --arg MISSED "$MISSED" '$ARGS.named')
+        --arg LEAN "$LEAN" --arg LEAN_L4 "$LEAN_L4" --arg MISSED "$MISSED" '$ARGS.named')
     out=$(jq --argjson v "$vars" 'walk(if type == "string"
             then reduce ($v | to_entries[]) as $e (.; gsub("\\{\\{" + $e.key + "\\}\\}"; $e.value))
             else . end)' "$CLAIMS_SRC") || die "$CLAIMS_SRC is not JSON"

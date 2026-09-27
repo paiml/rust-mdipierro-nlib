@@ -1,5 +1,5 @@
 {
-  "_spec": "GH-1 scope c: proof levels from contracts/proof-status.json only rise; scripts/proof_ratchet.sh fails the contracts gate on a drop. Raise a level here in the PR that raises it.",
+  "_spec": "GH-1 scope c, GH-5: proof levels from contracts/proof-status.json only rise, and phantom Kani harnesses and grounded Lean theorems only move the right way; scripts/proof_ratchet.sh fails the contracts gate otherwise. Move a baseline here in the PR that moves it.",
   "levels": {
     "enforcement-claims-v1": "L2",
     "example-fourier-v1": "L3",
@@ -23,8 +23,9 @@
     "optimization-v1": "L3",
     "random-generators-v1": "L3",
     "sorting-v1": "L3",
-    "statistics-v1": "L3"
+    "statistics-v1": "L5"
   },
   "bindings_implemented": 96,
-  "phantom_kani_harnesses": 28
+  "phantom_kani_harnesses": 28,
+  "lean_grounded": 9
 }

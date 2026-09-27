@@ -14,6 +14,7 @@ metadata:
 
 equations:
   quicksort:
+    lean_theorem: Theorems.Sorting.quicksort_correct
     formula: |
       quicksort(A, lo, hi):
         if lo < hi:
@@ -76,10 +77,20 @@ proof_obligations:
   property: Output is sorted
   formal: 'forall i in 0..n-1: result[i] <= result[i+1]'
   applies_to: quicksort
+  lean:
+    theorem: quicksort_sorted
+    module: ProvableContracts.Theorems.Sorting.quicksort_sorted
+    status: proved
+    notes: Stated over lists in any linear order, a functional model of the in-place Lomuto sort (see docs/lean-proofs.md).
 - type: postcondition
   property: Output is a permutation of input
   formal: 'multiset(output) == multiset(input)'
   applies_to: quicksort
+  lean:
+    theorem: quicksort_perm
+    module: ProvableContracts.Theorems.Sorting.quicksort_perm
+    status: proved
+    notes: Stated over lists in any linear order, a functional model of the in-place Lomuto sort (see docs/lean-proofs.md).
 - type: postcondition
   property: Mergesort stability
   formal: 'equal elements preserve original relative order'
