@@ -158,14 +158,15 @@ jobs:
       - name: Score contracts
         run: pv score contracts/ --binding contracts/binding.yaml
 
-      # ONT-G: the gate proves itself first (16 cases against a stub pv, incl.
+      # ONT-G: the gate proves itself first (19 cases against a stub pv, incl.
       # a mutant that must go green without the shapes_n probe).
       - name: Contracts gate self-test
         run: bash scripts/contracts_gate.sh --self-test
 
       # Every step runs, whatever an earlier one says: lint (all armed gates,
-      # with --binding/--crate-dir), shapes (fails closed), regen, README sync,
-      # provenance, and a diff of the generated census/extract files.
+      # with --binding/--crate-dir, then the proof-level ratchet), shapes (fails
+      # closed), regen (census, extract, the proof-status receipt), README sync
+      # and example links, provenance, and a diff of every generated file.
       - name: Contracts gate
         run: bash scripts/contracts_gate.sh
 

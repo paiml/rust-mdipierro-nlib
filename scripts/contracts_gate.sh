@@ -8,11 +8,15 @@
 #
 # Steps:
 #   lint        pv lint with --binding/--crate-dir, so every armed gate (reverse-coverage too) is computed
+#               then scripts/proof_ratchet.sh: no proof level below contracts/proof-baseline.json, no fewer
+#               verified bindings, no more phantom Kani harnesses
 #   shapes      pv lint --gate shapes, FAIL-CLOSED: only Pass with shapes_n > 0, focus_nodes_n > 0, pv's
 #               planted control fired and every extractor's control fired is a pass. rc 2 is a DECLINE,
 #               reported with pv's reason, never a pass.
-#   regen       regenerate contracts/census.json, contracts.nt and shapes.ttl from the committed contracts
-#   readme      scripts/readme_sync.sh --check (the README contract table and metrics are generated)
+#   regen       regenerate contracts/census.json, contracts.nt, shapes.ttl and the proof receipt
+#               contracts/proof-status.json (pv proof-status --verify-bindings, timestamp removed)
+#   readme      scripts/readme_sync.sh --check (every README table is generated), then
+#               scripts/example_links.sh: each example has one row, its five links in order, each target real
 #   provenance  scripts/lint-provenance.sh --self-test, then over the files that carry numeric claims
 #   diff        git says whether a generated file moved: a contract changed without regenerating is RED
 #
@@ -24,7 +28,7 @@
 set -u
 
 STEPS=(lint shapes regen readme provenance diff)
-GENERATED=(contracts/census.json contracts/contracts.nt contracts/shapes.ttl)
+GENERATED=(contracts/census.json contracts/contracts.nt contracts/shapes.ttl contracts/proof-status.json)
 PROVENANCE_FILES=(contracts/external-corpora.yaml docs/ontology-conformance.md)
 
 step_lint() {
@@ -34,6 +38,11 @@ step_lint() {
     rc=$?
     tail -5 "$log"
     rm -f "$log"
+    bash scripts/proof_ratchet.sh --self-test >/dev/null || {
+        echo "FAIL: proof_ratchet.sh --self-test"
+        rc=1
+    }
+    bash scripts/proof_ratchet.sh || rc=1
     return "$rc"
 }
 
@@ -89,6 +98,7 @@ step_shapes() {
 
 # Regenerate every generated file from the committed contracts; `diff` then asks GIT whether they moved.
 step_regen() {
+    local raw
     "$PV" census contracts --format json >contracts/census.json || {
         echo "FAIL: pv census exited non-zero"
         return 1
@@ -97,9 +107,31 @@ step_regen() {
         echo "FAIL: pv extract contracts exited non-zero"
         return 1
     }
+    # The proof receipt, minus its wall-clock timestamp so the same contracts give the same bytes.
+    raw=$(mktemp) || return 1
+    if ! "$PV" proof-status contracts --binding contracts/binding.yaml --verify-bindings . --format json >"$raw"; then
+        echo "FAIL: pv proof-status exited non-zero"
+        rm -f "$raw"
+        return 1
+    fi
+    jq 'del(.timestamp)' "$raw" >contracts/proof-status.json || {
+        echo "FAIL: pv proof-status printed no JSON"
+        rm -f "$raw"
+        return 1
+    }
+    rm -f "$raw"
 }
 
-step_readme() { PV="$PV" bash scripts/readme_sync.sh --check; }
+step_readme() {
+    local rc=0
+    PV="$PV" bash scripts/readme_sync.sh --check || rc=1
+    bash scripts/example_links.sh --self-test >/dev/null || {
+        echo "FAIL: example_links.sh --self-test"
+        rc=1
+    }
+    bash scripts/example_links.sh README.md || rc=1
+    return "$rc"
+}
 
 step_provenance() {
     bash scripts/lint-provenance.sh --self-test \
@@ -151,6 +183,7 @@ fi
 case "$1" in
   census)  echo "{\"n_files\": $n}" ;;
   extract) echo "nt $n" >contracts/contracts.nt; echo "ttl $n" >contracts/shapes.ttl ;;
+  proof-status) echo "{\"timestamp\": \"pid-$$\", \"n\": $n}" ;;
   lint)
     [ "${3:-}" = --gate ] || exit 0
     ok='"verdict":"Pass","shapes_n":11,"focus_nodes_n":11,"pc_shape":"fired","pc_extract":{"json":"fired","code":"fired"}'
@@ -176,8 +209,10 @@ STUB
             && echo 'id: a' >contracts/a.yaml \
             && echo '{"n_files": 1}' >contracts/census.json \
             && echo 'nt 1' >contracts/contracts.nt && echo 'ttl 1' >contracts/shapes.ttl \
-            && printf '#!/usr/bin/env bash\nexit 0\n' >scripts/readme_sync.sh \
-            && cp scripts/readme_sync.sh scripts/lint-provenance.sh \
+            && printf '{\n  "n": 1\n}\n' >contracts/proof-status.json \
+            && printf '#!/usr/bin/env bash\n[ "${STUB_FAIL:-}" = "$(basename "$0")" ] && exit 1\nexit 0\n' >scripts/readme_sync.sh \
+            && cp scripts/readme_sync.sh scripts/lint-provenance.sh && cp scripts/readme_sync.sh scripts/example_links.sh \
+            && cp scripts/readme_sync.sh scripts/proof_ratchet.sh \
             && git add contracts scripts \
             && git -c core.hooksPath=/dev/null -c user.email=t@t -c user.name=t commit -qm fixture
     ) || {
@@ -220,8 +255,8 @@ STUB
     out=$(run "$SELF" "" pass)
     rc=$?
     [ "$rc" != 0 ] && grep -q 'FAILED: diff' <<<"$out" && grep -q 'census.json' <<<"$out" \
-        && grep -q 'contracts.nt' <<<"$out" && grep -q 'shapes.ttl' <<<"$out"
-    row "a contract added WITHOUT regenerating is RED on diff, naming census.json, contracts.nt and shapes.ttl (rc=$rc)" $?
+        && grep -q 'contracts.nt' <<<"$out" && grep -q 'shapes.ttl' <<<"$out" && grep -q proof-status.json <<<"$out"
+    row "a contract added WITHOUT regenerating is RED on diff, naming census.json, contracts.nt, shapes.ttl and proof-status.json (rc=$rc)" $?
     (cd "$d" && git checkout -q -- . && CONTRACTS_GATE_PV="$stub" bash "$SELF" regen >/dev/null 2>&1 \
         && git add contracts && git -c core.hooksPath=/dev/null -c user.email=t@t -c user.name=t commit -qm regenerate)
     out=$(run "$SELF" "" pass)
@@ -229,6 +264,22 @@ STUB
     [ "$rc" = 0 ]
     row "the same tree after \`contracts_gate.sh regen\` + commit is green again (rc=$rc)" $?
 
+
+    # GH-1 scope c and b: the proof ratchet, the proof receipt and the example links are each load-bearing.
+    out=$(run "$SELF" proof_ratchet.sh pass)
+    rc=$?
+    [ "$rc" != 0 ] && grep -q '6 of 6 step(s) RAN, 1 FAILED: lint' <<<"$out"
+    row "a proof level below the baseline (red proof_ratchet.sh) is RED on lint, every step still RAN (rc=$rc)" $?
+
+    out=$(run "$SELF" proof-status pass)
+    rc=$?
+    [ "$rc" != 0 ] && grep -q 'FAIL: pv proof-status exited non-zero' <<<"$out" && grep -q 'FAILED: regen' <<<"$out"
+    row "a failing pv proof-status is RED on regen (rc=$rc)" $?
+
+    out=$(run "$SELF" example_links.sh pass)
+    rc=$?
+    [ "$rc" != 0 ] && grep -q '6 of 6 step(s) RAN, 1 FAILED: readme' <<<"$out"
+    row "an example missing a link or a target (red example_links.sh) is RED on readme (rc=$rc)" $?
     local c want
     for c in fail:1:FAIL noshapes:2:'DECLINE.*NoShapes' nofocus:2:'DECLINE.*NoFocus' zero:1:'shapes_n=0' \
         nofocus0:1:'focus_nodes_n=0' unknown:1:'verdict=Unknown' silent:1:'pc_shape=silent' \
@@ -255,7 +306,7 @@ STUB
 
     rm -rf "${d:?}"
     echo "contracts_gate self-test: $pass passed, $fail failed"
-    [ "$fail" -eq 0 ] && [ "$pass" -eq 16 ]
+    [ "$fail" -eq 0 ] && [ "$pass" -eq 19 ]
 }
 
 SELF=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")

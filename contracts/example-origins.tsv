@@ -1,0 +1,12 @@
+# example	file (in mdipierro/nlib at the external-corpora.yaml ref)	symbol	line	what the example shares with it	what the Rust example does
+sort	docs/book_numerical.tex	quicksort	3163	quicksort (nlib.py has no sorting code; the book source listing)	Quicksort, mergesort, heapsort on the same input
+stats	src/nlib.py	mean	1686	mean, variance, covariance, correlation	Mean, variance, correlation, chi-squared
+matrix	src/nlib.py	Matrix	823	Matrix product, transpose, inverse	Matmul, transpose, inverse, Cholesky, determinant
+solve	src/nlib.py	solve_bisection	1389	bisection, Newton, secant, fixed point	Bisection, Newton, secant, fixed-point root finding
+optimize	src/nlib.py	optimize_golden_search	1471	golden section and Newton optimization	Golden section, Newton optimizer, gradient descent
+integrate	src/nlib.py	integrate	1642	trapezoid integration with Richardson refinement	Trapezoid, Simpson, adaptive quadrature
+fourier	docs/book_numerical.tex	fourier	8358	discrete Fourier transform (nlib.py has none; the book source listing)	DFT, FFT, inverse DFT, roundtrip check
+random	src/nlib.py	MCG	1706	the MINSTD linear congruential generator	LCG (MINSTD), Mersenne Twister, uniformity test
+monte_carlo	src/nlib.py	MCEngine	1908	Monte Carlo engine and bootstrap error	MC integration of x^2, bootstrap error estimation
+graph	src/nlib.py	Dijkstra	458	Dijkstra shortest paths	Dijkstra, BFS, DFS, Kruskal MST on weighted graph
+parity	src/nlib.py	solve_bisection	1389	the first of the nlib.py functions tests/falsify_parity.py cross-checks	Values cross-checked against Python nlib and closed forms
