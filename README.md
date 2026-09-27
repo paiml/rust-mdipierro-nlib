@@ -47,6 +47,33 @@ published on crates.io — no other external crates.
 
 <!-- CONTRACT_TABLE_END -->
 
+## What is enforced, and what is not
+
+<!-- ENFORCEMENT_START -->
+
+GitHub enforces only what the org ruleset "Green Main" requires, and it requires one check: `gate`.
+That job runs last, and it fails unless each of these 7 jobs succeeded: `lint-test`, `Golden Vectors`, `Python/Rust Parity`, `Kani BMC`, `Mutation Testing`, `Examples`, `Contract Validation`.
+Advisory, never blocking: `PMAT Comply (advisory)`, and the full mutation sweep on `main`.
+`scripts/ci_gate.sh --check-workflow` fails if a new job is neither needed by `gate` nor marked advisory.
+
+| Claim | Mechanism | What turns it RED (blocks merge?) | Plant receipt | Honest limit |
+|-------|-----------|-----------------------------------|---------------|--------------|
+| A red job blocks the merge | ruleset requires `gate`; `gate` needs the 7 jobs above | any needed job failed, cancelled or skipped (yes) | pending | Org admins may bypass the ruleset ("always"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings)) |
+| Each example receipt conforms to its closed SHACL shape | `pv lint --gate shapes` over 11 shapes and 11 receipts; the Examples job diffs each receipt against `evidence/examples/` | any violation, or a receipt that differs (yes) | Simpson weight 4 -> 3.9: the example exits 1 and the gate reports 5 violations ([conformance](docs/ontology-conformance.md#conformance-rows)) | Checks the 11 examples on their fixed inputs, not the library on other inputs |
+| The ONT-G contracts gate runs every step | `scripts/contracts_gate.sh`: 6 of 6 steps RUN, each with its own status | any step fails; a later step still runs (yes) | `--self-test` against a stub pv, incl. a mutant that must go green | pv is the instrument: its defects pass through ([aprender#4531](https://github.com/paiml/aprender/issues/4531), [aprender#4521](https://github.com/paiml/aprender/issues/4521)) |
+| README tables and example links match what generated them | `scripts/readme_sync.sh --check`, `scripts/example_links.sh` | any hand edit to a generated block; a link whose target does not say what the link claims (yes) | a hand-edited W3C count; an anchor moved to L1687 | Prose outside the markers is not checked; in this section only the numbers are generated |
+| Proof levels only rise; phantom Kani references only fall | `scripts/proof_ratchet.sh` against `contracts/proof-baseline.json` | a level drops, or phantoms exceed 28 (yes) | removed harnesses: L3 -> L2; one renamed harness: 29 phantoms | Levels today: 22 at L3. pv credits a declared harness toward L3 without checking that it exists |
+| Bounded properties hold for every input within the bound | Kani BMC, 7 harnesses in `src/kani_harnesses.rs` | a counterexample (yes) | the `gate` plant above | BOUNDED: unwind 4 to 9, so no loop runs more than 8 times. Nothing is proved beyond the bound. Every declared harness exists for 12 of 22 contracts; 28 declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6)) |
+| Pre- and postconditions hold at runtime | 10 `contract_pre_*!`/`contract_post_*!` macros, written by hand in `build.rs`, at 11 call sites | an assertion panics in a debug or test build (yes, through the tests) | none recorded | They expand to `debug_assert!`: release builds are NOT checked at runtime. `quicksort: input exists` (`len < usize::MAX`) can never fail |
+| The tests catch changes to the code a PR touches | `cargo mutants --in-diff` on the PR diff | a mutant on a changed line survives (yes) | none recorded | Code the PR does not touch is not re-checked. The full sweep on `main` is advisory: 114 missed mutants before GH-1 |
+| Values match Python nlib and the closed forms | `tests/golden_vectors.rs` (14 tests), `tests/falsify_parity.py` | any mismatch (yes) | none recorded | Fixed inputs only; parity with nlib.py cannot catch a bug the two share |
+| An equation is true on every input of an exact model (L4) | Lean 4 | none yet: no equation cites a Lean theorem ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5)) | - | No contract is above L3 yet |
+| The repository meets PMAT governance | `pmat comply check` | fails today (no: advisory, not needed by `gate`) | - | Its failures are governance (branch protection needs an admin, `deny.toml`, `build.rs`, roadmap and spec schema, TDG), not contract enforcement |
+
+**A claim counts only if a planted fault turns a REQUIRED check red, and here the only required check is `gate`.** Everything else in this README is a measurement, not a guarantee.
+
+<!-- ENFORCEMENT_END -->
+
 ## Installation
 
 ```toml
@@ -94,10 +121,11 @@ is written. The contract defines:
 Contracts are validated by
 `pv` (aprender-contracts-cli, built from the pinned aprender rev).
 
-**Runtime enforcement:** `build.rs` generates `contract_pre_*!` /
-`contract_post_*!` macros from YAML. These compile to `debug_assert!`
-in debug builds (zero cost in release). Kani BMC harnesses prove
-invariants for all inputs within bounds. Mutation testing (cargo-mutants,
+**Runtime checks:** `build.rs` defines the `contract_pre_*!` /
+`contract_post_*!` macros. They are written by hand, not derived from the
+YAML equations, and expand to `debug_assert!`: they check debug and test
+builds only and compile to nothing in release. Kani BMC harnesses prove
+invariants for all inputs within their bounds, and nothing beyond them. Mutation testing (cargo-mutants,
 blocking on every PR diff) validates test quality. Every example is itself
 a contract: its `--json` receipt is an entity closed by a SHACL shape.
 

@@ -4,6 +4,7 @@
 #
 # It rewrites exactly the lines BETWEEN each marker pair, and nothing else:
 #
+#     <!-- ENFORCEMENT_START -->      ...   <!-- ENFORCEMENT_END -->
 #     <!-- CONTRACT_TABLE_START -->   ...   <!-- CONTRACT_TABLE_END -->
 #     <!-- SHACL_SUMMARY_START -->    ...   <!-- SHACL_SUMMARY_END -->
 #     <!-- PROOF_STATUS_START -->     ...   <!-- PROOF_STATUS_END -->
@@ -34,6 +35,8 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 README="${README_PATH:-"$REPO_ROOT/README.md"}"
 PV="${PV:-pv}"
 PROOF=contracts/proof-status.json
+# The run in which a planted failing job (not the first) turned the required `gate` check red.
+GATE_PLANT='pending'
 
 die() {
     printf 'FAIL readme_sync: %s\n' "$1" >&2
@@ -123,6 +126,7 @@ measure() {
     trap - EXIT
     measure_examples
     measure_proofs
+    measure_enforcement
 }
 
 # The per-example table (GH-1 scope b, c): links in the order rust, python, contract, shape, proof
@@ -187,7 +191,7 @@ measure_proofs() {
     [ -n "$PROOF_TEXT" ] || die "$PROOF holds no contracts"
 
     # pv counts a declared Kani harness without looking for it; say how many exist.
-    local kt n_k backed phantom stale
+    local kt stale
     kt=$(bash scripts/proof_ratchet.sh --kani-table) || die "proof_ratchet.sh --kani-table failed"
     n_k=$(printf '%s\n' "$kt" | grep -c . || true)
     nonzero "contracts declaring Kani harnesses" "$n_k"
@@ -203,6 +207,74 @@ measure_proofs() {
         PROOF_TEXT+=$'\n'"harnesses that are missing (present of declared): $stale."
         PROOF_TEXT+=$'\n'"\`scripts/proof_ratchet.sh\` fails the gate if the phantom count rises."
     fi
+}
+
+# measure_enforcement — the counts in "What is enforced, and what is not". Each comes from the file
+# that enforces it: the gate's needs from ci.yml (scripts/ci_gate.sh), the gate steps from
+# contracts_gate.sh, the macros from build.rs, the Kani bounds from src/kani_harnesses.rs, the
+# phantom baseline from contracts/proof-baseline.json, the mutant backlog from the conformance doc.
+measure_enforcement() {
+    cd "$REPO_ROOT" || exit 3
+    REQUIRED=$(bash scripts/ci_gate.sh --required | awk -F'\t' '{ printf "%s`%s`", sep, $2; sep = ", " }') \
+        || die "scripts/ci_gate.sh --required failed"
+    [ -n "$REQUIRED" ] || die "the gate job needs no job"
+    N_REQUIRED=$(bash scripts/ci_gate.sh --required | grep -c .)
+    ADVISORY=$(bash scripts/ci_gate.sh --advisory | awk -F'\t' '{ printf "%s`%s`", sep, $2; sep = ", " }')
+    [ -n "$ADVISORY" ] || ADVISORY=none
+    GATE_STEPS=$(sed -n 's/^STEPS=(\(.*\))$/\1/p' scripts/contracts_gate.sh | wc -w)
+    MACROS=$(grep -c 'macro_rules!' build.rs || true)
+    MACRO_CALLS=$(grep -rhoE 'contract_(pre|post)_[a-z_]+!' src | grep -c . || true)
+    UNWIND_MIN=$(grep -oE 'kani::unwind\([0-9]+\)' src/kani_harnesses.rs | tr -dc '0-9\n' | sort -n | head -1)
+    UNWIND_MAX=$(grep -oE 'kani::unwind\([0-9]+\)' src/kani_harnesses.rs | tr -dc '0-9\n' | sort -n | tail -1)
+    GOLDEN=$(grep -c '#\[test\]' tests/golden_vectors.rs || true)
+    MISSED=$(grep -oE 'had [0-9]+ missed mutants' docs/ontology-conformance.md | grep -oE '[0-9]+' | head -1)
+    PH_BASE=$(jq -r '.phantom_kani_harnesses' contracts/proof-baseline.json)
+    LEVELS=$(jq -r '[.contracts[].proof_level] | group_by(.) | map("\(length) at \(.[0])") | join(", ")' "$PROOF")
+    LEAN=$(jq -r '.totals.lean_grounded' "$PROOF")
+    nonzero "gate needs" "$N_REQUIRED"
+    nonzero "contracts gate steps" "$GATE_STEPS"
+    nonzero "contract macros" "$MACROS"
+    nonzero "contract macro call sites" "$MACRO_CALLS"
+    nonzero "Kani unwind bound" "$UNWIND_MAX"
+    nonzero "golden vector tests" "$GOLDEN"
+    nonzero "missed-mutant backlog" "$MISSED"
+    case "$PH_BASE" in '' | *[!0-9]*) die "contracts/proof-baseline.json records no phantom_kani_harnesses" ;; esac
+    case "$LEAN" in '' | *[!0-9]*) die "$PROOF records no lean_grounded" ;; esac
+}
+
+render_enforcement() {
+    local lean_row
+    if [ "$LEAN" -gt 0 ]; then
+        lean_row="$LEAN equation(s) cite a sorry-free, in-tree Lean theorem"
+    else
+        lean_row="none yet: no equation cites a Lean theorem ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5))"
+    fi
+    printf 'GitHub enforces only what the org ruleset "Green Main" requires, and it requires one check: `gate`.\n'
+    printf 'That job runs last, and it fails unless each of these %s jobs succeeded: %s.\n' "$N_REQUIRED" "$REQUIRED"
+    printf 'Advisory, never blocking: %s, and the full mutation sweep on `main`.\n' "$ADVISORY"
+    printf '`scripts/ci_gate.sh --check-workflow` fails if a new job is neither needed by `gate` nor marked advisory.\n\n'
+    printf '| Claim | Mechanism | What turns it RED (blocks merge?) | Plant receipt | Honest limit |\n'
+    printf '|-------|-----------|-----------------------------------|---------------|--------------|\n'
+    printf '| A red job blocks the merge | ruleset requires `gate`; `gate` needs the %s jobs above | any needed job failed, cancelled or skipped (yes) | %s | Org admins may bypass the ruleset ("always"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings)) |\n' \
+        "$N_REQUIRED" "$GATE_PLANT"
+    printf '| Each example receipt conforms to its closed SHACL shape | `pv lint --gate shapes` over %s shapes and %s receipts; the Examples job diffs each receipt against `evidence/examples/` | any violation, or a receipt that differs (yes) | Simpson weight 4 -> 3.9: the example exits 1 and the gate reports 5 violations ([conformance](docs/ontology-conformance.md#conformance-rows)) | Checks the %s examples on their fixed inputs, not the library on other inputs |\n' \
+        "$SHAPES" "$FOCUS" "$N_EX"
+    printf '| The ONT-G contracts gate runs every step | `scripts/contracts_gate.sh`: %s of %s steps RUN, each with its own status | any step fails; a later step still runs (yes) | `--self-test` against a stub pv, incl. a mutant that must go green | pv is the instrument: its defects pass through ([aprender#4531](https://github.com/paiml/aprender/issues/4531), [aprender#4521](https://github.com/paiml/aprender/issues/4521)) |\n' \
+        "$GATE_STEPS" "$GATE_STEPS"
+    printf '| README tables and example links match what generated them | `scripts/readme_sync.sh --check`, `scripts/example_links.sh` | any hand edit to a generated block; a link whose target does not say what the link claims (yes) | a hand-edited W3C count; an anchor moved to L1687 | Prose outside the markers is not checked; in this section only the numbers are generated |\n'
+    printf '| Proof levels only rise; phantom Kani references only fall | `scripts/proof_ratchet.sh` against `contracts/proof-baseline.json` | a level drops, or phantoms exceed %s (yes) | removed harnesses: L3 -> L2; one renamed harness: 29 phantoms | Levels today: %s. pv credits a declared harness toward L3 without checking that it exists |\n' \
+        "$PH_BASE" "$LEVELS"
+    printf '| Bounded properties hold for every input within the bound | Kani BMC, %s harnesses in `src/kani_harnesses.rs` | a counterexample (yes) | the `gate` plant above | BOUNDED: unwind %s to %s, so no loop runs more than %s times. Nothing is proved beyond the bound. Every declared harness exists for %s of %s contracts; %s declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6)) |\n' \
+        "$KANI" "$UNWIND_MIN" "$UNWIND_MAX" "$((UNWIND_MAX - 1))" "$backed" "$n_k" "$phantom"
+    printf '| Pre- and postconditions hold at runtime | %s `contract_pre_*!`/`contract_post_*!` macros, written by hand in `build.rs`, at %s call sites | an assertion panics in a debug or test build (yes, through the tests) | none recorded | They expand to `debug_assert!`: release builds are NOT checked at runtime. `quicksort: input exists` (`len < usize::MAX`) can never fail |\n' \
+        "$MACROS" "$MACRO_CALLS"
+    printf '| The tests catch changes to the code a PR touches | `cargo mutants --in-diff` on the PR diff | a mutant on a changed line survives (yes) | none recorded | Code the PR does not touch is not re-checked. The full sweep on `main` is advisory: %s missed mutants before GH-1 |\n' \
+        "$MISSED"
+    printf '| Values match Python nlib and the closed forms | `tests/golden_vectors.rs` (%s tests), `tests/falsify_parity.py` | any mismatch (yes) | none recorded | Fixed inputs only; parity with nlib.py cannot catch a bug the two share |\n' \
+        "$GOLDEN"
+    printf '| An equation is true on every input of an exact model (L4) | Lean 4 | %s | - | No contract is above L3 yet |\n' "$lean_row"
+    printf '| The repository meets PMAT governance | `pmat comply check` | fails today (no: advisory, not needed by `gate`) | - | Its failures are governance (branch protection needs an admin, `deny.toml`, `build.rs`, roadmap and spec schema, TDG), not contract enforcement |\n\n'
+    printf '**A claim counts only if a planted fault turns a REQUIRED check red, and here the only required check is `gate`.** Everything else in this README is a measurement, not a guarantee.\n'
 }
 
 render_table() {
@@ -255,10 +327,11 @@ rendered_readme() {
     nxt="$(mktemp)"
     body="$(mktemp)"
     cp "$README" "$cur"
-    for name in CONTRACT_TABLE SHACL_SUMMARY PROOF_STATUS EXAMPLE_TABLE CONTRACT_METRICS; do
+    for name in ENFORCEMENT CONTRACT_TABLE SHACL_SUMMARY PROOF_STATUS EXAMPLE_TABLE CONTRACT_METRICS; do
         {
             printf '\n'
             case "$name" in
+                ENFORCEMENT) render_enforcement ;;
                 CONTRACT_TABLE) render_table ;;
                 SHACL_SUMMARY) render_shapes ;;
                 PROOF_STATUS) printf '%s\n' "$PROOF_TEXT" ;;
@@ -284,6 +357,8 @@ measure
 
 case "$mode" in
     --print)
+        render_enforcement
+        printf '\n'
         render_table
         printf '\n'
         render_shapes
