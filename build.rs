@@ -70,7 +70,7 @@ macro_rules! contract_pre_quicksort {{
 macro_rules! contract_post_quicksort {{
     ($a:expr) => {{
         debug_assert!(
-            $a.windows(2).all(|w| w[0] <= w[1]),
+            $a.windows(2).all(|w| w[0] >= w[1]),
             "quicksort: postcondition violated — output not sorted"
         );
     }};
