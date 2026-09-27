@@ -1,6 +1,6 @@
 //! Statistics — contract: `statistics-v1.yaml`
 //!
-//! Di Pierro Ch. 5: mean, variance, covariance, correlation, chi².
+//! Di Pierro Ch. 5 (§5.1), §4.4.9: mean, variance, covariance, correlation, chi².
 //! Delegates to `aprender::Vector<f32>` for mean/variance/std and
 //! `aprender::stats::covariance::{cov, corr}` / `aprender::stats::chisquare`.
 //! nlib API uses f64; aprender stats use f32 internally — we bridge both.
@@ -16,12 +16,16 @@ fn to_apr_vec(x: &[f64]) -> AprVector<f32> {
 pub fn mean(x: &[f64]) -> f64 {
     assert!(!x.is_empty(), "mean: input must be non-empty");
     contract_pre_mean!(x);
-    let apr_mean = to_apr_vec(x).mean() as f64;
     let result = x.iter().sum::<f64>() / x.len() as f64;
-    debug_assert!(
-        !result.is_finite() || (apr_mean - result).abs() < 1e-5,
-        "aprender/f64 divergence in mean: apr={apr_mean}, f64={result}"
-    );
+    // aprender cross-check; skipped under Kani, whose harnesses prove the f64 path.
+    #[cfg(not(kani))]
+    {
+        let apr_mean = to_apr_vec(x).mean() as f64;
+        debug_assert!(
+            !result.is_finite() || (apr_mean - result).abs() < 1e-5,
+            "aprender/f64 divergence in mean: apr={apr_mean}, f64={result}"
+        );
+    }
     contract_post_mean!(result);
     result
 }

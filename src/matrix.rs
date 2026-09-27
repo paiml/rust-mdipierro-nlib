@@ -1,6 +1,6 @@
 //! Dense matrix algebra — contract: `matrix-algebra-v1.yaml`
 //!
-//! Di Pierro Ch. 4.4: matmul, transpose, inverse, Cholesky, determinant.
+//! Di Pierro §4.4: matmul, transpose, inverse, Cholesky, determinant.
 //! Backed by `aprender::Matrix<f64>` for storage and basic ops.
 
 use aprender::Matrix as AprMatrix;

@@ -1,6 +1,6 @@
 //! Sorting algorithms — contract: `sorting-v1.yaml`
 //!
-//! Di Pierro Ch. 3.5: quicksort, mergesort, heapsort.
+//! Di Pierro §3.5.5, §3.6.1: quicksort, mergesort, heapsort.
 //! Postcondition: output is sorted AND is a permutation of input.
 //! Uses `aprender::Vector<f32>` for sorted-data representation
 //! in postcondition helpers.

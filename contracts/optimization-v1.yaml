@@ -6,7 +6,7 @@ metadata:
     Numerical optimization — golden-section search, Newton's method for
     minimization, gradient descent. Covers the optimization chapter of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 6 Optimization'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.7 Optimization in one dimension; §4.8 Functions of many variables'
   - 'Nocedal & Wright (2006) Numerical Optimization, 2nd Ed.'
 
 equations:

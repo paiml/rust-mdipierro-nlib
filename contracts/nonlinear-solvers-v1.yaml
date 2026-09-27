@@ -6,7 +6,7 @@ metadata:
     Root-finding algorithms — bisection, Newton-Raphson, secant, fixed-point
     iteration. Covers the nonlinear solver chapter of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 5 Solvers'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.6 Solvers for nonlinear equations'
   - 'Burden & Faires (2015) Numerical Analysis, 10th Ed.'
 
 equations:

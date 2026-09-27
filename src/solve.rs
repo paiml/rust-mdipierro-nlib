@@ -1,6 +1,6 @@
 //! Nonlinear solvers — contract: `nonlinear-solvers-v1.yaml`
 //!
-//! Di Pierro Ch. 5: bisection, Newton-Raphson, secant, fixed-point.
+//! Di Pierro §4.6: bisection, Newton-Raphson, secant, fixed-point.
 //! Uses `aprender::Vector<f32>` for solution representation where applicable.
 
 use aprender::Vector as AprVector;

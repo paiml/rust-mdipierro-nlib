@@ -6,7 +6,7 @@ metadata:
     Graph algorithms — Dijkstra shortest path, Kruskal MST, BFS, DFS.
     Covers the graph theory chapter of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 11 Graphs'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §3.7 Graph algorithms'
   - 'Cormen et al. (2009) Introduction to Algorithms, 3rd Ed. — Part VI Graph Algorithms'
 
 equations:

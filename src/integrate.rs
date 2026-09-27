@@ -1,6 +1,6 @@
 //! Numerical integration — contract: `integration-v1.yaml`
 //!
-//! Di Pierro Ch. 7: trapezoid, Simpson, adaptive quadrature.
+//! Di Pierro §4.10: trapezoid, Simpson, adaptive quadrature.
 //! Uses `aprender::Vector<f32>` for storing quadrature node values.
 
 use aprender::Vector as AprVector;

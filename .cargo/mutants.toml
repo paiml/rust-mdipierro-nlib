@@ -1,0 +1,4 @@
+# cargo-mutants configuration (GH-1).
+# Kani harnesses are compiled only under `cargo kani` (cfg(kani)); mutating
+# them under `cargo test` changes nothing and would be reported as missed.
+exclude_globs = ["src/kani_harnesses.rs"]

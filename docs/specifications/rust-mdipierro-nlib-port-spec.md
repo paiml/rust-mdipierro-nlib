@@ -61,7 +61,7 @@ tests that *try to break* the invariants. If a falsification test passes
 Falsification tests are the primary quality signal, not unit tests.
 
 **P7: Mathematical fidelity.** Every equation uses the exact formula from
-Di Pierro (2023). No "simplified" versions. The contract `formula` field
+Di Pierro (2013). No "simplified" versions. The contract `formula` field
 must be copy-pasteable into a Lean 4 theorem statement.
 
 ---
@@ -393,8 +393,9 @@ falsification_tests:
 
 ### Primary source
 
-Di Pierro, M. (2023). *Annotated Algorithms in Python: With Applications
-in Physics, Biology, Finance* (3rd Ed.). ISBN 9798254871569.
+Di Pierro, M. (2013). *Annotated Algorithms in Python: with Applications in
+Physics, Biology, and Finance*. Experts4Solutions. ISBN 978-0991160402.
+https://www.amazon.com/dp/0991160401 (revised by the author for Python 3.8).
 Source: https://github.com/mdipierro/nlib
 
 ### Numerical analysis foundations

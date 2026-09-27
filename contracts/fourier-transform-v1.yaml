@@ -6,7 +6,7 @@ metadata:
     Discrete Fourier Transform — DFT, FFT (Cooley-Tukey), inverse DFT.
     Covers the spectral analysis chapter of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 8 Spectral Methods'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.11 Fourier transforms'
   - 'Cooley & Tukey (1965) An Algorithm for the Machine Calculation of Complex Fourier Series'
 
 equations:

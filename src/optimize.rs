@@ -1,6 +1,6 @@
 //! Optimization — contract: `optimization-v1.yaml`
 //!
-//! Di Pierro Ch. 6: golden-section search, Newton for minimization,
+//! Di Pierro §4.7–4.8: golden-section search, Newton for minimization,
 //! gradient descent (multi-dimensional).
 //! Uses `aprender::optim::SGD` for gradient-descent step logic and
 //! `aprender::Vector<f32>` for multi-dimensional state.

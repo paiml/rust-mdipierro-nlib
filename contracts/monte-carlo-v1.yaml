@@ -6,7 +6,7 @@ metadata:
     Monte Carlo methods — MC integration, bootstrap error estimation,
     Metropolis-Hastings sampling. Covers the simulation chapter of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 10 Monte Carlo'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. Ch. 7 Monte Carlo simulations (§7.2 bootstrap, §7.4 integration)'
   - 'Robert & Casella (2004) Monte Carlo Statistical Methods, 2nd Ed.'
 
 equations:

@@ -7,7 +7,7 @@ metadata:
     correlation, chi-squared goodness-of-fit. Covers the statistics chapter
     of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 12 Statistics'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. Ch. 5 Probability and statistics (§5.1); §4.4.9 chi-squared'
   - 'Wasserman (2004) All of Statistics'
 
 equations:

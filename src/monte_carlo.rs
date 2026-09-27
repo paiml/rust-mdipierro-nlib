@@ -1,6 +1,6 @@
 //! Monte Carlo methods — contract: `monte-carlo-v1.yaml`
 //!
-//! Di Pierro Ch. 10: MC integration, bootstrap error estimation.
+//! Di Pierro Ch. 7 (§7.2, §7.4): MC integration, bootstrap error estimation.
 //! Uses `aprender::monte_carlo::prelude::MonteCarloRng` for reproducible
 //! randomness and internal LCG for the classic Di Pierro algorithm.
 

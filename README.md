@@ -10,10 +10,13 @@
 
 Provable-contracts-first Rust port of Massimo Di Pierro's
 [nlib](https://github.com/mdipierro/nlib) — the companion library to
-*Annotated Algorithms in Python* (3rd Ed., 2023).
+*Annotated Algorithms in Python: with Applications in Physics, Biology,
+and Finance* ([Amazon](https://www.amazon.com/dp/0991160401); the author's
+free PDF, CC BY-NC-ND 3.0, is in [mdipierro/nlib](https://github.com/mdipierro/nlib)).
 
-**Sole dependency:** [`aprender`](https://crates.io/crates/aprender) —
-no other external crates.
+**Sole dependency:** [`aprender`](https://github.com/paiml/aprender) 0.70.0-dev
+(car/0.70.0 @ 1274d040d), pinned by git rev until v0.70.0 is tagged and
+published on crates.io — no other external crates.
 
 ## Contract Coverage
 
@@ -73,7 +76,7 @@ assert!((area - 2.0).abs() < 1e-10);
 Every algorithm is specified as a YAML contract **before** any Rust code
 is written. The contract defines:
 
-- **Equations** — exact mathematical formulas from Di Pierro (2023)
+- **Equations** — exact mathematical formulas from Di Pierro (2013)
 - **Preconditions** — what must hold before calling
 - **Postconditions** — what must hold after return
 - **Falsification tests** — Popperian tests that try to break invariants
@@ -156,10 +159,14 @@ cargo llvm-cov --lib
 
 ## Reference
 
-Di Pierro, M. (2023). *Annotated Algorithms in Python: With Applications
-in Physics, Biology, Finance* (3rd Ed.). ISBN 9798254871569.
-
-Source: [github.com/mdipierro/nlib](https://github.com/mdipierro/nlib)
+Di Pierro, M. (2013). *Annotated Algorithms in Python: with Applications in
+Physics, Biology, and Finance*. Experts4Solutions. ISBN 978-0991160402.
+[Amazon](https://www.amazon.com/dp/0991160401). The author has since revised
+the text for Python 3.8; the section numbers cited in this repository (§4.10 etc.)
+follow the author's LaTeX source at
+[mdipierro/nlib@5db3a42](https://github.com/mdipierro/nlib/tree/5db3a42f24907e21559d6546ff3489578e2e4ad9/docs),
+where the full PDF is published under CC BY-NC-ND 3.0. No text from the book is
+reproduced here; the Rust code is an independent MIT-licensed port of `nlib.py`.
 
 ## License
 

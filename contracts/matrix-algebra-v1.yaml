@@ -6,7 +6,7 @@ metadata:
     Dense matrix algebra — matmul, transpose, inverse, Cholesky, determinant.
     Covers the linear-algebra chapter of nlib with exact formulas.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 4 Linear Algebra'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.4 Linear algebra'
   - 'Golub & Van Loan (2013) Matrix Computations, 4th Ed.'
 
 equations:

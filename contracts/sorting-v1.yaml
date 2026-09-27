@@ -6,7 +6,7 @@ metadata:
     Sorting algorithms — quicksort, mergesort, heapsort.
     Covers the sorting and searching chapter of nlib.
   references:
-  - 'Di Pierro (2023) Annotated Algorithms in Python, 3rd Ed. — Ch. 3 Sorting'
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §3.5.5 Sorting; §3.6.1 Heapsort'
   - 'Cormen et al. (2009) Introduction to Algorithms, 3rd Ed. — Part II Sorting'
 
 equations:
