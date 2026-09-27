@@ -310,7 +310,7 @@ render_enforcement() {
     printf '`scripts/ci_gate.sh --check-workflow` fails if a new job is neither needed by `gate` nor marked advisory.\n\n'
     printf 'Each row is a claim entity in [`evidence/enforcement/claims.json`](evidence/enforcement/claims.json), closed by the SHACL shape in [`contracts/enforcement-claims-v1.yaml`](contracts/enforcement-claims-v1.yaml).\n'
     jq -r '
-        "\(.enforced | length) claims are enforced and proved by a plant; \(.unplanted | length) block the merge but no plant has proved them yet; \(.not_enforced | length) are not enforced.",
+        "\(.enforced | length) claims are enforced and proved by a plant; \(if (.unplanted | length) > 0 then "\(.unplanted | length) block the merge but no plant has proved them yet; " else "" end)\(.not_enforced | length) are not enforced.",
         "",
         "| Claim | Mechanism | What turns it RED | Blocks merge | Plant receipt | Honest limit |",
         "|-------|-----------|-------------------|--------------|---------------|--------------|",

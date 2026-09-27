@@ -14,9 +14,7 @@
       "plant": "a failing step in Kani BMC, not the first job: lint-test green, kani red, `gate` red, merge BLOCKED",
       "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36314753804/job/108607643661",
       "limit": "Org admins may bypass the ruleset (\"always\"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings))"
-    }
-  ],
-  "unplanted": [
+    },
     {
       "id": "CLAIM-002",
       "claim": "Each example receipt conforms to its closed SHACL shape",
@@ -25,8 +23,8 @@
       "job": "examples",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "examples/integrate.json receipt edited to hold false: Examples red (falsify_exintg_002 receipt differs from evidence), `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475241",
       "limit": "Checks the {{N_EX}} examples on their fixed inputs, not the library on other inputs"
     },
     {
@@ -37,8 +35,8 @@
       "job": "contracts",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "four faults in one run (phantom baseline, README byte, claims plant run, receipt): 4 of 6 steps failed and all 6 RAN, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175",
       "limit": "pv is the instrument: its defects pass through ([aprender#4531](https://github.com/paiml/aprender/issues/4531), [aprender#4521](https://github.com/paiml/aprender/issues/4521))"
     },
     {
@@ -49,8 +47,8 @@
       "job": "contracts",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "one README byte hand-edited (`enforced` to `enforceD`), nothing else: only Contract Validation red (readme step), `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36316337423/job/108611736648",
       "limit": "The prose in `docs/README.md.in` is written by hand: the gate proves the README matches it, not that the prose is true"
     },
     {
@@ -61,8 +59,8 @@
       "job": "contracts",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "the advisory PMAT claim moved into `enforced` in claims.json: the shape names `job: \"comply\" is not one of [...]`, Contract Validation red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36316963827/job/108613465055",
       "limit": "The shape checks that a plant run is recorded, not what the run showed: the run itself is the receipt"
     },
     {
@@ -73,8 +71,8 @@
       "job": "contracts",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "phantom baseline lowered from 28 to 27: the ratchet reports phantoms rose from 27 to 28, Contract Validation red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175",
       "limit": "Levels today: {{LEVELS}}. pv credits a declared harness toward L3 without checking that it exists"
     },
     {
@@ -85,8 +83,8 @@
       "job": "kani",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "a strict-order assertion added to verify_quicksort_sorted: Kani reports the assertion failed, Kani BMC red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475259",
       "limit": "BOUNDED: unwind {{UNWIND_MIN}} to {{UNWIND_MAX}}, so no loop runs more than {{UNWIND_LOOPS}} times. Nothing is proved beyond the bound. Every declared harness exists for {{KANI_BACKED}} of {{KANI_CONTRACTS}} contracts; {{PHANTOM}} declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6))"
     },
     {
@@ -97,8 +95,8 @@
       "job": "lint-test",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "the quicksort postcondition macro inverted in build.rs: 6 tests panic `postcondition violated`, lint-test red, every other job skipped, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36318164016/job/108616712665",
       "limit": "They expand to `debug_assert!`: release builds are NOT checked at runtime. `quicksort: input exists` (`len < usize::MAX`) can never fail"
     },
     {
@@ -109,8 +107,8 @@
       "job": "mutants",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "an untested function (plant_untested_scale) added: 2 mutants missed, Mutation Testing red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475227",
       "limit": "Code the PR does not touch is not re-checked"
     },
     {
@@ -121,8 +119,8 @@
       "job": "golden-vectors",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "the quicksort golden vector first value changed from 3 to 4: golden_sort mismatch, Golden Vectors red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475217",
       "limit": "Fixed inputs only"
     },
     {
@@ -133,11 +131,12 @@
       "job": "parity",
       "blocks_merge": true,
       "required_check": "gate",
-      "plant": "none",
-      "plant_run": "none",
+      "plant": "Rust integrate scaled by 1.01: integrate_sin 2.02 against Python 1.99997, Python/Rust Parity red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475162",
       "limit": "Parity cannot catch a bug the two implementations share"
     }
   ],
+  "unplanted": [],
   "not_enforced": [
     {
       "id": "CLAIM-012",
