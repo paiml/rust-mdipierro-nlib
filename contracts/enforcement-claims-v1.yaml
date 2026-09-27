@@ -1,0 +1,183 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: schema
+  valid_under:
+    world: committed
+  description: >
+    The README section "What is enforced, and what is not" as ontology data
+    (GH-1). Each row is a claim entity in evidence/enforcement/claims.json,
+    which scripts/readme_sync.sh renders from contracts/enforcement-claims.src.json
+    with the measured counts substituted, and then renders the table from.
+    The shape closes each claim class. An enforced claim blocks the merge
+    through the one required check, `gate`, and cites the CI job whose
+    planted fault turned it red. An unplanted claim blocks the merge but has
+    no plant receipt yet, so it is not presented as proved. A not-enforced
+    claim blocks nothing. A claim that mixes the classes, such as an advisory
+    check presented as enforced or an enforced claim with no plant run,
+    violates the shape.
+  references:
+  - 'ONT-001 v4.17 extract:json and closed SHACL shapes'
+  - 'GH-1: a claim counts only if a planted fault turns a REQUIRED check red'
+entity:
+  type: json
+  ref: evidence/enforcement/claims.json
+vocabulary:
+  prefix: ex
+  root_class: ex:EnforcementClaims
+  nested:
+    enforced: ex:EnforcedClaim
+    unplanted: ex:UnplantedClaim
+    not_enforced: ex:NotEnforcedClaim
+shape:
+  targetClass: ex:EnforcementClaims
+  closed: true
+  properties:
+  - path: ex:schema
+    minCount: 1
+    maxCount: 1
+    in: [enforcement-claims-v1]
+  - path: ex:ruleset
+    minCount: 1
+    maxCount: 1
+    in: [Green Main]
+  - path: ex:required_check
+    minCount: 1
+    maxCount: 1
+    in: [gate]
+  - path: ex:enforced
+    minCount: 1
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^CLAIM-[0-9]{3}$'
+      - path: ex:claim
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:mechanism
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:red_when
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:limit
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:job
+        minCount: 1
+        maxCount: 1
+        in: [gate, lint-test, golden-vectors, parity, kani, mutants, examples, contracts]
+      - path: ex:blocks_merge
+        minCount: 1
+        maxCount: 1
+        in: [true]
+      - path: ex:required_check
+        minCount: 1
+        maxCount: 1
+        in: [gate]
+      - path: ex:plant
+        minCount: 1
+        maxCount: 1
+        minLength: 20
+      - path: ex:plant_run
+        minCount: 1
+        maxCount: 1
+        pattern: '^https://github\.com/paiml/rust-mdipierro-nlib/actions/runs/[0-9]+/job/[0-9]+$'
+  - path: ex:unplanted
+    minCount: 0
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^CLAIM-[0-9]{3}$'
+      - path: ex:claim
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:mechanism
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:red_when
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:limit
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:job
+        minCount: 1
+        maxCount: 1
+        in: [gate, lint-test, golden-vectors, parity, kani, mutants, examples, contracts]
+      - path: ex:blocks_merge
+        minCount: 1
+        maxCount: 1
+        in: [true]
+      - path: ex:required_check
+        minCount: 1
+        maxCount: 1
+        in: [gate]
+      - path: ex:plant
+        minCount: 1
+        maxCount: 1
+        in: [none]
+      - path: ex:plant_run
+        minCount: 1
+        maxCount: 1
+        in: [none]
+  - path: ex:not_enforced
+    minCount: 1
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^CLAIM-[0-9]{3}$'
+      - path: ex:claim
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:mechanism
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:red_when
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:limit
+        minCount: 1
+        maxCount: 1
+        minLength: 1
+      - path: ex:job
+        minCount: 1
+        maxCount: 1
+        in: [comply, none]
+      - path: ex:blocks_merge
+        minCount: 1
+        maxCount: 1
+        in: [false]
+      - path: ex:required_check
+        minCount: 1
+        maxCount: 1
+        in: [none]
+      - path: ex:plant
+        minCount: 1
+        maxCount: 1
+        in: [none]
+      - path: ex:plant_run
+        minCount: 1
+        maxCount: 1
+        in: [none]
