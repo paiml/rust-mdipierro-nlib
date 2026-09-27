@@ -1,0 +1,176 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/parity.rs as an entity. The example's `--json` receipt
+    (evidence/examples/parity.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 23 checks, each naming one of this
+    contract's equations, every one holding. A value that drifts from its closed form, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. Ch. 4-5 (the functions nlib.py and this port share)'
+  - 'Di Pierro, M. nlib, https://github.com/mdipierro/nlib'
+  depends_on:
+  - nonlinear-solvers-v1
+entity:
+  type: json
+  ref: evidence/examples/parity.json
+vocabulary:
+  prefix: ex
+  root_class: ex:ParityReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:ParityReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [parity]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/parity.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-parity-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [23]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 23
+    maxCount: 23
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-PARITY-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [solver_root, integral, dft, matrix, stats, dijkstra]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  solver_root:
+    formula: |
+      bisection, newton, secant on x^2 - 2 within 1e-6 of sqrt(2);
+      fixed_point(cos) within 4e-6 of 0.7390851332151607 (nlib default ap = 1e-6)
+    domain: 'the parity inputs of tests/falsify_parity.py'
+    codomain: 'bool: each root matches its closed form'
+    preconditions:
+    - 'the solver converges from the given start'
+    postconditions:
+    - '|root - exact| <= tol'
+    tolerance: 4.0e-6
+  integral:
+    formula: 'adaptive_quadrature: int_0^pi sin = 2 and int_0^1 x^2 = 1/3, each within 1e-6'
+    domain: 'the parity integrands, tol 1e-6'
+    codomain: 'bool: each integral matches its closed form'
+    preconditions:
+    - 'a < b'
+    postconditions:
+    - '|I - exact| <= 1e-6'
+    tolerance: 1.0e-6
+  dft:
+    formula: 'DFT(impulse)[0] = 1 + 0i and DFT(3,3,3,3)[0] = 12'
+    domain: 'length-4 impulse and constant signals'
+    codomain: 'bool: exact to 1e-12'
+    preconditions:
+    - 'N > 0'
+    postconditions:
+    - 'each value within 1e-12'
+    tolerance: 1.0e-12
+  matrix:
+    formula: '[[1,2],[3,4]] [[5,6],[7,8]] = [[19,22],[43,50]] and det [[1,2],[3,4]] = -2'
+    domain: 'the parity matrices'
+    codomain: 'bool: exact to 1e-12'
+    preconditions:
+    - 'conformable shapes'
+    postconditions:
+    - 'each value within 1e-12'
+    tolerance: 1.0e-12
+  stats:
+    formula: 'mean = 5, population variance = 4 of [2,4,4,4,5,5,7,9]; corr([1..5], 2[1..5]) = 1'
+    domain: 'the parity samples'
+    codomain: 'bool: exact to 1e-12'
+    preconditions:
+    - 'n > 1'
+    postconditions:
+    - 'each value within 1e-12'
+    tolerance: 1.0e-12
+  dijkstra:
+    formula: 'dijkstra(G, 0) = [0, 4, 6, 1, 7, 8]'
+    domain: 'the 6-node parity graph (the same as examples/graph.rs)'
+    codomain: 'bool: exact to 1e-12'
+    preconditions:
+    - 'non-negative weights'
+    postconditions:
+    - 'each distance within 1e-12'
+    tolerance: 1.0e-12
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 23'
+  applies_to: solver_root
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/parity.json'
+  applies_to: solver_root
+- type: invariant
+  property: The values document keeps the keys tests/falsify_parity.py reads
+  formal: 'document(values()) is a JSON object with the 23 parity keys in fixed order'
+  applies_to: solver_root
+
+falsification_tests:
+- id: FALSIFY-EXPARITY-001
+  rule: solver_root
+  prediction: Every one of the 23 checks holds
+  test: cargo test --test examples falsify_exparity_001_all_checks_hold
+  if_fails: A claim of examples/parity.rs no longer holds
+- id: FALSIFY-EXPARITY-002
+  rule: solver_root
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exparity_002_receipt_matches_evidence
+  if_fails: evidence/examples/parity.json is stale; regenerate it with --json
+- id: FALSIFY-EXPARITY-003
+  rule: solver_root
+  prediction: A bisection stopped at 1e-2 fails the 1e-6 root bound
+  test: cargo test --test examples falsify_exparity_003_loose_solver_fails
+  if_fails: The solver tolerance cannot catch an early stop
+- id: FALSIFY-EXPARITY-004
+  rule: solver_root
+  prediction: The values document carries exactly the 23 keys the Python parity script compares, in order
+  test: cargo test --test examples falsify_exparity_004_document_keys
+  if_fails: examples/parity.rs and tests/falsify_parity.py disagree on the key set
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+
+qa_gate:
+  id: F-EXPARITY-001
+  name: example-parity-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes

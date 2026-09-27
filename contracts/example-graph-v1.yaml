@@ -1,0 +1,168 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/graph.rs as an entity. The example's `--json` receipt
+    (evidence/examples/graph.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 6 checks, each naming one of this
+    contract's equations, every one holding. A wrong relaxation or a non-minimal tree, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §3.7 Graph algorithms'
+  - 'Cormen, Leiserson, Rivest & Stein (2009) Introduction to Algorithms, 3rd Ed.'
+  depends_on:
+  - graph-algorithms-v1
+entity:
+  type: json
+  ref: evidence/examples/graph.json
+vocabulary:
+  prefix: ex
+  root_class: ex:GraphReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:GraphReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [graph]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/graph.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-graph-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [6]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 6
+    maxCount: 6
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-GRAPH-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [dijkstra_known, dijkstra_relaxed, bfs_visits_all, dfs_visits_all, mst_spanning, mst_weight_known]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  dijkstra_known:
+    formula: 'dijkstra(G, 0) = [0, 4, 6, 1, 7, 8]'
+    domain: 'the 6-node, 7-edge undirected graph EDGES, non-negative weights'
+    codomain: 'bool: distances equal the hand-computed shortest paths exactly'
+    preconditions:
+    - 'w(e) >= 0 for every edge'
+    postconditions:
+    - 'd == [0, 4, 6, 1, 7, 8]'
+  dijkstra_relaxed:
+    formula: 'for every edge (u, v, w): d[v] <= d[u] + w and d[u] <= d[v] + w'
+    domain: 'the distances returned by dijkstra and EDGES'
+    codomain: 'bool: no edge can shorten any distance (Bellman optimality)'
+    preconditions:
+    - 'w(e) >= 0'
+    postconditions:
+    - 'every edge is relaxed'
+  bfs_visits_all:
+    formula: 'bfs(G, 0) starts at 0 and is a permutation of 0..6'
+    domain: 'the connected graph G'
+    codomain: 'bool: every node is visited exactly once'
+    preconditions:
+    - 'G connected'
+    postconditions:
+    - 'order[0] == 0 and sorted(order) == [0..6)'
+  dfs_visits_all:
+    formula: 'dfs(G, 0) starts at 0 and is a permutation of 0..6'
+    domain: 'the connected graph G'
+    codomain: 'bool: every node is visited exactly once'
+    preconditions:
+    - 'G connected'
+    postconditions:
+    - 'order[0] == 0 and sorted(order) == [0..6)'
+  mst_spanning:
+    formula: '|kruskal_mst(G)| = n - 1 = 5'
+    domain: 'the connected 6-node graph G'
+    codomain: 'bool: a spanning tree has n - 1 edges'
+    preconditions:
+    - 'G connected'
+    postconditions:
+    - 'edge count == 5'
+  mst_weight_known:
+    formula: 'sum of MST weights = 1 + 1 + 2 + 3 + 4 = 11'
+    domain: 'the connected 6-node graph G'
+    codomain: 'bool: the tree has the minimum total weight, exactly'
+    preconditions:
+    - 'G connected'
+    postconditions:
+    - 'weight == 11'
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 6'
+  applies_to: dijkstra_known
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/graph.json'
+  applies_to: dijkstra_known
+- type: invariant
+  property: The relaxation and weight checks discriminate
+  formal: 'relaxed([0,4,6,1,7,11], EDGES) == false; a spanning tree through 3-4 weighs more than 11'
+  applies_to: dijkstra_relaxed
+
+falsification_tests:
+- id: FALSIFY-EXGRAPH-001
+  rule: dijkstra_known
+  prediction: Every one of the 6 checks holds
+  test: cargo test --test examples falsify_exgraph_001_all_checks_hold
+  if_fails: A claim of examples/graph.rs no longer holds
+- id: FALSIFY-EXGRAPH-002
+  rule: dijkstra_known
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exgraph_002_receipt_matches_evidence
+  if_fails: evidence/examples/graph.json is stale; regenerate it with --json
+- id: FALSIFY-EXGRAPH-003
+  rule: dijkstra_relaxed
+  prediction: A distance vector with node 5 reached the long way (11, via node 2) is not relaxed
+  test: cargo test --test examples falsify_exgraph_003_unrelaxed_distances_fail
+  if_fails: The optimality check accepts a non-shortest path
+- id: FALSIFY-EXGRAPH-004
+  rule: mst_weight_known
+  prediction: The spanning tree that uses 3-4 (6) instead of 0-1 (4) weighs 13, not 11
+  test: cargo test --test examples falsify_exgraph_004_non_minimal_tree_fails
+  if_fails: The weight check cannot tell a spanning tree from a minimum one
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+
+qa_gate:
+  id: F-EXGRAPH-001
+  name: example-graph-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes

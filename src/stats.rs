@@ -33,14 +33,18 @@ pub fn mean(x: &[f64]) -> f64 {
 /// Population variance: sigma^2 = (1/n) sum (x_i - mu)^2
 pub fn variance(x: &[f64]) -> f64 {
     assert!(x.len() > 1, "variance: need n > 1");
-    let apr_var = to_apr_vec(x).variance() as f64;
     let mu = mean(x);
     let ss: f64 = x.iter().map(|&v| (v - mu).powi(2)).sum();
     let result = ss / x.len() as f64;
-    debug_assert!(
-        !result.is_finite() || (apr_var - result).abs() < 1e-3,
-        "aprender/f64 divergence in variance: apr={apr_var}, f64={result}"
-    );
+    // aprender cross-check; skipped under Kani, whose harnesses prove the f64 path.
+    #[cfg(not(kani))]
+    {
+        let apr_var = to_apr_vec(x).variance() as f64;
+        debug_assert!(
+            !result.is_finite() || (apr_var - result).abs() < 1e-3,
+            "aprender/f64 divergence in variance: apr={apr_var}, f64={result}"
+        );
+    }
     result
 }
 

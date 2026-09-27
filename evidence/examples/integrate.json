@@ -1,0 +1,16 @@
+{
+  "example": "integrate",
+  "source": "examples/integrate.rs",
+  "contract": "example-integrate-v1",
+  "n_checks": 7,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-INTEGRATE-001", "equation": "trapezoid_sin_0_pi", "holds": true},
+    {"id": "EX-INTEGRATE-002", "equation": "simpson_sin_0_pi", "holds": true},
+    {"id": "EX-INTEGRATE-003", "equation": "adaptive_sin_0_pi", "holds": true},
+    {"id": "EX-INTEGRATE-004", "equation": "simpson_beats_trapezoid", "holds": true},
+    {"id": "EX-INTEGRATE-005", "equation": "simpson_exact_cubic", "holds": true},
+    {"id": "EX-INTEGRATE-006", "equation": "simpson_exact_cubic", "holds": true},
+    {"id": "EX-INTEGRATE-007", "equation": "adaptive_exp_0_1", "holds": true}
+  ]
+}

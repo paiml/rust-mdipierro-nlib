@@ -1,0 +1,188 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/sort.rs as an entity. The example's `--json` receipt
+    (evidence/examples/sort.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 7 checks, each naming one of this
+    contract's equations, every one holding. An unsorted or lossy output, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §3.5.5, §3.6.1 Sorting'
+  - 'Knuth (1998) The Art of Computer Programming, Vol. 3: Sorting and Searching, 2nd Ed.'
+  depends_on:
+  - sorting-v1
+entity:
+  type: json
+  ref: evidence/examples/sort.json
+vocabulary:
+  prefix: ex
+  root_class: ex:SortReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:SortReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [sort]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/sort.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-sort-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [7]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 7
+    maxCount: 7
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-SORT-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [quicksort_sorted, quicksort_permutation, mergesort_sorted, mergesort_permutation, heapsort_sorted, heapsort_permutation, sorts_agree]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  quicksort_sorted:
+    formula: 'is_sorted(quicksort([38, 27, 43, 3, 9, 82, 10]))'
+    domain: 'the 7-element i32 input DATA'
+    codomain: 'bool: a[i] <= a[i+1] for every i'
+    preconditions:
+    - 'T: Ord'
+    postconditions:
+    - 'output non-decreasing'
+  quicksort_permutation:
+    formula: 'is_permutation(DATA, quicksort(DATA))'
+    domain: 'the 7-element i32 input DATA'
+    codomain: 'bool: the output is a rearrangement of the input (same multiset)'
+    preconditions:
+    - 'T: Ord + Clone'
+    postconditions:
+    - 'sorted(output) == sorted(input) element by element'
+  mergesort_sorted:
+    formula: 'is_sorted(mergesort(DATA))'
+    domain: 'the 7-element i32 input DATA'
+    codomain: 'bool: output non-decreasing'
+    preconditions:
+    - 'T: Ord + Clone'
+    postconditions:
+    - 'output non-decreasing'
+  mergesort_permutation:
+    formula: 'is_permutation(DATA, mergesort(DATA))'
+    domain: 'the 7-element i32 input DATA'
+    codomain: 'bool: same multiset'
+    preconditions:
+    - 'T: Ord + Clone'
+    postconditions:
+    - 'same multiset as the input'
+  heapsort_sorted:
+    formula: 'is_sorted(heapsort(DATA))'
+    domain: 'the 7-element i32 input DATA'
+    codomain: 'bool: output non-decreasing'
+    preconditions:
+    - 'T: Ord'
+    postconditions:
+    - 'output non-decreasing'
+  heapsort_permutation:
+    formula: 'is_permutation(DATA, heapsort(DATA))'
+    domain: 'the 7-element i32 input DATA'
+    codomain: 'bool: same multiset'
+    preconditions:
+    - 'T: Ord'
+    postconditions:
+    - 'same multiset as the input'
+  sorts_agree:
+    formula: 'quicksort(DATA) == mergesort(DATA) == heapsort(DATA)'
+    domain: 'the 7-element i32 input DATA'
+    codomain: 'bool: the sorted order is unique, so three correct sorts agree'
+    preconditions:
+    - 'total order on T'
+    postconditions:
+    - 'all three outputs identical'
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 7'
+  applies_to: quicksort_sorted
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/sort.json'
+  applies_to: quicksort_sorted
+- type: invariant
+  property: The sortedness and permutation checks discriminate
+  formal: '!is_sorted(DATA) && !is_permutation(DATA, DATA with one element duplicated)'
+  applies_to: quicksort_permutation
+
+falsification_tests:
+- id: FALSIFY-EXSORT-001
+  rule: quicksort_sorted
+  prediction: Every one of the 7 checks holds
+  test: cargo test --test examples falsify_exsort_001_all_checks_hold
+  if_fails: A claim of examples/sort.rs no longer holds
+- id: FALSIFY-EXSORT-002
+  rule: quicksort_sorted
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exsort_002_receipt_matches_evidence
+  if_fails: evidence/examples/sort.json is stale; regenerate it with --json
+- id: FALSIFY-EXSORT-003
+  rule: quicksort_sorted
+  prediction: is_sorted rejects the unsorted input itself
+  test: cargo test --test examples falsify_exsort_003_unsorted_input_rejected
+  if_fails: The sortedness check is vacuous
+- id: FALSIFY-EXSORT-004
+  rule: quicksort_permutation
+  prediction: A sorted output that lost an element (one value duplicated) is not a permutation
+  test: cargo test --test examples falsify_exsort_004_lossy_output_rejected
+  if_fails: The permutation check cannot see a dropped element
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+- id: KANI-SORT-001
+  obligation: Every check in the receipt holds
+  property: 'quicksort output is sorted for every 3-element i8 array'
+  bound: 5
+  strategy: exhaustive
+  harness: verify_quicksort_sorted
+- id: KANI-SORT-002
+  obligation: The sortedness and permutation checks discriminate
+  property: 'quicksort preserves length and element sum for every 3-element i8 array'
+  bound: 5
+  strategy: exhaustive
+  harness: verify_quicksort_length
+
+qa_gate:
+  id: F-EXSORT-001
+  name: example-sort-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes

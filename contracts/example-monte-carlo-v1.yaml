@@ -1,0 +1,145 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/monte_carlo.rs as an entity. The example's `--json` receipt
+    (evidence/examples/monte_carlo.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 6 checks, each naming one of this
+    contract's equations, every one holding. A biased sampler, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. Ch. 7 Monte Carlo simulations'
+  - 'Efron & Tibshirani (1993) An Introduction to the Bootstrap.'
+  depends_on:
+  - monte-carlo-v1
+entity:
+  type: json
+  ref: evidence/examples/monte_carlo.json
+vocabulary:
+  prefix: ex
+  root_class: ex:MonteCarloReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:MonteCarloReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [monte_carlo]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/monte_carlo.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-monte-carlo-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [6]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 6
+    maxCount: 6
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-MONTECARLO-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [mc_clt_bound, mean_known, bootstrap_se_mean]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  mc_clt_bound:
+    formula: '|mc_integrate(x^2, 0, 1, N, seed 42) - 1/3| <= 4 sigma / sqrt(N), sigma = sqrt(1/5 - 1/9)'
+    domain: 'N in {100, 1000, 10000, 100000}, fixed seed 42'
+    codomain: 'bool: each estimate lies within 4 standard errors of the truth'
+    preconditions:
+    - 'a < b, N > 0'
+    postconditions:
+    - '|I_N - 1/3| <= 4 * 0.2981 / sqrt(N)'
+  mean_known:
+    formula: 'mean(DATA) = 37.4 / 10 = 3.74'
+    domain: 'the 10-element sample DATA'
+    codomain: 'bool: |mean - 3.74| <= 1e-12'
+    preconditions:
+    - 'n > 0'
+    postconditions:
+    - '|mean(DATA) - 3.74| <= 1e-12'
+    tolerance: 1.0e-12
+  bootstrap_se_mean:
+    formula: '|bootstrap_error(DATA, mean, 10000, seed 123) - sigma / sqrt(n)| <= 0.1 sigma / sqrt(n)'
+    domain: 'DATA (n = 10), 10000 resamples, population sigma'
+    codomain: 'bool: the bootstrap SE of the mean agrees with the plug-in sigma/sqrt(n) to 10 %'
+    preconditions:
+    - 'n > 0, resamples > 1'
+    postconditions:
+    - '|SE_boot / (sigma / sqrt(n)) - 1| <= 0.1'
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 6'
+  applies_to: mc_clt_bound
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/monte_carlo.json'
+  applies_to: mc_clt_bound
+- type: bound
+  property: The CLT bound discriminates a biased estimator
+  formal: 'mc_integrate(x, 0, 1, 100000) ~ 1/2 lies far outside 4 sigma/sqrt(N) of 1/3'
+  applies_to: mc_clt_bound
+
+falsification_tests:
+- id: FALSIFY-EXMC-001
+  rule: mc_clt_bound
+  prediction: Every one of the 6 checks holds
+  test: cargo test --test examples falsify_exmc_001_all_checks_hold
+  if_fails: A claim of examples/monte_carlo.rs no longer holds
+- id: FALSIFY-EXMC-002
+  rule: mc_clt_bound
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exmc_002_receipt_matches_evidence
+  if_fails: evidence/examples/monte_carlo.json is stale; regenerate it with --json
+- id: FALSIFY-EXMC-003
+  rule: mc_clt_bound
+  prediction: Integrating x instead of x^2 lands outside the 4-sigma band around 1/3
+  test: cargo test --test examples falsify_exmc_003_biased_estimate_fails
+  if_fails: The CLT band is too wide to catch a wrong integrand
+- id: FALSIFY-EXMC-004
+  rule: bootstrap_se_mean
+  prediction: Reporting sigma (not sigma/sqrt(n)) as the SE fails the 10 % bound
+  test: cargo test --test examples falsify_exmc_004_unscaled_se_fails
+  if_fails: The SE check cannot see a missing 1/sqrt(n)
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+
+qa_gate:
+  id: F-EXMC-001
+  name: example-monte-carlo-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes

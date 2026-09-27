@@ -1,0 +1,14 @@
+{
+  "example": "optimize",
+  "source": "examples/optimize.rs",
+  "contract": "example-optimize-v1",
+  "n_checks": 5,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-OPTIMIZE-001", "equation": "golden_section_min", "holds": true},
+    {"id": "EX-OPTIMIZE-002", "equation": "newton_critical_point", "holds": true},
+    {"id": "EX-OPTIMIZE-003", "equation": "newton_critical_point", "holds": true},
+    {"id": "EX-OPTIMIZE-004", "equation": "newton_is_minimum", "holds": true},
+    {"id": "EX-OPTIMIZE-005", "equation": "gradient_descent_min", "holds": true}
+  ]
+}

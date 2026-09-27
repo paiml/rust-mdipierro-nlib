@@ -1,0 +1,111 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    src/receipt.rs, the receipt every example emits with `--json`. The
+    eleven example-*-v1 contracts extract those receipts as JSON entities and
+    close them with SHACL shapes; this contract pins the receipt itself: the
+    tolerance test is sound, zero checks never pass, one failed check fails
+    the receipt, and the JSON form is canonical so the tracked evidence can be
+    compared byte for byte.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402'
+  - 'ONT-001 §3.7 extract:json; R-2 zero is a decline, never a pass'
+
+equations:
+  within:
+    formula: 'within(got, want, tol) = finite(got) && finite(want) && finite(tol) && |got - want| <= tol'
+    domain: 'got, want, tol: f64'
+    codomain: 'bool'
+    preconditions:
+    - 'none: every f64 is accepted, including NaN and infinities'
+    postconditions:
+    - 'within(...) implies all three operands finite and tol >= 0'
+    - 'any NaN operand implies !within(...)'
+  all_pass:
+    formula: 'all_pass(r) = |r.checks| > 0 && forall c in r.checks: c.holds'
+    domain: 'r: Receipt'
+    codomain: 'bool'
+    preconditions:
+    - 'r was built by Receipt::new with a [a-z0-9_]+ example name'
+    postconditions:
+    - '|r.checks| = 0 implies !all_pass(r)'
+    - 'emit(r) = 0 iff all_pass(r), else 1'
+  to_json:
+    formula: 'to_json(r) = canonical JSON {example, source, contract, n_checks, all_pass, checks[{id, equation, holds}]}'
+    domain: 'r: Receipt'
+    codomain: 'String: fixed key order, two-space indent, trailing newline'
+    preconditions:
+    - 'example and equation names match [a-z0-9_]+ (asserted, so no escaping is needed)'
+    postconditions:
+    - 'check ids are EX-<EXAMPLE>-NNN, numbered from 001 in insertion order'
+    - 'n_checks = |r.checks|'
+
+proof_obligations:
+- type: invariant
+  property: A tolerance check holds only on finite operands within tolerance
+  formal: 'within(g, w, t) => finite(g) && finite(w) && finite(t) && t >= 0'
+  applies_to: within
+- type: postcondition
+  property: Zero checks is a decline, never a pass
+  formal: 'r.checks.is_empty() => !r.all_pass()'
+  applies_to: all_pass
+- type: equivalence
+  property: The JSON form is canonical
+  formal: 'to_json(r) is a pure function of r with fixed key order'
+  applies_to: to_json
+
+falsification_tests:
+- id: FALSIFY-RCPT-001
+  rule: all_pass
+  prediction: An empty receipt does not pass and serialises all_pass false
+  test: cargo test --lib receipt::tests::falsify_rcpt_001_empty_receipt_does_not_pass
+  if_fails: A receipt with no checks would arm a shape vacuously (R-2)
+- id: FALSIFY-RCPT-002
+  rule: all_pass
+  prediction: One failed check among passing ones fails the receipt and exits 1
+  test: cargo test --lib receipt::tests::falsify_rcpt_002_one_failed_check_fails_the_receipt
+  if_fails: A failing example claim could still exit 0
+- id: FALSIFY-RCPT-003
+  rule: within
+  prediction: NaN or infinite operands never hold; the bound is inclusive
+  test: cargo test --lib receipt::tests::falsify_rcpt_003_nan_never_within_tolerance
+  if_fails: A NaN result would pass a numeric check
+- id: FALSIFY-RCPT-004
+  rule: to_json
+  prediction: The JSON is byte-identical to the canonical form
+  test: cargo test --lib receipt::tests::falsify_rcpt_004_json_is_canonical
+  if_fails: Evidence files would drift without any behaviour change
+- id: FALSIFY-RCPT-005
+  rule: to_json
+  prediction: An equation name needing JSON escaping is refused
+  test: cargo test --lib receipt::tests::falsify_rcpt_005_unsafe_names_are_refused
+  if_fails: A crafted name could inject JSON into the receipt
+- id: FALSIFY-RCPT-006
+  rule: to_json
+  prediction: An example name outside [a-z0-9_]+ is refused
+  test: cargo test --lib receipt::tests::falsify_rcpt_006_unsafe_example_name_is_refused
+  if_fails: A crafted example name could inject JSON into the receipt
+
+- id: FALSIFY-RCPT-007
+  rule: to_json
+  prediction: Only an exact `--json` argument selects the JSON receipt
+  test: cargo test --lib receipt::tests::falsify_rcpt_007_only_an_exact_json_flag_selects_json
+  if_fails: An example could print a human summary where CI diffs JSON, or JSON on a near-miss flag
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: A tolerance check holds only on finite operands within tolerance
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+
+qa_gate:
+  id: F-RCPT-001
+  name: example-receipt-v1 Contract
+  checks:
+  - validation
+  - falsification

@@ -1,0 +1,186 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/stats.rs as an entity. The example's `--json` receipt
+    (evidence/examples/stats.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 6 checks, each naming one of this
+    contract's equations, every one holding. A sample-vs-population slip, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. Ch. 5 Probability and statistics'
+  - 'Wasserman (2004) All of Statistics.'
+  depends_on:
+  - statistics-v1
+entity:
+  type: json
+  ref: evidence/examples/stats.json
+vocabulary:
+  prefix: ex
+  root_class: ex:StatsReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:StatsReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [stats]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/stats.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-stats-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [6]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 6
+    maxCount: 6
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-STATS-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [mean_known, variance_population, std_dev_known, covariance_known, correlation_perfect, chi_squared_known]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  mean_known:
+    formula: 'mean([2, 4, 4, 4, 5, 5, 7, 9]) = 40 / 8 = 5'
+    domain: 'the 8-element sample x'
+    codomain: 'bool: |mean - 5| <= 1e-12'
+    preconditions:
+    - 'n > 0'
+    postconditions:
+    - '|mean(x) - 5| <= 1e-12'
+    tolerance: 1.0e-12
+  variance_population:
+    formula: 'variance(x) = (1/n) sum (x_i - 5)^2 = 32 / 8 = 4'
+    domain: 'the 8-element sample x'
+    codomain: 'bool: the POPULATION variance (divisor n, not n - 1) is 4'
+    preconditions:
+    - 'n > 1'
+    postconditions:
+    - '|variance(x) - 4| <= 1e-12'
+    tolerance: 1.0e-12
+  std_dev_known:
+    formula: 'std_dev(x) = sqrt(4) = 2'
+    domain: 'the 8-element sample x'
+    codomain: 'bool: |std_dev - 2| <= 1e-12'
+    preconditions:
+    - 'n > 1'
+    postconditions:
+    - '|std_dev(x) - 2| <= 1e-12'
+    tolerance: 1.0e-12
+  covariance_known:
+    formula: 'cov(a, 2a) = 2 var(a) = 2 * 2 = 4 for a = [1, 2, 3, 4, 5]'
+    domain: 'a = [1..5], b = 2a'
+    codomain: 'bool: |cov - 4| <= 1e-12'
+    preconditions:
+    - 'len(a) == len(b) > 0'
+    postconditions:
+    - '|cov(a, b) - 4| <= 1e-12'
+    tolerance: 1.0e-12
+  correlation_perfect:
+    formula: 'corr(a, 2a) = 1'
+    domain: 'a = [1..5], b = 2a'
+    codomain: 'bool: a positive linear relation has correlation exactly 1 (to rounding)'
+    preconditions:
+    - 'std(a) > 0 and std(b) > 0'
+    postconditions:
+    - '|corr(a, b) - 1| <= 1e-12'
+    tolerance: 1.0e-12
+  chi_squared_known:
+    formula: 'sum (O - E)^2 / E = 0 + 4/16 + 0 + 4/16 + 16/16 + 16/8 = 3.5'
+    domain: 'O = [16, 18, 16, 14, 12, 12], E = [16, 16, 16, 16, 16, 8]'
+    codomain: 'bool: |chi2 - 3.5| <= 1e-12'
+    preconditions:
+    - 'E_i > 0'
+    postconditions:
+    - '|chi2 - 3.5| <= 1e-12'
+    tolerance: 1.0e-12
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 6'
+  applies_to: mean_known
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/stats.json'
+  applies_to: mean_known
+- type: bound
+  property: The variance check tells population from sample variance
+  formal: '|32/7 - 4| > 1e-12'
+  applies_to: variance_population
+
+falsification_tests:
+- id: FALSIFY-EXSTATS-001
+  rule: mean_known
+  prediction: Every one of the 6 checks holds
+  test: cargo test --test examples falsify_exstats_001_all_checks_hold
+  if_fails: A claim of examples/stats.rs no longer holds
+- id: FALSIFY-EXSTATS-002
+  rule: mean_known
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exstats_002_receipt_matches_evidence
+  if_fails: evidence/examples/stats.json is stale; regenerate it with --json
+- id: FALSIFY-EXSTATS-003
+  rule: variance_population
+  prediction: The sample variance (divisor n - 1 = 7) fails the population bound
+  test: cargo test --test examples falsify_exstats_003_sample_variance_fails
+  if_fails: The variance check cannot tell n from n - 1
+- id: FALSIFY-EXSTATS-004
+  rule: correlation_perfect
+  prediction: A reversed series (correlation -1) fails the perfect-positive bound
+  test: cargo test --test examples falsify_exstats_004_negative_correlation_fails
+  if_fails: The correlation check ignores the sign
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+- id: KANI-STATS-001
+  obligation: The variance check tells population from sample variance
+  property: 'stats::variance >= 0 for every 3-element sample of integers in [-8, 8]'
+  bound: 4
+  strategy: exhaustive
+  harness: verify_variance_non_negative
+- id: KANI-STATS-002
+  obligation: Every check in the receipt holds
+  property: 'cov(x, y)^2 <= var(x) var(y) (|corr| <= 1) on stats::covariance, n = 3'
+  bound: 4
+  strategy: exhaustive
+  harness: verify_correlation_bounded
+
+qa_gate:
+  id: F-EXSTATS-001
+  name: example-stats-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes

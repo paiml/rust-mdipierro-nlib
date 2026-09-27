@@ -1,0 +1,186 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/integrate.rs as an entity. The example's `--json` receipt
+    (evidence/examples/integrate.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 7 checks, each naming one of this
+    contract's equations, every one holding. A wrong quadrature weight, a lost
+    check or a stale receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.10 Integration'
+  - 'Davis & Rabinowitz (1984) Methods of Numerical Integration, 2nd Ed.'
+  depends_on:
+  - integration-v1
+entity:
+  type: json
+  ref: evidence/examples/integrate.json
+vocabulary:
+  prefix: ex
+  root_class: ex:IntegrateReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:IntegrateReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [integrate]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/integrate.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-integrate-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [7]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 7
+    maxCount: 7
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-INTEGRATE-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [trapezoid_sin_0_pi, simpson_sin_0_pi, adaptive_sin_0_pi, simpson_beats_trapezoid, simpson_exact_cubic, adaptive_exp_0_1]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  trapezoid_sin_0_pi:
+    formula: |
+      |trapezoid(sin, 0, pi, 100) - 2| <= (b-a) h^2 / 12 * max|f''| = pi^3 / (12 * 100^2) ~ 2.6e-4
+    domain: 'f = sin on [0, pi], n = 100 panels'
+    codomain: 'bool: the composite-trapezoid error bound holds'
+    preconditions:
+    - 'a < b'
+    - 'n > 0'
+    postconditions:
+    - '|I - 2| <= 2.6e-4'
+    tolerance: 2.6e-4
+  simpson_sin_0_pi:
+    formula: |
+      |simpson(sin, 0, pi, 100) - 2| <= (b-a) h^4 / 180 * max|f''''| = pi^5 / (180 * 100^4) ~ 1.7e-8
+    domain: 'f = sin on [0, pi], n = 100 panels (even)'
+    codomain: 'bool: the composite-Simpson error bound holds'
+    preconditions:
+    - 'a < b'
+    - 'n > 0 && n % 2 == 0'
+    postconditions:
+    - '|I - 2| <= 1.7e-8'
+    tolerance: 1.7e-8
+  adaptive_sin_0_pi:
+    formula: '|adaptive_quadrature(sin, 0, pi, 1e-10) - 2| <= 1e-10'
+    domain: 'f = sin on [0, pi], tol = 1e-10'
+    codomain: 'bool: the adaptive result is within the requested tolerance'
+    preconditions:
+    - 'a < b'
+    - 'tol > 0'
+    postconditions:
+    - '|I - 2| <= 1e-10'
+    tolerance: 1.0e-10
+  simpson_beats_trapezoid:
+    formula: '|simpson(sin, 0, pi, 100) - 2| < |trapezoid(sin, 0, pi, 100) - 2|'
+    domain: 'f = sin on [0, pi], n = 100'
+    codomain: 'bool: O(h^4) beats O(h^2) at equal n'
+    preconditions:
+    - 'n even'
+    postconditions:
+    - 'Simpson error strictly below trapezoid error'
+  simpson_exact_cubic:
+    formula: |
+      simpson(x^2, 0, 1, 50) = 1/3 and simpson(x^3, 0, 1, 2) = 1/4, to rounding
+    domain: 'polynomials of degree <= 3 on [0, 1]'
+    codomain: 'bool: Simpson is exact for cubics'
+    preconditions:
+    - 'n even'
+    postconditions:
+    - '|I - exact| <= 1e-14'
+    tolerance: 1.0e-14
+  adaptive_exp_0_1:
+    formula: '|adaptive_quadrature(exp, 0, 1, 1e-12) - (e - 1)| <= 1e-12'
+    domain: 'f = exp on [0, 1], tol = 1e-12'
+    codomain: 'bool: the adaptive result is within the requested tolerance'
+    preconditions:
+    - 'a < b'
+    - 'tol > 0'
+    postconditions:
+    - '|I - (e - 1)| <= 1e-12'
+    tolerance: 1.0e-12
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 7'
+  applies_to: simpson_sin_0_pi
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/integrate.json'
+  applies_to: simpson_sin_0_pi
+- type: bound
+  property: The Simpson tolerance discriminates a trapezoid-grade result
+  formal: '|trapezoid(sin, 0, pi, 100) - 2| > 1.7e-8'
+  applies_to: simpson_sin_0_pi
+
+falsification_tests:
+- id: FALSIFY-EXINTG-001
+  rule: simpson_sin_0_pi
+  prediction: Every one of the 7 checks holds
+  test: cargo test --test examples falsify_exintg_001_all_checks_hold
+  if_fails: A quadrature rule or its error bound regressed
+- id: FALSIFY-EXINTG-002
+  rule: simpson_sin_0_pi
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exintg_002_receipt_matches_evidence
+  if_fails: evidence/examples/integrate.json is stale; regenerate it with --json
+- id: FALSIFY-EXINTG-003
+  rule: simpson_sin_0_pi
+  prediction: A trapezoid-grade answer fails the Simpson bound, so the check is not vacuous
+  test: cargo test --test examples falsify_exintg_003_simpson_bound_discriminates
+  if_fails: The Simpson tolerance is too loose to catch an O(h^2) rule
+- id: FALSIFY-EXINTG-004
+  rule: simpson_exact_cubic
+  prediction: A Simpson with (1,3,3,1)-style weights misses the cubic bound
+  test: cargo test --test examples falsify_exintg_004_wrong_weights_miss_cubic
+  if_fails: The cubic-exactness check cannot tell Simpson from a wrong rule
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+- id: KANI-INTG-001
+  obligation: The Simpson tolerance discriminates a trapezoid-grade result
+  property: 'simpson panics for every odd n < 8'
+  bound: 9
+  strategy: bounded_int
+  harness: verify_simpson_rejects_odd_n
+
+qa_gate:
+  id: F-EXINTG-001
+  name: example-integrate-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes

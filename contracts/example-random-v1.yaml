@@ -1,0 +1,144 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/random.rs as an entity. The example's `--json` receipt
+    (evidence/examples/random.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 4 checks, each naming one of this
+    contract's equations, every one holding. A wrong multiplier or a non-uniform generator, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §6.4 Pseudo-random number generators'
+  - 'Park & Miller (1988) Random number generators: good ones are hard to find. CACM 31(10); Matsumoto & Nishimura (1998) Mersenne Twister. ACM TOMACS 8(1).'
+  depends_on:
+  - random-generators-v1
+entity:
+  type: json
+  ref: evidence/examples/random.json
+vocabulary:
+  prefix: ex
+  root_class: ex:RandomReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:RandomReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [random]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/random.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-random-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [4]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 4
+    maxCount: 4
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-RANDOM-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [minstd_known_value, mt19937_known_value, uniform_chi2]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  minstd_known_value:
+    formula: 'x_{k+1} = 16807 x_k mod (2^31 - 1), x_0 = 1: x_10000 = 1043618065'
+    domain: 'MINSTD, seed 1'
+    codomain: 'bool: the published Park-Miller check value, exactly'
+    preconditions:
+    - 'seed in [1, m - 1]'
+    postconditions:
+    - 'x_10000 == 1043618065'
+  mt19937_known_value:
+    formula: 'MT19937 seeded with 5489: the 10000th output is 4123659995'
+    domain: 'MT19937, default seed 5489'
+    codomain: 'bool: the reference check value (as in C++ std::mt19937), exactly'
+    preconditions:
+    - 'reference initialization'
+    postconditions:
+    - 'y_10000 == 4123659995'
+  uniform_chi2:
+    formula: 'chi2 of 10000 draws in 10 equal bins of [0, 1) < 21.666 (df 9, p = 0.01)'
+    domain: 'MINSTD seed 1 and MT19937 seed 42, 10000 draws each'
+    codomain: 'bool: each generator passes a chi-squared uniformity test'
+    preconditions:
+    - 'every draw lies in [0, 1)'
+    postconditions:
+    - 'chi2 < 21.666'
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 4'
+  applies_to: minstd_known_value
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/random.json'
+  applies_to: minstd_known_value
+- type: bound
+  property: The value and chi-squared checks discriminate
+  formal: 'multiplier 16808 misses 1043618065; a step-1 LCG fails chi2'
+  applies_to: uniform_chi2
+
+falsification_tests:
+- id: FALSIFY-EXRANDOM-001
+  rule: minstd_known_value
+  prediction: Every one of the 4 checks holds
+  test: cargo test --test examples falsify_exrandom_001_all_checks_hold
+  if_fails: A claim of examples/random.rs no longer holds
+- id: FALSIFY-EXRANDOM-002
+  rule: minstd_known_value
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exrandom_002_receipt_matches_evidence
+  if_fails: evidence/examples/random.json is stale; regenerate it with --json
+- id: FALSIFY-EXRANDOM-003
+  rule: minstd_known_value
+  prediction: Multiplier 16808 (off by one) misses the 10000th check value
+  test: cargo test --test examples falsify_exrandom_003_wrong_multiplier_fails
+  if_fails: The check value does not pin the recurrence
+- id: FALSIFY-EXRANDOM-004
+  rule: uniform_chi2
+  prediction: A generator creeping by 1/m per step (x -> x + 1) fails the chi-squared test
+  test: cargo test --test examples falsify_exrandom_004_degenerate_generator_fails
+  if_fails: The chi-squared test cannot see a non-uniform stream
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+
+qa_gate:
+  id: F-EXRANDOM-001
+  name: example-random-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes
