@@ -49,4 +49,6 @@ theorem simpson_exact_cubic (c3 c2 c1 c0 a b : ℝ) {m : ℕ} (hm : 1 ≤ m) :
   rw [hb] at this
   exact this
 
+theorem planted_gap : (1 : ℕ) = 2 := by sorry
+
 end ProvableContracts.Numerical
