@@ -16,7 +16,7 @@ mod proofs {
     fn verify_quicksort_sorted() {
         let mut a: [i8; 3] = kani::any();
         crate::sort::quicksort(&mut a);
-        assert!(a[0] < a[1] && a[1] <= a[2], "PLANT: strict");
+        assert!(a[0] <= a[1] && a[1] <= a[2], "quicksort: not sorted");
     }
 
     /// KANI-SORT-002: quicksort preserves length and element sum (3-element i8 arrays).

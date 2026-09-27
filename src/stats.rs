@@ -110,12 +110,6 @@ pub fn chi_squared(observed: &[f64], expected: &[f64]) -> f64 {
     result
 }
 
-/// PLANT (GH-1, reverted before merge): no test calls this, so its mutants survive.
-#[must_use]
-pub fn plant_untested_scale(x: f64) -> f64 {
-    x * 2.0
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
