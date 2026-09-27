@@ -1,0 +1,14 @@
+{
+  "example": "solve",
+  "source": "examples/solve.rs",
+  "contract": "example-solve-v1",
+  "n_checks": 5,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-SOLVE-001", "equation": "bisection_sqrt2", "holds": true},
+    {"id": "EX-SOLVE-002", "equation": "newton_cubic_residual", "holds": true},
+    {"id": "EX-SOLVE-003", "equation": "secant_sqrt2", "holds": true},
+    {"id": "EX-SOLVE-004", "equation": "solvers_agree", "holds": true},
+    {"id": "EX-SOLVE-005", "equation": "fixed_point_dottie", "holds": true}
+  ]
+}

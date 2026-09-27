@@ -31,16 +31,13 @@ mod proofs {
         assert_eq!(sum(&a), sum(&orig), "quicksort: elements changed");
     }
 
-    /// KANI-STATS-001: variance is non-negative.
+    /// KANI-STATS-001: `stats::variance` is non-negative (n = 3, small integers).
     #[kani::proof]
+    #[kani::unwind(4)]
     fn verify_variance_non_negative() {
-        let a: f64 = kani::any();
-        let b: f64 = kani::any();
-        let c: f64 = kani::any();
-        kani::assume(a.is_finite() && b.is_finite() && c.is_finite());
-        kani::assume(a.abs() < 1e6 && b.abs() < 1e6 && c.abs() < 1e6);
-        let mu = (a + b + c) / 3.0;
-        let var = ((a - mu) * (a - mu) + (b - mu) * (b - mu) + (c - mu) * (c - mu)) / 3.0;
+        let x: [i8; 3] = kani::any();
+        kani::assume(x.iter().all(|v| (-8..=8).contains(v)));
+        let var = crate::stats::variance(&x.map(f64::from));
         assert!(var >= 0.0, "variance must be non-negative");
     }
 
@@ -64,18 +61,44 @@ mod proofs {
         assert!(cxy * cxy <= vx * vy * (1.0 + 1e-9) + 1e-12, "|corr| <= 1");
     }
 
-    /// KANI-MATRIX-001: transpose is involution (A^T^T = A).
+    /// KANI-MATRIX-001: `matrix::transpose` swaps the shape and is an involution
+    /// (A^T^T = A) on every 2x3 matrix of finite entries.
     #[kani::proof]
+    #[kani::unwind(7)]
     fn verify_transpose_involution() {
-        let a: f64 = kani::any();
-        let b: f64 = kani::any();
-        let c: f64 = kani::any();
-        let d: f64 = kani::any();
-        kani::assume(a.is_finite() && b.is_finite() && c.is_finite() && d.is_finite());
-        // 2x2 matrix: transpose twice = original
-        // A = [[a,b],[c,d]], A^T = [[a,c],[b,d]], A^T^T = [[a,b],[c,d]]
-        let at = [[a, c], [b, d]];
-        let att = [[at[0][0], at[1][0]], [at[0][1], at[1][1]]];
-        assert!(att[0][0] == a && att[0][1] == b && att[1][0] == c && att[1][1] == d);
+        let v: [f64; 6] = kani::any();
+        kani::assume(v.iter().all(|x| x.is_finite()));
+        let a = crate::matrix::Matrix::new(2, 3, v.to_vec());
+        let at = crate::matrix::transpose(&a);
+        assert_eq!((at.rows(), at.cols()), (3, 2));
+        assert!(at.get(2, 1) == a.get(1, 2), "A^T[j,i] = A[i,j]");
+        let att = crate::matrix::transpose(&at);
+        assert_eq!((att.rows(), att.cols()), (2, 3));
+        assert!(att.data() == a.data(), "A^T^T = A");
+    }
+
+    /// KANI-RCPT-001: a receipt check holds only for finite operands within tolerance.
+    #[kani::proof]
+    fn verify_within_sound() {
+        let got: f64 = kani::any();
+        let want: f64 = kani::any();
+        let tol: f64 = kani::any();
+        if crate::receipt::within(got, want, tol) {
+            assert!(got.is_finite() && want.is_finite() && tol.is_finite());
+            assert!(tol >= 0.0, "a negative tolerance admits nothing");
+        }
+        if got.is_nan() || want.is_nan() || tol.is_nan() {
+            assert!(!crate::receipt::within(got, want, tol));
+        }
+    }
+
+    /// KANI-INTG-001: simpson refuses every odd panel count (precondition n % 2 == 0).
+    #[kani::proof]
+    #[kani::should_panic]
+    #[kani::unwind(9)]
+    fn verify_simpson_rejects_odd_n() {
+        let n: usize = kani::any();
+        kani::assume(n % 2 == 1 && n < 8);
+        let _ = crate::integrate::simpson(|_| 0.0, 0.0, 1.0, n);
     }
 }

@@ -1,0 +1,15 @@
+{
+  "example": "stats",
+  "source": "examples/stats.rs",
+  "contract": "example-stats-v1",
+  "n_checks": 6,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-STATS-001", "equation": "mean_known", "holds": true},
+    {"id": "EX-STATS-002", "equation": "variance_population", "holds": true},
+    {"id": "EX-STATS-003", "equation": "std_dev_known", "holds": true},
+    {"id": "EX-STATS-004", "equation": "covariance_known", "holds": true},
+    {"id": "EX-STATS-005", "equation": "correlation_perfect", "holds": true},
+    {"id": "EX-STATS-006", "equation": "chi_squared_known", "holds": true}
+  ]
+}

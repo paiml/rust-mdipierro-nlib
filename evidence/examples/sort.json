@@ -1,0 +1,16 @@
+{
+  "example": "sort",
+  "source": "examples/sort.rs",
+  "contract": "example-sort-v1",
+  "n_checks": 7,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-SORT-001", "equation": "quicksort_sorted", "holds": true},
+    {"id": "EX-SORT-002", "equation": "quicksort_permutation", "holds": true},
+    {"id": "EX-SORT-003", "equation": "mergesort_sorted", "holds": true},
+    {"id": "EX-SORT-004", "equation": "mergesort_permutation", "holds": true},
+    {"id": "EX-SORT-005", "equation": "heapsort_sorted", "holds": true},
+    {"id": "EX-SORT-006", "equation": "heapsort_permutation", "holds": true},
+    {"id": "EX-SORT-007", "equation": "sorts_agree", "holds": true}
+  ]
+}

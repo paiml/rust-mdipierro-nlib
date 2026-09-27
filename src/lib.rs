@@ -31,6 +31,7 @@ pub mod matrix;
 pub mod monte_carlo;
 pub mod optimize;
 pub mod random;
+pub mod receipt;
 pub mod solve;
 pub mod sort;
 pub mod stats;

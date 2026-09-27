@@ -1,0 +1,165 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/fourier.rs as an entity. The example's `--json` receipt
+    (evidence/examples/fourier.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 6 checks, each naming one of this
+    contract's equations, every one holding. A wrong twiddle sign or a missing 1/N, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.11 Fourier transforms'
+  - 'Cooley & Tukey (1965) An algorithm for the machine calculation of complex Fourier series. Math. Comp. 19.'
+  depends_on:
+  - fourier-transform-v1
+entity:
+  type: json
+  ref: evidence/examples/fourier.json
+vocabulary:
+  prefix: ex
+  root_class: ex:FourierReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:FourierReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [fourier]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/fourier.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-fourier-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [6]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 6
+    maxCount: 6
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-FOURIER-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [dft_sine_peak, dft_sine_no_leakage, fft_matches_dft, idft_roundtrip, parseval]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  dft_sine_peak:
+    formula: '|X[1]| = |X[N-1]| = N/2 = 4 for x_n = sin(2 pi n / N), N = 8'
+    domain: 'one period of a sine over N = 8 samples'
+    codomain: 'bool: each of the two peaks is N/2 to 1e-12'
+    preconditions:
+    - 'N > 2'
+    postconditions:
+    - '| |X[1]| - 4 | <= 1e-12 and | |X[7]| - 4 | <= 1e-12'
+    tolerance: 1.0e-12
+  dft_sine_no_leakage:
+    formula: 'max over k not in {1, N-1} of |X[k]| <= 1e-12'
+    domain: 'the same 8-sample sine (an integer number of periods: no leakage)'
+    codomain: 'bool: every other bin is empty to rounding'
+    preconditions:
+    - 'the window holds an integer number of periods'
+    postconditions:
+    - 'max_k |X[k]| <= 1e-12 off the two peaks'
+    tolerance: 1.0e-12
+  fft_matches_dft:
+    formula: 'max_k |fft(x)[k] - dft(x)[k]| <= 1e-12'
+    domain: 'x of length N = 8 (a power of two)'
+    codomain: 'bool: radix-2 Cooley-Tukey equals the O(N^2) definition'
+    preconditions:
+    - 'N is a power of 2'
+    postconditions:
+    - 'max_k |FFT_k - DFT_k| <= 1e-12'
+    tolerance: 1.0e-12
+  idft_roundtrip:
+    formula: 'max_n |inverse_dft(fft(x))[n] - x[n]| <= 1e-12'
+    domain: 'the 8-sample sine'
+    codomain: 'bool: the inverse (with its 1/N) undoes the transform'
+    preconditions:
+    - 'N > 0'
+    postconditions:
+    - 'max_n |x_n - IDFT(X)_n| <= 1e-12'
+    tolerance: 1.0e-12
+  parseval:
+    formula: 'sum |x_n|^2 = (1/N) sum |X_k|^2'
+    domain: 'the 8-sample sine (energy N/2 = 4)'
+    codomain: 'bool: energy is conserved to 1e-12'
+    preconditions:
+    - 'N > 0'
+    postconditions:
+    - '|E_time - E_freq / N| <= 1e-12'
+    tolerance: 1.0e-12
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 6'
+  applies_to: dft_sine_peak
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/fourier.json'
+  applies_to: dft_sine_peak
+- type: bound
+  property: The peak and roundtrip checks discriminate
+  formal: '|DFT(sin 2 cycles)[1]| = 0 != 4; roundtrip without 1/N is off by a factor N'
+  applies_to: dft_sine_peak
+
+falsification_tests:
+- id: FALSIFY-EXFOURIER-001
+  rule: dft_sine_peak
+  prediction: Every one of the 6 checks holds
+  test: cargo test --test examples falsify_exfourier_001_all_checks_hold
+  if_fails: A claim of examples/fourier.rs no longer holds
+- id: FALSIFY-EXFOURIER-002
+  rule: dft_sine_peak
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exfourier_002_receipt_matches_evidence
+  if_fails: evidence/examples/fourier.json is stale; regenerate it with --json
+- id: FALSIFY-EXFOURIER-003
+  rule: dft_sine_peak
+  prediction: A two-cycle sine puts nothing in bin 1, so it fails the peak check
+  test: cargo test --test examples falsify_exfourier_003_wrong_frequency_fails
+  if_fails: The peak check cannot tell one frequency from another
+- id: FALSIFY-EXFOURIER-004
+  rule: idft_roundtrip
+  prediction: An inverse without the 1/N factor fails the roundtrip bound
+  test: cargo test --test examples falsify_exfourier_004_unnormalized_inverse_fails
+  if_fails: The roundtrip bound cannot see a missing normalization
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+
+qa_gate:
+  id: F-EXFOURIER-001
+  name: example-fourier-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes

@@ -1,0 +1,13 @@
+{
+  "example": "random",
+  "source": "examples/random.rs",
+  "contract": "example-random-v1",
+  "n_checks": 4,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-RANDOM-001", "equation": "minstd_known_value", "holds": true},
+    {"id": "EX-RANDOM-002", "equation": "mt19937_known_value", "holds": true},
+    {"id": "EX-RANDOM-003", "equation": "uniform_chi2", "holds": true},
+    {"id": "EX-RANDOM-004", "equation": "uniform_chi2", "holds": true}
+  ]
+}

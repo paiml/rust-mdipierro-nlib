@@ -1,0 +1,32 @@
+{
+  "example": "parity",
+  "source": "examples/parity.rs",
+  "contract": "example-parity-v1",
+  "n_checks": 23,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-PARITY-001", "equation": "solver_root", "holds": true},
+    {"id": "EX-PARITY-002", "equation": "solver_root", "holds": true},
+    {"id": "EX-PARITY-003", "equation": "solver_root", "holds": true},
+    {"id": "EX-PARITY-004", "equation": "solver_root", "holds": true},
+    {"id": "EX-PARITY-005", "equation": "integral", "holds": true},
+    {"id": "EX-PARITY-006", "equation": "integral", "holds": true},
+    {"id": "EX-PARITY-007", "equation": "dft", "holds": true},
+    {"id": "EX-PARITY-008", "equation": "dft", "holds": true},
+    {"id": "EX-PARITY-009", "equation": "dft", "holds": true},
+    {"id": "EX-PARITY-010", "equation": "matrix", "holds": true},
+    {"id": "EX-PARITY-011", "equation": "matrix", "holds": true},
+    {"id": "EX-PARITY-012", "equation": "matrix", "holds": true},
+    {"id": "EX-PARITY-013", "equation": "matrix", "holds": true},
+    {"id": "EX-PARITY-014", "equation": "matrix", "holds": true},
+    {"id": "EX-PARITY-015", "equation": "stats", "holds": true},
+    {"id": "EX-PARITY-016", "equation": "stats", "holds": true},
+    {"id": "EX-PARITY-017", "equation": "stats", "holds": true},
+    {"id": "EX-PARITY-018", "equation": "dijkstra", "holds": true},
+    {"id": "EX-PARITY-019", "equation": "dijkstra", "holds": true},
+    {"id": "EX-PARITY-020", "equation": "dijkstra", "holds": true},
+    {"id": "EX-PARITY-021", "equation": "dijkstra", "holds": true},
+    {"id": "EX-PARITY-022", "equation": "dijkstra", "holds": true},
+    {"id": "EX-PARITY-023", "equation": "dijkstra", "holds": true}
+  ]
+}

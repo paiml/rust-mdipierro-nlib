@@ -47,27 +47,27 @@ bindings:
 - contract: matrix-algebra-v1.yaml
   equation: matmul
   module_path: nlib::matrix
-  function: Matrix::matmul
+  function: matmul
   status: implemented
 - contract: matrix-algebra-v1.yaml
   equation: transpose
   module_path: nlib::matrix
-  function: Matrix::transpose
+  function: transpose
   status: implemented
 - contract: matrix-algebra-v1.yaml
   equation: inverse
   module_path: nlib::matrix
-  function: Matrix::inverse
+  function: inverse
   status: implemented
 - contract: matrix-algebra-v1.yaml
   equation: cholesky
   module_path: nlib::matrix
-  function: Matrix::cholesky
+  function: cholesky
   status: implemented
 - contract: matrix-algebra-v1.yaml
   equation: determinant
   module_path: nlib::matrix
-  function: Matrix::determinant
+  function: determinant
   status: implemented
 # nonlinear-solvers-v1.yaml
 - contract: nonlinear-solvers-v1.yaml
@@ -148,12 +148,12 @@ bindings:
 - contract: random-generators-v1.yaml
   equation: lcg
   module_path: nlib::random
-  function: Lcg::next
+  function: next_val
   status: implemented
 - contract: random-generators-v1.yaml
   equation: mersenne_twister
   module_path: nlib::random
-  function: Mt19937::next
+  function: next_u32
   status: implemented
 # monte-carlo-v1.yaml
 - contract: monte-carlo-v1.yaml
@@ -176,22 +176,334 @@ bindings:
 - contract: graph-algorithms-v1.yaml
   equation: dijkstra
   module_path: nlib::graph
-  function: Graph::dijkstra
+  function: dijkstra
   status: implemented
 - contract: graph-algorithms-v1.yaml
   equation: kruskal_mst
   module_path: nlib::graph
-  function: Graph::kruskal_mst
+  function: kruskal_mst
   status: implemented
 - contract: graph-algorithms-v1.yaml
   equation: bfs
   module_path: nlib::graph
-  function: Graph::bfs
+  function: bfs
   status: implemented
 - contract: graph-algorithms-v1.yaml
   equation: dfs
   module_path: nlib::graph
-  function: Graph::dfs
+  function: dfs
+  status: implemented
+# example-solve-v1.yaml
+- contract: example-solve-v1.yaml
+  equation: bisection_sqrt2
+  module_path: nlib::solve
+  function: bisection
+  status: implemented
+- contract: example-solve-v1.yaml
+  equation: newton_cubic_residual
+  module_path: nlib::solve
+  function: newton
+  status: implemented
+- contract: example-solve-v1.yaml
+  equation: secant_sqrt2
+  module_path: nlib::solve
+  function: secant
+  status: implemented
+- contract: example-solve-v1.yaml
+  equation: solvers_agree
+  module_path: nlib::solve
+  function: bisection
+  status: implemented
+- contract: example-solve-v1.yaml
+  equation: fixed_point_dottie
+  module_path: nlib::solve
+  function: fixed_point
+  status: implemented
+# example-sort-v1.yaml
+- contract: example-sort-v1.yaml
+  equation: quicksort_sorted
+  module_path: nlib::sort
+  function: quicksort
+  status: implemented
+- contract: example-sort-v1.yaml
+  equation: quicksort_permutation
+  module_path: nlib::sort
+  function: quicksort
+  status: implemented
+- contract: example-sort-v1.yaml
+  equation: mergesort_sorted
+  module_path: nlib::sort
+  function: mergesort
+  status: implemented
+- contract: example-sort-v1.yaml
+  equation: mergesort_permutation
+  module_path: nlib::sort
+  function: mergesort
+  status: implemented
+- contract: example-sort-v1.yaml
+  equation: heapsort_sorted
+  module_path: nlib::sort
+  function: heapsort
+  status: implemented
+- contract: example-sort-v1.yaml
+  equation: heapsort_permutation
+  module_path: nlib::sort
+  function: heapsort
+  status: implemented
+- contract: example-sort-v1.yaml
+  equation: sorts_agree
+  module_path: nlib::sort
+  function: quicksort
+  status: implemented
+# example-stats-v1.yaml
+- contract: example-stats-v1.yaml
+  equation: mean_known
+  module_path: nlib::stats
+  function: mean
+  status: implemented
+- contract: example-stats-v1.yaml
+  equation: variance_population
+  module_path: nlib::stats
+  function: variance
+  status: implemented
+- contract: example-stats-v1.yaml
+  equation: std_dev_known
+  module_path: nlib::stats
+  function: std_dev
+  status: implemented
+- contract: example-stats-v1.yaml
+  equation: covariance_known
+  module_path: nlib::stats
+  function: covariance
+  status: implemented
+- contract: example-stats-v1.yaml
+  equation: correlation_perfect
+  module_path: nlib::stats
+  function: correlation
+  status: implemented
+- contract: example-stats-v1.yaml
+  equation: chi_squared_known
+  module_path: nlib::stats
+  function: chi_squared
+  status: implemented
+# example-matrix-v1.yaml
+- contract: example-matrix-v1.yaml
+  equation: matmul_known
+  module_path: nlib::matrix
+  function: matmul
+  status: implemented
+- contract: example-matrix-v1.yaml
+  equation: transpose_known
+  module_path: nlib::matrix
+  function: transpose
+  status: implemented
+- contract: example-matrix-v1.yaml
+  equation: inverse_identity
+  module_path: nlib::matrix
+  function: inverse
+  status: implemented
+- contract: example-matrix-v1.yaml
+  equation: cholesky_reconstructs
+  module_path: nlib::matrix
+  function: cholesky
+  status: implemented
+- contract: example-matrix-v1.yaml
+  equation: cholesky_lower_triangular
+  module_path: nlib::matrix
+  function: cholesky
+  status: implemented
+- contract: example-matrix-v1.yaml
+  equation: determinant_known
+  module_path: nlib::matrix
+  function: determinant
+  status: implemented
+# example-fourier-v1.yaml
+- contract: example-fourier-v1.yaml
+  equation: dft_sine_peak
+  module_path: nlib::fourier
+  function: dft
+  status: implemented
+- contract: example-fourier-v1.yaml
+  equation: dft_sine_no_leakage
+  module_path: nlib::fourier
+  function: dft
+  status: implemented
+- contract: example-fourier-v1.yaml
+  equation: fft_matches_dft
+  module_path: nlib::fourier
+  function: fft
+  status: implemented
+- contract: example-fourier-v1.yaml
+  equation: idft_roundtrip
+  module_path: nlib::fourier
+  function: inverse_dft
+  status: implemented
+- contract: example-fourier-v1.yaml
+  equation: parseval
+  module_path: nlib::fourier
+  function: dft
+  status: implemented
+# example-graph-v1.yaml
+- contract: example-graph-v1.yaml
+  equation: dijkstra_known
+  module_path: nlib::graph
+  function: dijkstra
+  status: implemented
+- contract: example-graph-v1.yaml
+  equation: dijkstra_relaxed
+  module_path: nlib::graph
+  function: dijkstra
+  status: implemented
+- contract: example-graph-v1.yaml
+  equation: bfs_visits_all
+  module_path: nlib::graph
+  function: bfs
+  status: implemented
+- contract: example-graph-v1.yaml
+  equation: dfs_visits_all
+  module_path: nlib::graph
+  function: dfs
+  status: implemented
+- contract: example-graph-v1.yaml
+  equation: mst_spanning
+  module_path: nlib::graph
+  function: kruskal_mst
+  status: implemented
+- contract: example-graph-v1.yaml
+  equation: mst_weight_known
+  module_path: nlib::graph
+  function: kruskal_mst
+  status: implemented
+# example-monte-carlo-v1.yaml
+- contract: example-monte-carlo-v1.yaml
+  equation: mc_clt_bound
+  module_path: nlib::monte_carlo
+  function: mc_integrate
+  status: implemented
+- contract: example-monte-carlo-v1.yaml
+  equation: mean_known
+  module_path: nlib::stats
+  function: mean
+  status: implemented
+- contract: example-monte-carlo-v1.yaml
+  equation: bootstrap_se_mean
+  module_path: nlib::monte_carlo
+  function: bootstrap_error
+  status: implemented
+# example-optimize-v1.yaml
+- contract: example-optimize-v1.yaml
+  equation: golden_section_min
+  module_path: nlib::optimize
+  function: golden_section
+  status: implemented
+- contract: example-optimize-v1.yaml
+  equation: newton_critical_point
+  module_path: nlib::optimize
+  function: newton_optimize
+  status: implemented
+- contract: example-optimize-v1.yaml
+  equation: newton_is_minimum
+  module_path: nlib::optimize
+  function: newton_optimize
+  status: implemented
+- contract: example-optimize-v1.yaml
+  equation: gradient_descent_min
+  module_path: nlib::optimize
+  function: gradient_descent
+  status: implemented
+# example-random-v1.yaml
+- contract: example-random-v1.yaml
+  equation: minstd_known_value
+  module_path: nlib::random
+  function: next_val
+  status: implemented
+- contract: example-random-v1.yaml
+  equation: mt19937_known_value
+  module_path: nlib::random
+  function: next_u32
+  status: implemented
+- contract: example-random-v1.yaml
+  equation: uniform_chi2
+  module_path: nlib::random
+  function: next_f64
+  status: implemented
+# example-integrate-v1.yaml
+- contract: example-integrate-v1.yaml
+  equation: trapezoid_sin_0_pi
+  module_path: nlib::integrate
+  function: trapezoid
+  status: implemented
+- contract: example-integrate-v1.yaml
+  equation: simpson_sin_0_pi
+  module_path: nlib::integrate
+  function: simpson
+  status: implemented
+- contract: example-integrate-v1.yaml
+  equation: adaptive_sin_0_pi
+  module_path: nlib::integrate
+  function: adaptive_quadrature
+  status: implemented
+- contract: example-integrate-v1.yaml
+  equation: simpson_beats_trapezoid
+  module_path: nlib::integrate
+  function: simpson
+  status: implemented
+- contract: example-integrate-v1.yaml
+  equation: simpson_exact_cubic
+  module_path: nlib::integrate
+  function: simpson
+  status: implemented
+- contract: example-integrate-v1.yaml
+  equation: adaptive_exp_0_1
+  module_path: nlib::integrate
+  function: adaptive_quadrature
+  status: implemented
+# example-parity-v1.yaml
+- contract: example-parity-v1.yaml
+  equation: solver_root
+  module_path: nlib::solve
+  function: bisection
+  status: implemented
+- contract: example-parity-v1.yaml
+  equation: integral
+  module_path: nlib::integrate
+  function: adaptive_quadrature
+  status: implemented
+- contract: example-parity-v1.yaml
+  equation: dft
+  module_path: nlib::fourier
+  function: dft
+  status: implemented
+- contract: example-parity-v1.yaml
+  equation: matrix
+  module_path: nlib::matrix
+  function: matmul
+  status: implemented
+- contract: example-parity-v1.yaml
+  equation: stats
+  module_path: nlib::stats
+  function: mean
+  status: implemented
+- contract: example-parity-v1.yaml
+  equation: dijkstra
+  module_path: nlib::graph
+  function: dijkstra
+  status: implemented
+# example-receipt-v1.yaml
+- contract: example-receipt-v1.yaml
+  equation: within
+  module_path: nlib::receipt
+  function: within
+  status: implemented
+- contract: example-receipt-v1.yaml
+  equation: all_pass
+  module_path: nlib::receipt
+  function: all_pass
+  status: implemented
+- contract: example-receipt-v1.yaml
+  equation: to_json
+  module_path: nlib::receipt
+  function: to_json
   status: implemented
 critical_path:
 - matmul

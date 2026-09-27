@@ -2,3 +2,7 @@
 # Kani harnesses are compiled only under `cargo kani` (cfg(kani)); mutating
 # them under `cargo test` changes nothing and would be reported as missed.
 exclude_globs = ["src/kani_harnesses.rs"]
+# `receipt::json_requested` only reads the process arguments and delegates to
+# `wants_json` (FALSIFY-RCPT-007). The Examples CI job exercises it: every
+# example runs with `--json` and its output must equal the tracked evidence.
+exclude_re = ["json_requested"]

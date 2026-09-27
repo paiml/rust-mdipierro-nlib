@@ -1,0 +1,15 @@
+{
+  "example": "fourier",
+  "source": "examples/fourier.rs",
+  "contract": "example-fourier-v1",
+  "n_checks": 6,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-FOURIER-001", "equation": "dft_sine_peak", "holds": true},
+    {"id": "EX-FOURIER-002", "equation": "dft_sine_peak", "holds": true},
+    {"id": "EX-FOURIER-003", "equation": "dft_sine_no_leakage", "holds": true},
+    {"id": "EX-FOURIER-004", "equation": "fft_matches_dft", "holds": true},
+    {"id": "EX-FOURIER-005", "equation": "idft_roundtrip", "holds": true},
+    {"id": "EX-FOURIER-006", "equation": "parseval", "holds": true}
+  ]
+}

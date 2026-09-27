@@ -1,0 +1,15 @@
+{
+  "example": "graph",
+  "source": "examples/graph.rs",
+  "contract": "example-graph-v1",
+  "n_checks": 6,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-GRAPH-001", "equation": "dijkstra_known", "holds": true},
+    {"id": "EX-GRAPH-002", "equation": "dijkstra_relaxed", "holds": true},
+    {"id": "EX-GRAPH-003", "equation": "bfs_visits_all", "holds": true},
+    {"id": "EX-GRAPH-004", "equation": "dfs_visits_all", "holds": true},
+    {"id": "EX-GRAPH-005", "equation": "mst_spanning", "holds": true},
+    {"id": "EX-GRAPH-006", "equation": "mst_weight_known", "holds": true}
+  ]
+}

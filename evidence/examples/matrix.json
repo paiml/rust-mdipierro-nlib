@@ -1,0 +1,15 @@
+{
+  "example": "matrix",
+  "source": "examples/matrix.rs",
+  "contract": "example-matrix-v1",
+  "n_checks": 6,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-MATRIX-001", "equation": "matmul_known", "holds": true},
+    {"id": "EX-MATRIX-002", "equation": "transpose_known", "holds": true},
+    {"id": "EX-MATRIX-003", "equation": "inverse_identity", "holds": true},
+    {"id": "EX-MATRIX-004", "equation": "cholesky_reconstructs", "holds": true},
+    {"id": "EX-MATRIX-005", "equation": "cholesky_lower_triangular", "holds": true},
+    {"id": "EX-MATRIX-006", "equation": "determinant_known", "holds": true}
+  ]
+}

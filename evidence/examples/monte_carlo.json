@@ -1,0 +1,15 @@
+{
+  "example": "monte_carlo",
+  "source": "examples/monte_carlo.rs",
+  "contract": "example-monte-carlo-v1",
+  "n_checks": 6,
+  "all_pass": true,
+  "checks": [
+    {"id": "EX-MONTECARLO-001", "equation": "mc_clt_bound", "holds": true},
+    {"id": "EX-MONTECARLO-002", "equation": "mc_clt_bound", "holds": true},
+    {"id": "EX-MONTECARLO-003", "equation": "mc_clt_bound", "holds": true},
+    {"id": "EX-MONTECARLO-004", "equation": "mc_clt_bound", "holds": true},
+    {"id": "EX-MONTECARLO-005", "equation": "mean_known", "holds": true},
+    {"id": "EX-MONTECARLO-006", "equation": "bootstrap_se_mean", "holds": true}
+  ]
+}

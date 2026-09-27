@@ -1,0 +1,177 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/matrix.rs as an entity. The example's `--json` receipt
+    (evidence/examples/matrix.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 6 checks, each naming one of this
+    contract's equations, every one holding. A swapped index, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.4 Linear algebra'
+  - 'Golub & Van Loan (2013) Matrix Computations, 4th Ed.'
+  depends_on:
+  - matrix-algebra-v1
+entity:
+  type: json
+  ref: evidence/examples/matrix.json
+vocabulary:
+  prefix: ex
+  root_class: ex:MatrixReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:MatrixReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [matrix]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/matrix.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-matrix-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [6]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 6
+    maxCount: 6
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-MATRIX-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [matmul_known, transpose_known, inverse_identity, cholesky_reconstructs, cholesky_lower_triangular, determinant_known]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  matmul_known:
+    formula: '[[1,2],[3,4]] [[5,6],[7,8]] = [[19,22],[43,50]] exactly'
+    domain: 'A = [[1,2],[3,4]], B = [[5,6],[7,8]]'
+    codomain: 'bool: every entry equal (small integers are exact in f64)'
+    preconditions:
+    - 'cols(A) == rows(B)'
+    postconditions:
+    - 'AB == [19, 22, 43, 50] row-major'
+  transpose_known:
+    formula: 'A^T = [[1,3],[2,4]]'
+    domain: 'A = [[1,2],[3,4]]'
+    codomain: 'bool: A^T[j][i] == A[i][j]'
+    preconditions:
+    - 'true'
+    postconditions:
+    - 'A^T == [1, 3, 2, 4] row-major'
+  inverse_identity:
+    formula: 'max |A A^-1 - I| <= 1e-12'
+    domain: 'A = [[1,2],[3,4]], det A = -2'
+    codomain: 'bool: the computed inverse is a right inverse to rounding'
+    preconditions:
+    - 'det A != 0'
+    postconditions:
+    - 'max_ij |(A A^-1)_ij - delta_ij| <= 1e-12'
+    tolerance: 1.0e-12
+  cholesky_reconstructs:
+    formula: 'max |L L^T - S| <= 1e-12 for S = [[4,2],[2,3]]'
+    domain: 'S symmetric positive definite'
+    codomain: 'bool: the factor reproduces S'
+    preconditions:
+    - 'S = S^T, x^T S x > 0'
+    postconditions:
+    - 'max_ij |(L L^T - S)_ij| <= 1e-12'
+    tolerance: 1.0e-12
+  cholesky_lower_triangular:
+    formula: 'L[0][1] == 0'
+    domain: 'the 2x2 Cholesky factor L of S'
+    codomain: 'bool: L is lower triangular'
+    preconditions:
+    - 'S SPD'
+    postconditions:
+    - 'L_ij == 0 for j > i'
+  determinant_known:
+    formula: 'det [[1,2],[3,4]] = 1*4 - 2*3 = -2'
+    domain: 'A = [[1,2],[3,4]]'
+    codomain: 'bool: |det A + 2| <= 1e-12'
+    preconditions:
+    - 'A square'
+    postconditions:
+    - '|det(A) - (-2)| <= 1e-12'
+    tolerance: 1.0e-12
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 6'
+  applies_to: matmul_known
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/matrix.json'
+  applies_to: matmul_known
+- type: invariant
+  property: The product check is sensitive to operand order
+  formal: 'BA = [[23,34],[31,46]] != AB'
+  applies_to: matmul_known
+
+falsification_tests:
+- id: FALSIFY-EXMATRIX-001
+  rule: matmul_known
+  prediction: Every one of the 6 checks holds
+  test: cargo test --test examples falsify_exmatrix_001_all_checks_hold
+  if_fails: A claim of examples/matrix.rs no longer holds
+- id: FALSIFY-EXMATRIX-002
+  rule: matmul_known
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exmatrix_002_receipt_matches_evidence
+  if_fails: evidence/examples/matrix.json is stale; regenerate it with --json
+- id: FALSIFY-EXMATRIX-003
+  rule: matmul_known
+  prediction: B A (the operands swapped) does not match the A B check
+  test: cargo test --test examples falsify_exmatrix_003_swapped_operands_fail
+  if_fails: The product check cannot see a transposed kernel
+- id: FALSIFY-EXMATRIX-004
+  rule: inverse_identity
+  prediction: An inverse perturbed by 1e-9 in one entry fails the identity bound
+  test: cargo test --test examples falsify_exmatrix_004_perturbed_inverse_fails
+  if_fails: The identity tolerance is too loose
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+- id: KANI-MATRIX-001
+  obligation: The product check is sensitive to operand order
+  property: 'matrix::transpose swaps the shape and (A^T)^T == A for every finite 2x3 matrix'
+  bound: 7
+  strategy: exhaustive
+  harness: verify_transpose_involution
+
+qa_gate:
+  id: F-EXMATRIX-001
+  name: example-matrix-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes

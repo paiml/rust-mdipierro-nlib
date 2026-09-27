@@ -1,0 +1,158 @@
+metadata:
+  version: 1.0.0
+  created: '2026-09-27'
+  author: PAIML Engineering
+  kind: kernel
+  description: >
+    examples/optimize.rs as an entity. The example's `--json` receipt
+    (evidence/examples/optimize.json) is extracted by extract:json and must
+    satisfy the closed shape below: exactly 5 checks, each naming one of this
+    contract's equations, every one holding. Converging to a maximum, a lost check or a stale
+    receipt turns `pv lint --gate shapes` RED.
+  references:
+  - 'Di Pierro, M. (2013) Annotated Algorithms in Python: with Applications in Physics, Biology, and Finance. Experts4Solutions. ISBN 978-0991160402. §4.7-4.8 Optimization'
+  - 'Nocedal & Wright (2006) Numerical Optimization, 2nd Ed.'
+  depends_on:
+  - optimization-v1
+entity:
+  type: json
+  ref: evidence/examples/optimize.json
+vocabulary:
+  prefix: ex
+  root_class: ex:OptimizeReceipt
+  nested:
+    checks: ex:Check
+shape:
+  targetClass: ex:OptimizeReceipt
+  closed: true
+  properties:
+  - path: ex:example
+    minCount: 1
+    maxCount: 1
+    in: [optimize]
+  - path: ex:source
+    minCount: 1
+    maxCount: 1
+    in: [examples/optimize.rs]
+  - path: ex:contract
+    minCount: 1
+    maxCount: 1
+    in: [example-optimize-v1]
+  - path: ex:n_checks
+    minCount: 1
+    maxCount: 1
+    in: [5]
+  - path: ex:all_pass
+    minCount: 1
+    maxCount: 1
+    in: [true]
+  - path: ex:checks
+    minCount: 5
+    maxCount: 5
+    node:
+      closed: true
+      properties:
+      - path: ex:id
+        minCount: 1
+        maxCount: 1
+        pattern: '^EX-OPTIMIZE-[0-9]{3}$'
+      - path: ex:equation
+        minCount: 1
+        maxCount: 1
+        in: [golden_section_min, newton_critical_point, newton_is_minimum, gradient_descent_min]
+      - path: ex:holds
+        minCount: 1
+        maxCount: 1
+        in: [true]
+
+equations:
+  golden_section_min:
+    formula: '|golden_section((x-3)^2, 0, 10, 1e-10) - 3| <= 1e-9'
+    domain: 'f(x) = (x-3)^2, unimodal on [0, 10]'
+    codomain: 'bool: the bracket closes on the minimizer'
+    preconditions:
+    - 'f unimodal on [a, b]'
+    postconditions:
+    - '|x* - 3| <= 1e-9'
+    tolerance: 1.0e-9
+  newton_critical_point:
+    formula: |
+      x = newton_optimize(f, f', f'', 1.0, 1e-10) for f = x^4 - 3x^2 + 2:
+      |f'(x)| <= 1e-10 and |x - sqrt(3/2)| <= 1e-10
+    domain: 'x0 = 1.0, in the basin of the local minimum sqrt(3/2)'
+    codomain: 'bool: Newton stops at the critical point sqrt(3/2)'
+    preconditions:
+    - 'f'''' != 0 along the iteration'
+    postconditions:
+    - '|f''(x)| <= 1e-10'
+    - '|x - 1.2247448713915890| <= 1e-10'
+    tolerance: 1.0e-10
+  newton_is_minimum:
+    formula: 'f''''(x) = 12 x^2 - 6 > 0 at the returned x'
+    domain: 'the point newton_optimize returns from x0 = 1.0'
+    codomain: 'bool: the critical point is a minimum, not a maximum'
+    preconditions:
+    - 'f twice differentiable'
+    postconditions:
+    - 'f''''(x) > 0'
+  gradient_descent_min:
+    formula: '|| gradient_descent(x^2 + y^2, (5, 3), lr 0.1, tol 1e-6) ||_2 <= 1e-6'
+    domain: 'convex quadratic bowl; steps taken in f32 via aprender SGD'
+    codomain: 'bool: the iterate reaches the origin'
+    preconditions:
+    - 'lr > 0 and lr < 2 / L (L = 2)'
+    postconditions:
+    - '||x*|| <= 1e-6'
+    tolerance: 1.0e-6
+
+proof_obligations:
+- type: postcondition
+  property: Every check in the receipt holds
+  formal: 'receipt().all_pass() && receipt().checks.len() == 5'
+  applies_to: golden_section_min
+- type: equivalence
+  property: The tracked receipt is the example's current output
+  formal: 'receipt().to_json() == evidence/examples/optimize.json'
+  applies_to: golden_section_min
+- type: invariant
+  property: The minimum check rejects a maximum
+  formal: 'newton_optimize(f, f'', f'''', 0.5, 1e-10) == 0 and f''''(0) = -6 < 0'
+  applies_to: newton_is_minimum
+
+falsification_tests:
+- id: FALSIFY-EXOPT-001
+  rule: golden_section_min
+  prediction: Every one of the 5 checks holds
+  test: cargo test --test examples falsify_exopt_001_all_checks_hold
+  if_fails: A claim of examples/optimize.rs no longer holds
+- id: FALSIFY-EXOPT-002
+  rule: golden_section_min
+  prediction: The tracked receipt equals the example's output byte for byte
+  test: cargo test --test examples falsify_exopt_002_receipt_matches_evidence
+  if_fails: evidence/examples/optimize.json is stale; regenerate it with --json
+- id: FALSIFY-EXOPT-003
+  rule: golden_section_min
+  prediction: Golden section on [4, 10] (which excludes the minimizer) returns ~4 and fails the bound
+  test: cargo test --test examples falsify_exopt_003_wrong_bracket_fails
+  if_fails: The minimizer bound is vacuous
+- id: FALSIFY-EXOPT-004
+  rule: newton_is_minimum
+  prediction: From x0 = 0.5 Newton converges to the local maximum x = 0, which fails the minimum check
+  test: cargo test --test examples falsify_exopt_004_newton_from_half_finds_maximum
+  if_fails: The minimum check cannot tell a maximum from a minimum
+
+kani_harnesses:
+- id: KANI-RCPT-001
+  obligation: Every check in the receipt holds
+  property: 'within(got, want, tol) implies all three finite and tol >= 0; NaN never holds'
+  bound: 1
+  strategy: exhaustive
+  harness: verify_within_sound
+
+qa_gate:
+  id: F-EXOPT-001
+  name: example-optimize-v1 Contract
+  checks:
+  - validation
+  - falsification
+  - shapes
