@@ -15,6 +15,7 @@ metadata:
 
 equations:
   mean:
+    lean_theorem: Theorems.Descriptive.mean_within_range
     formula: 'mu = (1/n) * sum_{i=1}^{n} x_i'
     domain: 'x: &[f64], n > 0'
     codomain: 'mu: f64'
@@ -27,6 +28,7 @@ equations:
     - 'mean(x + k) == mean(x) + k (shift invariance)'
 
   variance:
+    lean_theorem: Theorems.Descriptive.variance_nonneg
     formula: 'sigma^2 = (1/(n-1)) * sum_{i=1}^{n} (x_i - mu)^2  (Bessel correction)'
     domain: 'x: &[f64], n > 1'
     codomain: 'sigma^2: f64'
@@ -40,6 +42,7 @@ equations:
     tolerance: 1.0e-12
 
   covariance:
+    lean_theorem: Theorems.Descriptive.covariance_symm
     formula: 'cov(x,y) = (1/(n-1)) * sum_{i=1}^{n} (x_i - mu_x)(y_i - mu_y)'
     domain: 'x: &[f64], y: &[f64], x.len() == y.len(), n > 1'
     codomain: 'cov: f64'
@@ -54,6 +57,7 @@ equations:
     tolerance: 1.0e-12
 
   correlation:
+    lean_theorem: Theorems.Descriptive.correlation_bounded
     formula: 'r = cov(x, y) / (std(x) * std(y))'
     domain: 'x: &[f64], y: &[f64], std(x) > 0 and std(y) > 0'
     codomain: 'r: f64 in [-1, 1]'
@@ -68,6 +72,7 @@ equations:
     tolerance: 1.0e-10
 
   chi_squared_fit:
+    lean_theorem: Theorems.Descriptive.chi_squared_nonneg
     formula: 'chi2 = sum_{i=1}^{k} (O_i - E_i)^2 / E_i'
     domain: 'O: &[f64] observed, E: &[f64] expected, k bins'
     codomain: 'chi2: f64 test statistic'
@@ -86,22 +91,47 @@ proof_obligations:
   property: Variance non-negative
   formal: 'variance(x) >= 0.0 for all x with n > 1'
   applies_to: variance
+  lean:
+    theorem: variance_nonneg
+    module: ProvableContracts.Theorems.Descriptive.variance_nonneg
+    status: proved
+    notes: Stated over the exact model (see docs/lean-proofs.md), not over f64.
 - type: bound
   property: Correlation bounded
   formal: '-1.0 <= correlation(x, y) <= 1.0'
   applies_to: correlation
+  lean:
+    theorem: correlation_bounded
+    module: ProvableContracts.Theorems.Descriptive.correlation_bounded
+    status: proved
+    notes: Stated over the exact model (see docs/lean-proofs.md), not over f64.
 - type: postcondition
   property: Chi-squared non-negative
   formal: 'chi_squared(O, E) >= 0.0'
   applies_to: chi_squared_fit
+  lean:
+    theorem: chi_squared_nonneg
+    module: ProvableContracts.Theorems.Descriptive.chi_squared_nonneg
+    status: proved
+    notes: Stated over the exact model (see docs/lean-proofs.md), not over f64.
 - type: invariant
   property: Covariance symmetry
   formal: 'cov(x, y) == cov(y, x)'
   applies_to: covariance
+  lean:
+    theorem: covariance_symm
+    module: ProvableContracts.Theorems.Descriptive.covariance_symm
+    status: proved
+    notes: Stated over the exact model (see docs/lean-proofs.md), not over f64.
 - type: postcondition
   property: Mean within data range
   formal: 'min(x) <= mean(x) <= max(x)'
   applies_to: mean
+  lean:
+    theorem: mean_within_range
+    module: ProvableContracts.Theorems.Descriptive.mean_within_range
+    status: proved
+    notes: Stated over the exact model (see docs/lean-proofs.md), not over f64.
 
 falsification_tests:
 - id: FALSIFY-STAT-001

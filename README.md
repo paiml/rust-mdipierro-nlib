@@ -36,16 +36,16 @@ published on crates.io — no other external crates.
 | example-stats-v1 | B (0.85) | 0.6 | 1 | 1 | 1 | mean_known, variance_population, std_dev_known, covariance_known, correlation_perfect, chi_squared_known |
 | fourier-transform-v1 | B (0.85) | 0.7 | 1 | 0.9 | 1 | dft, fft, inverse_dft, parseval |
 | graph-algorithms-v1 | B (0.81) | 0.7 | 1 | 0.75 | 1 | dijkstra, kruskal_mst, bfs, dfs |
-| integration-v1 | B (0.79) | 0.7 | 1 | 0.68 | 1 | trapezoid, simpson, adaptive_quadrature |
+| integration-v1 | B (0.84) | 0.7 | 1 | 0.68 | 1 | trapezoid, simpson, adaptive_quadrature |
 | matrix-algebra-v1 | B (0.79) | 0.7 | 1 | 0.68 | 1 | matmul, transpose, inverse, cholesky, determinant |
 | monte-carlo-v1 | B (0.79) | 0.7 | 1 | 0.68 | 1 | mc_integrate, bootstrap_error, metropolis |
 | nonlinear-solvers-v1 | B (0.79) | 0.7 | 1 | 0.68 | 1 | bisection, newton, secant, fixed_point |
 | optimization-v1 | B (0.79) | 0.7 | 1 | 0.68 | 1 | golden_section, newton_optimize, gradient_descent |
 | random-generators-v1 | B (0.79) | 0.7 | 1 | 0.68 | 1 | lcg, mersenne_twister |
-| sorting-v1 | B (0.77) | 0.7 | 1 | 0.6 | 1 | quicksort, mergesort, heapsort |
-| statistics-v1 | B (0.76) | 0.7 | 1 | 0.54 | 1 | mean, variance, covariance, correlation, chi_squared_fit |
+| sorting-v1 | B (0.83) | 0.7 | 1 | 0.6 | 1 | quicksort, mergesort, heapsort |
+| statistics-v1 | B (0.81) | 0.7 | 1 | 0.54 | 1 | mean, variance, covariance, correlation, chi_squared_fit |
 
-**23 contracts, 96 equations; mean contract score 0.75 (C); codebase grade A (0.92).**
+**23 contracts, 96 equations; mean contract score 0.75 (B); codebase grade B (0.89).**
 
 <!-- CONTRACT_TABLE_END -->
 
@@ -54,27 +54,27 @@ published on crates.io — no other external crates.
 <!-- ENFORCEMENT_START -->
 
 GitHub enforces only what the org ruleset "Green Main" requires, and it requires one check: `gate`.
-That job runs last, and it fails unless each of these 7 jobs succeeded: `lint-test`, `Golden Vectors`, `Python/Rust Parity`, `Kani BMC`, `Mutation Testing`, `Examples`, `Contract Validation`.
+That job runs last, and it fails unless each of these 8 jobs succeeded: `lint-test`, `Golden Vectors`, `Python/Rust Parity`, `Kani BMC`, `Mutation Testing`, `Examples`, `Contract Validation`, `Lean Proofs`.
 Advisory, never blocking: `PMAT Comply (advisory)`, and the full mutation sweep on `main`.
 `scripts/ci_gate.sh --check-workflow` fails if a new job is neither needed by `gate` nor marked advisory.
 
 Each row is a claim entity in [`evidence/enforcement/claims.json`](evidence/enforcement/claims.json), closed by the SHACL shape in [`contracts/enforcement-claims-v1.yaml`](contracts/enforcement-claims-v1.yaml).
-11 claims are enforced and proved by a plant; 3 are not enforced.
+12 claims are enforced and proved by a plant; 2 are not enforced.
 
 | Claim | Mechanism | What turns it RED | Blocks merge | Plant receipt | Honest limit |
 |-------|-----------|-------------------|--------------|---------------|--------------|
-| A red job blocks the merge | ruleset "Green Main" requires `gate`; `gate` runs last with `if: always()` and needs the 7 jobs `lint-test`, `Golden Vectors`, `Python/Rust Parity`, `Kani BMC`, `Mutation Testing`, `Examples`, `Contract Validation` | any needed job failed, was cancelled or was skipped | yes | a failing step in Kani BMC, not the first job: lint-test green, kani red, `gate` red, merge BLOCKED ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36314753804/job/108607643661)) | Org admins may bypass the ruleset ("always"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings)) |
+| A red job blocks the merge | ruleset "Green Main" requires `gate`; `gate` runs last with `if: always()` and needs the 8 jobs `lint-test`, `Golden Vectors`, `Python/Rust Parity`, `Kani BMC`, `Mutation Testing`, `Examples`, `Contract Validation`, `Lean Proofs` | any needed job failed, was cancelled or was skipped | yes | a failing step in Kani BMC, not the first job: lint-test green, kani red, `gate` red, merge BLOCKED ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36314753804/job/108607643661)) | Org admins may bypass the ruleset ("always"), and the account that merges here is one. No merge used it: every blocking check was green before each merge ([audit](docs/ontology-conformance.md#findings)) |
 | Each example receipt conforms to its closed SHACL shape | `pv lint --gate shapes` over 12 shapes and 12 focus nodes (the 11 example receipts and this table); the Examples job diffs each receipt against `evidence/examples/` | any shape violation, or a receipt that differs from its tracked evidence | yes | examples/integrate.json receipt edited to hold false: Examples red (falsify_exintg_002 receipt differs from evidence), `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475241)) | Checks the 11 examples on their fixed inputs, not the library on other inputs |
 | The ONT-G contracts gate runs every step | `scripts/contracts_gate.sh`: 6 steps, each RUN with its own status | any step fails; the later steps still run | yes | four faults in one run (phantom baseline, README byte, claims plant run, receipt): 4 of 6 steps failed and all 6 RAN, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175)) | pv is the instrument: its defects pass through ([aprender#4531](https://github.com/paiml/aprender/issues/4531), [aprender#4521](https://github.com/paiml/aprender/issues/4521)) |
 | README.md is generated: every byte comes from `docs/README.md.in` and the ontology | `scripts/readme_sync.sh --check` regenerates the whole file and compares bytes; `scripts/example_links.sh` checks every example link | any README byte differs from the regenerated file; a link whose target does not say what the link claims | yes | one README byte hand-edited (`enforced` to `enforceD`), nothing else: only Contract Validation red (readme step), `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36316337423/job/108611736648)) | The prose in `docs/README.md.in` is written by hand: the gate proves the README matches it, not that the prose is true |
 | Every claim in this table conforms to its closed SHACL shape | this table is rendered from `evidence/enforcement/claims.json`, closed by `contracts/enforcement-claims-v1.yaml`; the generator also checks each claim's job against `scripts/ci_gate.sh` | an enforced claim with no plant run; an advisory check presented as enforced; a claim whose job `gate` does or does not need contrary to its class | yes | the advisory PMAT claim moved into `enforced` in claims.json: the shape names `job: "comply" is not one of [...]`, Contract Validation red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36316963827/job/108613465055)) | The shape checks that a plant run is recorded, not what the run showed: the run itself is the receipt |
-| Proof levels only rise; phantom Kani references only fall | `scripts/proof_ratchet.sh` against `contracts/proof-baseline.json` | a level drops, or phantoms exceed 28 | yes | phantom baseline lowered from 28 to 27: the ratchet reports phantoms rose from 27 to 28, Contract Validation red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175)) | Levels today: 1 at L2, 22 at L3. pv credits a declared harness toward L3 without checking that it exists |
+| Proof levels only rise; phantom Kani references only fall | `scripts/proof_ratchet.sh` against `contracts/proof-baseline.json` | a level drops, or phantoms exceed 28 | yes | phantom baseline lowered from 28 to 27: the ratchet reports phantoms rose from 27 to 28, Contract Validation red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175)) | Levels today: 1 at L2, 21 at L3, 1 at L5. pv credits a declared harness toward L3 without checking that it exists |
 | Bounded properties hold for every input within the bound | Kani BMC, 7 harnesses in `src/kani_harnesses.rs` | a counterexample | yes | a strict-order assertion added to verify_quicksort_sorted: Kani reports the assertion failed, Kani BMC red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475259)) | BOUNDED: unwind 4 to 9, so no loop runs more than 8 times. Nothing is proved beyond the bound. Every declared harness exists for 12 of 22 contracts; 28 declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6)) |
 | Pre- and postconditions hold at runtime | 10 `contract_pre_*!`/`contract_post_*!` macros, written by hand in `build.rs`, at 11 call sites | an assertion panics in a debug or test build | yes | the quicksort postcondition macro inverted in build.rs: 6 tests panic `postcondition violated`, lint-test red, every other job skipped, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36318164016/job/108616712665)) | They expand to `debug_assert!`: release builds are NOT checked at runtime. `quicksort: input exists` (`len < usize::MAX`) can never fail |
 | The tests catch changes to the code a PR touches | `cargo mutants --in-diff` on the PR diff | a mutant on a changed line survives | yes | an untested function (plant_untested_scale) added: 2 mutants missed, Mutation Testing red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475227)) | Code the PR does not touch is not re-checked |
 | Values match the golden vectors from Python nlib | `tests/golden_vectors.rs`, 14 tests | any value outside its tolerance | yes | the quicksort golden vector first value changed from 3 to 4: golden_sort mismatch, Golden Vectors red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475217)) | Fixed inputs only |
 | The Rust values match Python nlib run live | `tests/falsify_parity.py` runs Di Pierro's nlib.py at a pinned commit against `cargo run --example parity` | any value differs beyond its tolerance | yes | Rust integrate scaled by 1.01: integrate_sin 2.02 against Python 1.99997, Python/Rust Parity red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475162)) | Parity cannot catch a bug the two implementations share |
-| An equation is true on every input of an exact model (L4) | Lean 4: 0 equation(s) cite a sorry-free, in-tree Lean theorem ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5)) | nothing: no required check builds Lean yet | no | - | No contract is above L3 yet |
+| An equation is true on every input of an exact model (L4) | `scripts/lean_gate.sh` in the Lean Proofs job: `lake build` of `lean/` with the pinned toolchain and Mathlib; `pv` counts 9 theorems there grounded in a contract, and the contracts ratchet fails if that count falls ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5)) | a proof that does not check; any `sorry`, `admit`, new `axiom` or `native_decide`; a cited theorem that does not exist or that `lake build` never compiles | yes | transpose_transpose restated as `(Aᵀ)ᵀ[i,j] = A[j,i]` plus a `sorry` in simpson_exact_cubic: `lake build` unsolved goals and `declaration uses sorry`, the static check names the sorry, Lean Proofs red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36320956902/job/108624548190)) | Each theorem is about an exact model (reals, lists in a linear order, row-major arrays), NOT the f64 code: [docs/lean-proofs.md](docs/lean-proofs.md) states each gap. At L4 or above: `statistics-v1` (L5); the other contracts have obligations no theorem covers, and Fourier, random and Monte Carlo are N/A |
 | The whole library survives mutation testing | the full `cargo mutants` sweep on `main`, a step with `continue-on-error: true` | never blocks: it runs after the merge | no | - | 114 missed mutants before GH-1 |
 | The repository meets PMAT governance | `pmat comply check` | fails today, and `gate` does not need it | no | - | Its failures are governance (branch protection needs an admin, `deny.toml`, `build.rs`, roadmap and spec schema, TDG), not contract enforcement |
 
@@ -170,19 +170,19 @@ Every example gets one row, and its links always come in the same order:
 <!-- Generated by scripts/readme_sync.sh from contracts/example-origins.tsv, contracts/shapes.ttl and contracts/proof-status.json. Do not edit by hand. -->
 <!-- EXAMPLE_TABLE_START -->
 
-| Example | Python original (nlib @ `5db3a42`) | Contract · SHACL shape | Proof | Run | What it does |
-|---------|-----------------|------------------------|-------|-----|--------------|
-| [sort](examples/sort.rs) | [`quicksort`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/docs/book_numerical.tex#L3163) | [example-sort-v1](contracts/example-sort-v1.yaml) · [shape](contracts/shapes.ttl#L802) | [L3](contracts/proof-status.json#L148) | `cargo run --example sort` | Quicksort, mergesort, heapsort on the same input |
-| [stats](examples/stats.rs) | [`mean`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1686) | [example-stats-v1](contracts/example-stats-v1.yaml) · [shape](contracts/shapes.ttl#L865) | [L3](contracts/proof-status.json#L161) | `cargo run --example stats` | Mean, variance, correlation, chi-squared |
-| [matrix](examples/matrix.rs) | [`Matrix`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L823) | [example-matrix-v1](contracts/example-matrix-v1.yaml) · [shape](contracts/shapes.ttl#L424) | [L3](contracts/proof-status.json#L57) | `cargo run --example matrix` | Matmul, transpose, inverse, Cholesky, determinant |
-| [solve](examples/solve.rs) | [`solve_bisection`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1389) | [example-solve-v1](contracts/example-solve-v1.yaml) · [shape](contracts/shapes.ttl#L739) | [L3](contracts/proof-status.json#L135) | `cargo run --example solve` | Bisection, Newton, secant, fixed-point root finding |
-| [optimize](examples/optimize.rs) | [`optimize_golden_search`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1471) | [example-optimize-v1](contracts/example-optimize-v1.yaml) · [shape](contracts/shapes.ttl#L550) | [L3](contracts/proof-status.json#L83) | `cargo run --example optimize` | Golden section, Newton optimizer, gradient descent |
-| [integrate](examples/integrate.rs) | [`integrate`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1642) | [example-integrate-v1](contracts/example-integrate-v1.yaml) · [shape](contracts/shapes.ttl#L361) | [L3](contracts/proof-status.json#L44) | `cargo run --example integrate` | Trapezoid, Simpson, adaptive quadrature |
-| [fourier](examples/fourier.rs) | [`fourier`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/docs/book_numerical.tex#L8358) | [example-fourier-v1](contracts/example-fourier-v1.yaml) · [shape](contracts/shapes.ttl#L235) | [L3](contracts/proof-status.json#L18) | `cargo run --example fourier` | DFT, FFT, inverse DFT, roundtrip check |
-| [random](examples/random.rs) | [`MCG`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1706) | [example-random-v1](contracts/example-random-v1.yaml) · [shape](contracts/shapes.ttl#L676) | [L3](contracts/proof-status.json#L109) | `cargo run --example random` | LCG (MINSTD), Mersenne Twister, uniformity test |
-| [monte_carlo](examples/monte_carlo.rs) | [`MCEngine`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1908) | [example-monte-carlo-v1](contracts/example-monte-carlo-v1.yaml) · [shape](contracts/shapes.ttl#L487) | [L3](contracts/proof-status.json#L70) | `cargo run --example monte_carlo` | MC integration of x^2, bootstrap error estimation |
-| [graph](examples/graph.rs) | [`Dijkstra`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L458) | [example-graph-v1](contracts/example-graph-v1.yaml) · [shape](contracts/shapes.ttl#L298) | [L3](contracts/proof-status.json#L31) | `cargo run --example graph` | Dijkstra, BFS, DFS, Kruskal MST on weighted graph |
-| [parity](examples/parity.rs) | [`solve_bisection`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1389) | [example-parity-v1](contracts/example-parity-v1.yaml) · [shape](contracts/shapes.ttl#L613) | [L3](contracts/proof-status.json#L96) | `cargo run --example parity` | Values cross-checked against Python nlib and closed forms |
+| Example | Python original (nlib @ `5db3a42`) | Contract · SHACL shape | Proof | Lean | Run | What it does |
+|---------|-----------------|------------------------|-------|------|-----|--------------|
+| [sort](examples/sort.rs) | [`quicksort`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/docs/book_numerical.tex#L3163) | [example-sort-v1](contracts/example-sort-v1.yaml) · [shape](contracts/shapes.ttl#L802) | [L3](contracts/proof-status.json#L148) | [`quicksort_correct`](lean/ProvableContracts/Theorems/Sorting/quicksort_correct.lean) | `cargo run --example sort` | Quicksort, mergesort, heapsort on the same input |
+| [stats](examples/stats.rs) | [`mean`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1686) | [example-stats-v1](contracts/example-stats-v1.yaml) · [shape](contracts/shapes.ttl#L865) | [L3](contracts/proof-status.json#L161) | [`variance_nonneg`](lean/ProvableContracts/Theorems/Descriptive/variance_nonneg.lean) | `cargo run --example stats` | Mean, variance, correlation, chi-squared |
+| [matrix](examples/matrix.rs) | [`Matrix`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L823) | [example-matrix-v1](contracts/example-matrix-v1.yaml) · [shape](contracts/shapes.ttl#L424) | [L3](contracts/proof-status.json#L57) | [`transpose_transpose`](lean/ProvableContracts/Theorems/Dense/transpose_transpose.lean) | `cargo run --example matrix` | Matmul, transpose, inverse, Cholesky, determinant |
+| [solve](examples/solve.rs) | [`solve_bisection`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1389) | [example-solve-v1](contracts/example-solve-v1.yaml) · [shape](contracts/shapes.ttl#L739) | [L3](contracts/proof-status.json#L135) | not proved yet: root finders: convergence needs analysis beyond this issue (GH-5 did sort, transpose, variance, Simpson) | `cargo run --example solve` | Bisection, Newton, secant, fixed-point root finding |
+| [optimize](examples/optimize.rs) | [`optimize_golden_search`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1471) | [example-optimize-v1](contracts/example-optimize-v1.yaml) · [shape](contracts/shapes.ttl#L550) | [L3](contracts/proof-status.json#L83) | not proved yet: golden section and Newton: convergence needs analysis beyond this issue | `cargo run --example optimize` | Golden section, Newton optimizer, gradient descent |
+| [integrate](examples/integrate.rs) | [`integrate`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1642) | [example-integrate-v1](contracts/example-integrate-v1.yaml) · [shape](contracts/shapes.ttl#L361) | [L3](contracts/proof-status.json#L44) | [`simpson_exact_cubic`](lean/ProvableContracts/Theorems/Numerical/simpson_exact_cubic.lean) | `cargo run --example integrate` | Trapezoid, Simpson, adaptive quadrature |
+| [fourier](examples/fourier.rs) | [`fourier`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/docs/book_numerical.tex#L8358) | [example-fourier-v1](contracts/example-fourier-v1.yaml) · [shape](contracts/shapes.ttl#L235) | [L3](contracts/proof-status.json#L18) | N/A: its claims (roundtrip within 1e-10, Parseval) are floating-point tolerances; over the reals they are textbook DFT facts, not facts about this code | `cargo run --example fourier` | DFT, FFT, inverse DFT, roundtrip check |
+| [random](examples/random.rs) | [`MCG`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1706) | [example-random-v1](contracts/example-random-v1.yaml) · [shape](contracts/shapes.ttl#L676) | [L3](contracts/proof-status.json#L109) | N/A: the integer recurrences are pinned by golden vectors and Kani, and uniformity is a statistical property, not a theorem | `cargo run --example random` | LCG (MINSTD), Mersenne Twister, uniformity test |
+| [monte_carlo](examples/monte_carlo.rs) | [`MCEngine`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1908) | [example-monte-carlo-v1](contracts/example-monte-carlo-v1.yaml) · [shape](contracts/shapes.ttl#L487) | [L3](contracts/proof-status.json#L70) | N/A: the error bound is a probabilistic statement about a pseudo-random stream; it is falsified by tests, not proved | `cargo run --example monte_carlo` | MC integration of x^2, bootstrap error estimation |
+| [graph](examples/graph.rs) | [`Dijkstra`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L458) | [example-graph-v1](contracts/example-graph-v1.yaml) · [shape](contracts/shapes.ttl#L298) | [L3](contracts/proof-status.json#L31) | not proved yet: Dijkstra, BFS, DFS, Kruskal: correctness proofs are not written yet | `cargo run --example graph` | Dijkstra, BFS, DFS, Kruskal MST on weighted graph |
+| [parity](examples/parity.rs) | [`solve_bisection`](https://github.com/mdipierro/nlib/blob/5db3a42f24907e21559d6546ff3489578e2e4ad9/src/nlib.py#L1389) | [example-parity-v1](contracts/example-parity-v1.yaml) · [shape](contracts/shapes.ttl#L613) | [L3](contracts/proof-status.json#L96) | not proved yet: cross-checks values against Python nlib; the theorems it would need are those of the examples above | `cargo run --example parity` | Values cross-checked against Python nlib and closed forms |
 
 <!-- EXAMPLE_TABLE_END -->
 
@@ -208,7 +208,7 @@ The gate **fails closed**:
 |--------|-------|
 | SHACL shapes (one per example contract) | 12 |
 | Focus nodes (example `--json` receipts in `evidence/examples/`) | 12 |
-| RDF triples checked | 1435 |
+| RDF triples checked | 1571 |
 | Violations | 0 (any violation is exit 1) |
 | Planted control: pv's own broken receipt must violate | fired, 71 violations |
 | Extractor controls fired | 13 of 13 |
@@ -238,16 +238,16 @@ harnesses go missing. The missing harnesses are tracked in
 <!-- Generated by scripts/readme_sync.sh from contracts/proof-status.json. Do not edit by hand. -->
 <!-- PROOF_STATUS_START -->
 
-**`pv proof-status` level: L3 (tested + Kani model-checked), 96/96 bindings verified; the Kani harnesses exist for 12 of the 22 contracts that declare them.**
+**`pv proof-status` level: L3 (tested + Kani model-checked + Lean-proved), 96/96 bindings verified; the Kani harnesses exist for 12 of the 22 contracts that declare them.**
 
 | Measure (`pv proof-status --verify-bindings`) | Value |
 |--------|-------|
-| Contracts | 23: 22 with proof obligations (22 at L3, the lowest level); 1 schema contract(s) over data, not code: `enforcement-claims-v1` (L2) |
-| Levels | L2: 1, L3: 22 |
+| Contracts | 23: 22 with proof obligations (21 at L3, the lowest level); 1 schema contract(s) over data, not code: `enforcement-claims-v1` (L2) |
+| Levels | L2: 1, L3: 21, L5: 1 |
 | Proof obligations | 81 (0 N/A) |
 | Falsification tests | 108 |
 | Kani harnesses | 48 |
-| Lean theorems proved (grounded in an equation) | 0 (0) |
+| Lean theorems proved (grounded in an equation) | 9 (9) |
 | Bindings verified in source | 96/96 |
 | Contracts whose every declared Kani harness exists in `src/` | 12 of 22 |
 | Declared Kani harnesses with no `#[kani::proof]` function (phantom) | 28 |
@@ -270,8 +270,8 @@ harnesses that are missing (present of declared): fourier-transform-v1 (0 of 3),
 | Bound symbols (extract:code) | 96 resolved, 0 unresolved |
 | SHACL shapes | 12, over 12 focus nodes |
 | Kani BMC harnesses | 7 |
-| Contract grade | C (0.75 mean) |
-| Codebase grade | A (0.92) |
+| Contract grade | B (0.75 mean) |
+| Codebase grade | B (0.89) |
 | External deps | 1 (aprender only) |
 
 <!-- CONTRACT_METRICS_END -->

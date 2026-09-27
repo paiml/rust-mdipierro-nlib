@@ -1,0 +1,12 @@
+# example	lean	the theorem the README links (a contract equation's lean_theorem names it), or N/A / open with the reason
+sort	quicksort_correct	quicksort returns a sorted permutation of its input (lists over any linear order)
+stats	variance_nonneg	population and sample variance are >= 0 (over the reals; see docs/lean-proofs.md for the other four)
+matrix	transpose_transpose	transposing twice returns the matrix (row-major storage, entries moved, never computed)
+integrate	simpson_exact_cubic	composite Simpson with an even panel count is exact on every cubic (over the reals)
+fourier	N/A	its claims (roundtrip within 1e-10, Parseval) are floating-point tolerances; over the reals they are textbook DFT facts, not facts about this code
+random	N/A	the integer recurrences are pinned by golden vectors and Kani, and uniformity is a statistical property, not a theorem
+monte_carlo	N/A	the error bound is a probabilistic statement about a pseudo-random stream; it is falsified by tests, not proved
+solve	open	root finders: convergence needs analysis beyond this issue (GH-5 did sort, transpose, variance, Simpson)
+optimize	open	golden section and Newton: convergence needs analysis beyond this issue
+graph	open	Dijkstra, BFS, DFS, Kruskal: correctness proofs are not written yet
+parity	open	cross-checks values against Python nlib; the theorems it would need are those of the examples above

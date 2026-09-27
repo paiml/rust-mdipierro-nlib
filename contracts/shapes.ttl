@@ -76,7 +76,7 @@
         sh:path <https://ont.paiml.dev/v1alpha1/ex/job> ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( "gate" "lint-test" "golden-vectors" "parity" "kani" "mutants" "examples" "contracts" ) ;
+        sh:in ( "gate" "lint-test" "golden-vectors" "parity" "kani" "mutants" "examples" "contracts" "lean" ) ;
     ] ;
     sh:property [
         sh:path <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> ;
@@ -140,7 +140,7 @@
         sh:path <https://ont.paiml.dev/v1alpha1/ex/job> ;
         sh:minCount 1 ;
         sh:maxCount 1 ;
-        sh:in ( "gate" "lint-test" "golden-vectors" "parity" "kani" "mutants" "examples" "contracts" ) ;
+        sh:in ( "gate" "lint-test" "golden-vectors" "parity" "kani" "mutants" "examples" "contracts" "lean" ) ;
     ] ;
     sh:property [
         sh:path <https://ont.paiml.dev/v1alpha1/ex/blocks_merge> ;

@@ -10,6 +10,10 @@
 #      and its shape        contracts/shapes.ttl#L<n>, the line declaring that contract's sh:NodeShape
 #   4. its proof status     contracts/proof-status.json#L<n>, the line naming that stem; the link text
 #                           is the level recorded there
+#   5. its Lean theorem     lean/ProvableContracts/Theorems/<Domain>/<theorem>.lean (GH-5): the file declares
+#                           `theorem <theorem>`, holds no `sorry` token, and a contract equation's
+#                           `lean_theorem:` names Theorems.<Domain>.<theorem>. An example with no theorem has
+#                           no sixth link and a cell `N/A: <reason>` or `not proved yet: <reason>` instead.
 #
 # Any example without a row, a row without an example, a missing or out-of-order link, or a target
 # that does not exist or does not say what the link claims is a failure. A remote file that cannot
@@ -53,15 +57,15 @@ line_of() {
 }
 
 check_row() { # check_row <example> <row> <ref>
-    local ex=$1 row=$2 ref=$3 stem links n text target path anchor line f level
+    local ex=$1 row=$2 ref=$3 stem links n text target path anchor line f level dom
     stem=$(stem_of "$ex")
     links=$(printf '%s\n' "$row" | grep -oE '\[[^]]*\]\([^)]*\)' | sed -E 's/^\[([^]]*)\]\(([^)]*)\)$/\1\t\2/')
     n=$(printf '%s\n' "$links" | grep -c . || true)
-    if [ "$n" != 5 ]; then
-        fail "$ex: $n link(s), want 5 (rust, python, contract, shape, proof status)"
+    if [ "$n" != 5 ] && [ "$n" != 6 ]; then
+        fail "$ex: $n link(s), want 5 or 6 (rust, python, contract, shape, proof status, then Lean)"
         return
     fi
-    CHECKED=$((CHECKED + 5))
+    CHECKED=$((CHECKED + n))
 
     IFS=$'\t' read -r text target < <(sed -n 1p <<<"$links")
     [ "$target" = "examples/$ex.rs" ] || fail "$ex: link 1 is '$target', want examples/$ex.rs"
@@ -109,6 +113,30 @@ check_row() { # check_row <example> <row> <ref>
     else
         fail "$ex: link 5 is '$target', want contracts/proof-status.json#L<n>"
     fi
+
+    # Link 6, the Lean theorem (GH-5), or no link and a cell that says why there is none.
+    if [ "$n" = 6 ]; then
+        IFS=$'\t' read -r text target < <(sed -n 6p <<<"$links")
+        text=${text//\`/}
+        if [[ "$target" =~ ^lean/ProvableContracts/Theorems/([A-Za-z]+)/([A-Za-z0-9_]+)\.lean$ ]]; then
+            dom=${BASH_REMATCH[1]}
+            if [ "${BASH_REMATCH[2]}" != "$text" ]; then
+                fail "$ex: link 6 shows '$text' but targets $target"
+            elif [ ! -f "$target" ]; then
+                fail "$ex: link 6 target $target does not exist"
+            elif ! grep -Eq "^theorem $text([[:space:]]|$)" "$target"; then
+                fail "$ex: link 6 $target declares no theorem $text"
+            elif grep -Eq '(^|[^A-Za-z0-9_])sorry([^A-Za-z0-9_]|$)' "$target"; then
+                fail "$ex: link 6 $target holds a sorry token, so it proves nothing"
+            elif ! grep -Eq "lean_theorem:[[:space:]]*Theorems\.${dom}\.${text}[[:space:]]*$" contracts/*.yaml; then
+                fail "$ex: link 6 $text is named by no contract equation's lean_theorem (Theorems.$dom.$text)"
+            fi
+        else
+            fail "$ex: link 6 is '$target', want lean/ProvableContracts/Theorems/<Domain>/<theorem>.lean"
+        fi
+    elif ! grep -Eq '\| (N/A|not proved yet): [^|]+\|' <<<"$row"; then
+        fail "$ex: no Lean link, and no 'N/A: <reason>' or 'not proved yet: <reason>' cell"
+    fi
 }
 
 check_readme() { # check_readme <README>
@@ -149,13 +177,17 @@ self_test() {
     d=$(mktemp -d)
     mkdir -p "$d/examples" "$d/contracts" "$d/origin/src"
     : >"$d/examples/a_b.rs"
-    : >"$d/contracts/example-a-b-v1.yaml"
+    printf 'equations:\n  e:\n    lean_theorem: Theorems.Dom.thm\n' >"$d/contracts/example-a-b-v1.yaml"
+    mkdir -p "$d/lean/ProvableContracts/Theorems/Dom"
+    printf 'theorem thm : 1 = 1 := rfl\n' >"$d/lean/ProvableContracts/Theorems/Dom/thm.lean"
     printf 'schema: x\ncorpora:\n  - name: nlib\n    ref: %s\n' "$sha" >"$d/contracts/external-corpora.yaml"
     printf '@prefix sh: <x> .\n<https://ont.paiml.dev/v1alpha1/shape/example-a-b-v1> a sh:NodeShape ;\n' >"$d/contracts/shapes.ttl"
     printf '{\n  "contracts": [\n    {\n      "stem": "example-a-b-v1",\n      "proof_level": "L3"\n    }\n  ]\n}\n' >"$d/contracts/proof-status.json"
     printf 'import math\ndef foo(x):\n    return x\n' >"$d/origin/src/nlib.py"
     local py="[\`foo\`](https://github.com/mdipierro/nlib/blob/$sha/src/nlib.py#L2)"
-    row="| [a_b](examples/a_b.rs) | $py | [example-a-b-v1](contracts/example-a-b-v1.yaml) · [shape](contracts/shapes.ttl#L2) | [L3](contracts/proof-status.json#L4) |"
+    row="| [a_b](examples/a_b.rs) | $py | [example-a-b-v1](contracts/example-a-b-v1.yaml) · [shape](contracts/shapes.ttl#L2) | [L3](contracts/proof-status.json#L4) | not proved yet: fixture |"
+    local lean="[\`thm\`](lean/ProvableContracts/Theorems/Dom/thm.lean)"
+    local lrow=${row/not proved yet: fixture/$lean}
     expect() { # expect <0|1> <message> <readme text>
         local got=0
         printf '%s\n' "$3" >"$d/README.md"
@@ -170,6 +202,10 @@ self_test() {
         fi
     }
     expect 0 "a row with all five links, each target verified, passes" "$row"
+    expect 1 "a row with neither a Lean link nor a reason fails" "${row/ not proved yet: fixture |/}"
+    expect 0 "a row whose sixth link is a cited, sorry-free theorem passes" "$lrow"
+    expect 1 "a Lean link to a theorem file that does not exist fails" "${lrow//thm/nope}"
+    expect 1 "a Lean link whose text names another theorem fails" "${lrow/\`thm\`/\`other\`}"
     expect 1 "an example with no row fails" "| nothing |"
     expect 1 "two rows for one example fail" "$row"$'\n'"$row"
     expect 1 "a row missing the Python link fails" "${row/"$py"/}"

@@ -170,6 +170,32 @@ jobs:
       - name: Contracts gate
         run: bash scripts/contracts_gate.sh
 
+  # GH-5: the Lean proofs build against the pinned toolchain and Mathlib (from its
+  # prebuilt cache, never from source), hold no sorry/admit/axiom/native_decide,
+  # and every theorem a contract cites is one of them. Lean needs no Rust, so this
+  # job does not wait for lint-test.
+  lean:
+    name: Lean Proofs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan (lean/lean-toolchain pins the Lean version)
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - uses: actions/cache@v4
+        with:
+          path: lean/.lake/packages
+          key: lake-${{ hashFiles('lean/lean-toolchain', 'lean/lake-manifest.json') }}
+
+      - name: Lean gate self-test
+        run: bash scripts/lean_gate.sh --self-test
+
+      - name: Lean gate (static checks, Mathlib cache, lake build)
+        run: bash scripts/lean_gate.sh
+
   # Advisory until the repo-governance findings (branch protection, deny.toml,
   # roadmap/spec schema) are closed; see docs/ontology-conformance.md.
   comply:
@@ -202,7 +228,7 @@ jobs:
   gate:
     name: gate
     if: always()
-    needs: [lint-test, golden-vectors, parity, kani, mutants, examples, contracts]
+    needs: [lint-test, golden-vectors, parity, kani, mutants, examples, contracts, lean]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

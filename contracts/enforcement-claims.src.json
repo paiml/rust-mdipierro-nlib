@@ -134,22 +134,22 @@
       "plant": "Rust integrate scaled by 1.01: integrate_sin 2.02 against Python 1.99997, Python/Rust Parity red, `gate` red",
       "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475162",
       "limit": "Parity cannot catch a bug the two implementations share"
+    },
+    {
+      "id": "CLAIM-012",
+      "claim": "An equation is true on every input of an exact model (L4)",
+      "mechanism": "`scripts/lean_gate.sh` in the Lean Proofs job: `lake build` of `lean/` with the pinned toolchain and Mathlib; `pv` counts {{LEAN}} theorems there grounded in a contract, and the contracts ratchet fails if that count falls ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5))",
+      "red_when": "a proof that does not check; any `sorry`, `admit`, new `axiom` or `native_decide`; a cited theorem that does not exist or that `lake build` never compiles",
+      "job": "lean",
+      "blocks_merge": true,
+      "required_check": "gate",
+      "plant": "transpose_transpose restated as `(Aᵀ)ᵀ[i,j] = A[j,i]` plus a `sorry` in simpson_exact_cubic: `lake build` unsolved goals and `declaration uses sorry`, the static check names the sorry, Lean Proofs red, `gate` red",
+      "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36320956902/job/108624548190",
+      "limit": "Each theorem is about an exact model (reals, lists in a linear order, row-major arrays), NOT the f64 code: [docs/lean-proofs.md](docs/lean-proofs.md) states each gap. At L4 or above: {{LEAN_L4}}; the other contracts have obligations no theorem covers, and Fourier, random and Monte Carlo are N/A"
     }
   ],
   "unplanted": [],
   "not_enforced": [
-    {
-      "id": "CLAIM-012",
-      "claim": "An equation is true on every input of an exact model (L4)",
-      "mechanism": "Lean 4: {{LEAN}} equation(s) cite a sorry-free, in-tree Lean theorem ([#5](https://github.com/paiml/rust-mdipierro-nlib/issues/5))",
-      "red_when": "nothing: no required check builds Lean yet",
-      "job": "none",
-      "blocks_merge": false,
-      "required_check": "none",
-      "plant": "none",
-      "plant_run": "none",
-      "limit": "No contract is above L3 yet"
-    },
     {
       "id": "CLAIM-013",
       "claim": "The whole library survives mutation testing",

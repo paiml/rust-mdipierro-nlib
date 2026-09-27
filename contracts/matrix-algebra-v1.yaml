@@ -29,6 +29,7 @@ equations:
     tolerance: 1.0e-10
 
   transpose:
+    lean_theorem: Theorems.Dense.transpose_transpose
     formula: 'A^T[i,j] = A[j,i]'
     domain: 'A: f64^{m x n}'
     codomain: 'A^T: f64^{n x m}'

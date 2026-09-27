@@ -7,7 +7,8 @@
 # contract's level and the verified binding count. This script fails when
 #   - a contract in the baseline is gone, or its level is below the baseline,
 #   - a contract in the receipt is missing from the baseline (every level is ratcheted from day one),
-#   - fewer bindings are verified than the baseline records, or any binding is unverified.
+#   - fewer bindings are verified than the baseline records, or any binding is unverified,
+#   - fewer Lean theorems are grounded in a contract equation than the baseline's lean_grounded (GH-5).
 # A level above the baseline passes and is printed, so the baseline can be raised in the same PR.
 #
 # It also fails when the number of Kani harness names the contracts declare, but no
@@ -82,9 +83,13 @@ ratchet() { # ratchet <receipt> <baseline>
               | "FAIL \(.key): at \(.value) but not in the baseline (record it)"),
             (if .totals.bindings_implemented < $b.bindings_implemented
                then "FAIL bindings verified \(.totals.bindings_implemented) < baseline \($b.bindings_implemented)" else empty end),
+            (if (.totals.lean_grounded // 0) < ($b.lean_grounded // 0)
+               then "FAIL Lean theorems grounded in an equation \(.totals.lean_grounded // 0) < baseline \($b.lean_grounded)" else empty end),
+            (if (.totals.lean_grounded // 0) > ($b.lean_grounded // 0)
+               then "RISE Lean theorems grounded \($b.lean_grounded // 0) -> \(.totals.lean_grounded) (raise the baseline)" else empty end),
             (if .totals.bindings_implemented != .totals.bindings_total
                then "FAIL \(.totals.bindings_total - .totals.bindings_implemented) binding(s) not verified in source" else empty end),
-            "levels: \([.contracts[].proof_level] | group_by(.) | map("\(.[0])=\(length)") | join(" ")); bindings \(.totals.bindings_implemented)/\(.totals.bindings_total) verified"
+            "levels: \([.contracts[].proof_level] | group_by(.) | map("\(.[0])=\(length)") | join(" ")); bindings \(.totals.bindings_implemented)/\(.totals.bindings_total) verified; Lean theorems grounded \(.totals.lean_grounded // 0)"
           ] | .[]
 JQ
 ) || {
@@ -134,6 +139,12 @@ self_test() {
     expect 1 "an unverified binding fails"
     printf '{"contracts":[],"totals":{}}\n' >"$d/r.json"
     expect 1 "an empty receipt fails"
+    printf '{"levels":{"a":"L3","b":"L3"},"bindings_implemented":4,"lean_grounded":2}\n' >"$d/b.json"
+    printf '{"contracts":[{"stem":"a","proof_level":"L3"},{"stem":"b","proof_level":"L3"}],"totals":{"bindings_implemented":4,"bindings_total":4,"lean_grounded":2}}\n' >"$d/r.json"
+    expect 0 "as many grounded Lean theorems as the baseline pass"
+    printf '{"contracts":[{"stem":"a","proof_level":"L3"},{"stem":"b","proof_level":"L3"}],"totals":{"bindings_implemented":4,"bindings_total":4,"lean_grounded":1}}\n' >"$d/r.json"
+    expect 1 "fewer grounded Lean theorems than the baseline fails"
+    printf '{"levels":{"a":"L3","b":"L3"},"bindings_implemented":4}\n' >"$d/b.json"
     printf 'not json\n' >"$d/r.json"
     expect 1 "a receipt that is not JSON fails"
     # The Kani phantom ratchet, on a fixture tree.
