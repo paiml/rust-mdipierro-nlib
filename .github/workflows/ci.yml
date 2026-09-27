@@ -12,7 +12,7 @@ env:
 
 jobs:
   gate:
-    name: Test + Lint
+    name: gate  # the org ruleset requires a check named `gate`
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
