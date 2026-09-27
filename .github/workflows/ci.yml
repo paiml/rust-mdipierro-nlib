@@ -65,6 +65,9 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+
+      - name: PLANT (GH-1, reverted before merge) a failing Kani step must turn gate red
+        run: exit 1
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
 
