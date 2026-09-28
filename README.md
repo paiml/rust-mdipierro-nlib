@@ -68,8 +68,8 @@ Each row is a claim entity in [`evidence/enforcement/claims.json`](evidence/enfo
 | The ONT-G contracts gate runs every step | `scripts/contracts_gate.sh`: 6 steps, each RUN with its own status | any step fails; the later steps still run | yes | four faults in one run (phantom baseline, README byte, claims plant run, receipt): 4 of 6 steps failed and all 6 RAN, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175)) | pv is the instrument: its defects pass through ([aprender#4531](https://github.com/paiml/aprender/issues/4531), [aprender#4521](https://github.com/paiml/aprender/issues/4521)) |
 | README.md is generated: every byte comes from `docs/README.md.in` and the ontology | `scripts/readme_sync.sh --check` regenerates the whole file and compares bytes; `scripts/example_links.sh` checks every example link | any README byte differs from the regenerated file; a link whose target does not say what the link claims | yes | one README byte hand-edited (`enforced` to `enforceD`), nothing else: only Contract Validation red (readme step), `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36316337423/job/108611736648)) | The prose in `docs/README.md.in` is written by hand: the gate proves the README matches it, not that the prose is true |
 | Every claim in this table conforms to its closed SHACL shape | this table is rendered from `evidence/enforcement/claims.json`, closed by `contracts/enforcement-claims-v1.yaml`; the generator also checks each claim's job against `scripts/ci_gate.sh` | an enforced claim with no plant run; an advisory check presented as enforced; a claim whose job `gate` does or does not need contrary to its class | yes | the advisory PMAT claim moved into `enforced` in claims.json: the shape names `job: "comply" is not one of [...]`, Contract Validation red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36316963827/job/108613465055)) | The shape checks that a plant run is recorded, not what the run showed: the run itself is the receipt |
-| Proof levels only rise; phantom Kani references only fall | `scripts/proof_ratchet.sh` against `contracts/proof-baseline.json` | a level drops, or phantoms exceed 28 | yes | phantom baseline lowered from 28 to 27: the ratchet reports phantoms rose from 27 to 28, Contract Validation red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175)) | Levels today: 1 at L2, 21 at L3, 1 at L5. pv credits a declared harness toward L3 without checking that it exists |
-| Bounded properties hold for every input within the bound | Kani BMC, 7 harnesses in `src/kani_harnesses.rs` | a counterexample | yes | a strict-order assertion added to verify_quicksort_sorted: Kani reports the assertion failed, Kani BMC red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475259)) | BOUNDED: unwind 4 to 9, so no loop runs more than 8 times. Nothing is proved beyond the bound. Every declared harness exists for 12 of 22 contracts; 28 declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6)) |
+| Proof levels only rise; phantom Kani references only fall | `scripts/proof_ratchet.sh` against `contracts/proof-baseline.json` | a level drops, or phantoms exceed 3 | yes | phantom baseline lowered from 28 to 27: the ratchet reports phantoms rose from 27 to 28, Contract Validation red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475175)) | Levels today: 1 at L2, 21 at L3, 1 at L5. pv credits a declared harness toward L3 without checking that it exists |
+| Bounded properties hold for every input within the bound | Kani BMC, 32 harnesses in `src/kani_harnesses.rs` | a counterexample | yes | a strict-order assertion added to verify_quicksort_sorted: Kani reports the assertion failed, Kani BMC red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475259)) | BOUNDED: unwind 4 to 626, so no loop runs more than 625 times, and most harnesses enumerate a small concrete input domain that their doc comment states. Nothing is proved beyond the bound. Every declared harness exists for 21 of 22 contracts; 3 declared harnesses are phantoms, unproven: see `docs/ontology-conformance.md` ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6)) |
 | Pre- and postconditions hold at runtime | 10 `contract_pre_*!`/`contract_post_*!` macros, written by hand in `build.rs`, at 11 call sites | an assertion panics in a debug or test build | yes | the quicksort postcondition macro inverted in build.rs: 6 tests panic `postcondition violated`, lint-test red, every other job skipped, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36318164016/job/108616712665)) | They expand to `debug_assert!`: release builds are NOT checked at runtime. `quicksort: input exists` (`len < usize::MAX`) can never fail |
 | The tests catch changes to the code a PR touches | `cargo mutants --in-diff` on the PR diff | a mutant on a changed line survives | yes | an untested function (plant_untested_scale) added: 2 mutants missed, Mutation Testing red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475227)) | Code the PR does not touch is not re-checked |
 | Values match the golden vectors from Python nlib | `tests/golden_vectors.rs`, 14 tests | any value outside its tolerance | yes | the quicksort golden vector first value changed from 3 to 4: golden_sort mismatch, Golden Vectors red, `gate` red ([job](https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475217)) | Fixed inputs only |
@@ -238,7 +238,7 @@ harnesses go missing. The missing harnesses are tracked in
 <!-- Generated by scripts/readme_sync.sh from contracts/proof-status.json. Do not edit by hand. -->
 <!-- PROOF_STATUS_START -->
 
-**`pv proof-status` level: L3 (tested + Kani model-checked + Lean-proved), 96/96 bindings verified; the Kani harnesses exist for 12 of the 22 contracts that declare them.**
+**`pv proof-status` level: L3 (tested + Kani model-checked + Lean-proved), 96/96 bindings verified; the Kani harnesses exist for 21 of the 22 contracts that declare them.**
 
 | Measure (`pv proof-status --verify-bindings`) | Value |
 |--------|-------|
@@ -249,12 +249,12 @@ harnesses go missing. The missing harnesses are tracked in
 | Kani harnesses | 48 |
 | Lean theorems proved (grounded in an equation) | 9 (9) |
 | Bindings verified in source | 96/96 |
-| Contracts whose every declared Kani harness exists in `src/` | 12 of 22 |
-| Declared Kani harnesses with no `#[kani::proof]` function (phantom) | 28 |
+| Contracts whose every declared Kani harness exists in `src/` | 21 of 22 |
+| Declared Kani harnesses with no `#[kani::proof]` function (phantom) | 3 |
 
 pv counts a declared `harness:` toward L3 without checking that it exists, so L3 is
-backed by a real Kani proof only for the 12 contracts above. These contracts name
-harnesses that are missing (present of declared): fourier-transform-v1 (0 of 3), graph-algorithms-v1 (0 of 3), integration-v1 (0 of 3), matrix-algebra-v1 (0 of 3), monte-carlo-v1 (0 of 3), nonlinear-solvers-v1 (0 of 3), optimization-v1 (0 of 3), random-generators-v1 (0 of 3), sorting-v1 (1 of 3), statistics-v1 (1 of 3).
+backed by a real Kani proof only for the 21 contracts above. These contracts name
+harnesses that are missing (present of declared): graph-algorithms-v1 (0 of 3).
 `scripts/proof_ratchet.sh` fails the gate if the phantom count rises.
 
 <!-- PROOF_STATUS_END -->
@@ -269,7 +269,7 @@ harnesses that are missing (present of declared): fourier-transform-v1 (0 of 3),
 | Equations | 96 |
 | Bound symbols (extract:code) | 96 resolved, 0 unresolved |
 | SHACL shapes | 12, over 12 focus nodes |
-| Kani BMC harnesses | 7 |
+| Kani BMC harnesses | 32 |
 | Contract grade | B (0.75 mean) |
 | Codebase grade | B (0.89) |
 | External deps | 1 (aprender only) |

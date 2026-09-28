@@ -21,7 +21,8 @@ WORKFLOW=.github/workflows/ci.yml
 
 # jobs_of <workflow> — one TSV row per job: id, name, needs (comma separated), job-level
 # continue-on-error, job-level if. Reads the two-space job keys under `jobs:` and their four-space
-# fields; `needs:` may be a scalar or a one-line [a, b] list.
+# fields; `needs:` may be a scalar or a one-line [a, b] list. A matrix suffix such as
+# " (${{ matrix.shard }})" is dropped from the name: it is one job, whatever its shards.
 jobs_of() {
     awk '
         function flush() { if (id != "") printf "%s\t%s\t%s\t%s\t%s\n", id, name, needs, coe, cond }
@@ -31,7 +32,7 @@ jobs_of() {
         /^  [A-Za-z0-9_-]+:[[:space:]]*$/ {
             flush(); id = $1; sub(/:$/, "", id); name = id; needs = ""; coe = "false"; cond = ""; next
         }
-        /^    name:/ { v = $0; sub(/^    name:[[:space:]]*/, "", v); sub(/[[:space:]]+#.*$/, "", v); name = v; next }
+        /^    name:/ { v = $0; sub(/^    name:[[:space:]]*/, "", v); sub(/[[:space:]]+#.*$/, "", v); sub(/[[:space:]]*\(\$\{\{[^}]*\}\}\)$/, "", v); name = v; next }
         /^    needs:/ {
             v = $0; sub(/^    needs:[[:space:]]*/, "", v); gsub(/[][[:space:]]/, "", v); needs = v; next
         }
@@ -158,6 +159,16 @@ self_test() {
     else
         fail=$((fail + 1))
         echo "FAIL the job parser reads name, needs and continue-on-error"
+        sed 's/^/     /' "$d/rows"
+    fi
+    sed -i 's/^    name: B job$/    name: B job (${{ matrix.shard }})/' "$d/ci.yml"
+    jobs_of "$d/ci.yml" >"$d/rows"
+    if grep -q "$(printf '^b\tB job\t')" "$d/rows"; then
+        pass=$((pass + 1))
+        echo "ok   the job parser drops a matrix suffix from the name"
+    else
+        fail=$((fail + 1))
+        echo "FAIL the job parser drops a matrix suffix from the name"
         sed 's/^/     /' "$d/rows"
     fi
     rm -rf "${d:?}"

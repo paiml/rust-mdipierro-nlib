@@ -13,6 +13,7 @@
 #
 # It also fails when the number of Kani harness names the contracts declare, but no
 # `#[kani::proof]` function under src/ defines, rises above the baseline's phantom_kani_harnesses.
+# And it fails when a `#[kani::proof]` function is not in exactly one shard of the Kani CI job.
 #
 # usage: proof_ratchet.sh [--self-test | --kani-table | receipt.json [baseline.json]]
 set -euo pipefail
@@ -58,6 +59,30 @@ kani_ratchet() {
     fi
     [ "$phantom" -lt "$max" ] && echo "proof-ratchet: RISE phantom harnesses fell $max -> $phantom (lower the baseline)"
     return 0
+}
+
+# kani_ci [dir] — every `#[kani::proof]` function under src/ is named exactly once in the Kani job's
+# shard table in .github/workflows/ci.yml, and the table names no harness that src/ lacks. A harness
+# CI never runs proves nothing, yet it would still count as present above.
+kani_ci() {
+    local dir=${1:-.} have listed missing extra twice
+    have=$(find "$dir/src" -name '*.rs' -exec awk '/#\[kani::proof\]/ { p = 1; next }
+        p && match($0, /fn [A-Za-z0-9_]+/) { print substr($0, RSTART + 3, RLENGTH - 3); p = 0 }' {} + | sort)
+    listed=$(awk '/^ *harnesses: / { for (i = 2; i <= NF; i++) { gsub(/"/, "", $i); if ($i != "") print $i } }' \
+        "$dir/.github/workflows/ci.yml" 2>/dev/null | sort)
+    [ -n "$have" ] && [ -n "$listed" ] || {
+        echo "proof-ratchet: FAIL kani-ci: no harness in src/ or no shard table in ci.yml (nothing measured is a decline)"
+        return 1
+    }
+    missing=$(comm -23 <(uniq <<<"$have") <(uniq <<<"$listed"))
+    extra=$(comm -13 <(uniq <<<"$have") <(uniq <<<"$listed"))
+    twice=$(uniq -d <<<"$listed")
+    echo "proof-ratchet: kani-ci: $(grep -c . <<<"$have") harness(es) in src/, $(grep -c . <<<"$listed") in ci.yml shards"
+    [ -z "$missing$extra$twice" ] && return 0
+    [ -n "$missing" ] && echo "proof-ratchet: FAIL kani-ci: not run by CI:" $missing
+    [ -n "$extra" ] && echo "proof-ratchet: FAIL kani-ci: in ci.yml but not in src/:" $extra
+    [ -n "$twice" ] && echo "proof-ratchet: FAIL kani-ci: in more than one shard:" $twice
+    return 1
 }
 
 ratchet() { # ratchet <receipt> <baseline>
@@ -182,6 +207,25 @@ self_test() {
     }
     rm -f "$d/k/contracts/c.yaml"
     kexpect 1 5 "no contract declaring any harness is a decline, not a pass"
+    # The CI shard table, on the same fixture tree.
+    mkdir -p "$d/k/.github/workflows"
+    cexpect() { # cexpect <0|1> <shard table line> <message>
+        local got=0
+        printf 'jobs:\n  kani:\n    strategy:\n      matrix:\n        include:\n          - shard: a\n            %s\n' "$2" >"$d/k/.github/workflows/ci.yml"
+        kani_ci "$d/k" >"$d/out" 2>&1 || got=1
+        if [ "$got" = "$1" ]; then
+            pass=$((pass + 1))
+            printf 'ok   %s\n' "$3"
+        else
+            fail=$((fail + 1))
+            printf 'FAIL %s\n' "$3"
+            sed 's/^/     /' "$d/out"
+        fi
+    }
+    cexpect 0 'harnesses: "verify_a"' "a harness named once in the shard table passes"
+    cexpect 1 'harnesses: "verify_b"' "a harness CI never runs fails, as does a listed one src/ lacks"
+    cexpect 1 'harnesses: "verify_a verify_a"' "a harness in two shards fails"
+    cexpect 1 'other: "verify_a"' "no shard table is a decline, not a pass"
     rm -rf "${d:?}"
     printf 'proof-ratchet: self-test: %d passed, %d failed\n' "$pass" "$fail"
     [ "$fail" -eq 0 ]
@@ -200,4 +244,5 @@ esac
 rc=0
 ratchet "${1:-contracts/proof-status.json}" "${2:-contracts/proof-baseline.json}" || rc=1
 kani_ratchet "${2:-contracts/proof-baseline.json}" . || rc=1
+kani_ci . || rc=1
 exit "$rc"

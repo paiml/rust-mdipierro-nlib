@@ -16,11 +16,8 @@ test:
 	cargo test --test golden_vectors
 
 kani:
-	cargo kani --harness verify_quicksort_sorted
-	cargo kani --harness verify_quicksort_preserves_length
-	cargo kani --harness verify_variance_non_negative
-	cargo kani --harness verify_mean_constant
-	cargo kani --harness verify_correlation_bounded
+# Every harness, one at a time (-Z stubbing: some replace sort, sqrt, sin_cos or cpuid; see src/kani_harnesses.rs).
+	cargo kani -Z stubbing -j 1
 
 mutants:
 	cargo mutants -j4 -- --lib

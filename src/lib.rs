@@ -36,5 +36,5 @@ pub mod solve;
 pub mod sort;
 pub mod stats;
 
-#[cfg(kani)]
+#[cfg(any(kani, test))]
 mod kani_harnesses;
