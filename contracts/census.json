@@ -13,6 +13,17 @@
   "by_entity_type": {
     "json": 12
   },
+  "by_concept": {
+    "Code": 0,
+    "Contract": 23,
+    "Doc": 0,
+    "Entity": 0,
+    "Example": 11,
+    "Proof": 0,
+    "Receipt": 0,
+    "Symbol": 39,
+    "Test": 0
+  },
   "by_anchoring": {
     "unanchored": 11,
     "class": 0,

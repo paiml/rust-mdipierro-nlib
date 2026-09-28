@@ -14,23 +14,21 @@ Tracking ticket: GH-1 ([#1](https://github.com/paiml/rust-mdipierro-nlib/issues/
 
 | Item | Value |
 |------|-------|
-| aprender (sole runtime dependency) | 0.70.0-dev (car/0.70.0 @ 1274d040d); `rev = "1274d040de369d37bb2a9549af5816658dfb4856"` in `Cargo.toml` [V 2026-09-27] |
-| pv (aprender-contracts-cli) | built from the same rev; reports `pv 0.70.0 (1274d040d)`; CI installs it from the rev in `Cargo.toml` [V 2026-09-27] |
-| Upgrade path | next CI-green car/0.70.0 rev (between PRs only) → `v0.70.0` tag → crates.io [C GH-1] |
+| aprender (sole runtime dependency) | 0.70.0-dev (fleet 0.70 dev @ d13f86934, head of paiml/aprender#4502 batch/ont-10); `rev = "d13f8693440b140d7d75ee42b5d8ae3869a1f211"` in `Cargo.toml` [V 2026-09-28] |
+| pv (aprender-contracts-cli) | built from the same rev; reports `pv 0.70.0 (d13f86934)`; CI installs it from the rev in `Cargo.toml` [V 2026-09-28] |
+| Upgrade path | main (or `v0.70.0-rc.1`) once ONT-10 (paiml/aprender#4502) merges → `v0.70.0` tag → crates.io [C GH-1] |
 
 ### Upstream CI state at the pin
 
-Check runs on paiml/aprender@1274d040d, observed 2026-09-27. They are recorded
-here and not fixed (this repo never patches aprender).
+Check runs on paiml/aprender@d13f86934, observed 2026-09-28. The rev is a PR head, not
+a CI-green main commit; it is pinned because the fleet builds 0.70 against it. The
+failures are recorded here and not fixed (this repo never patches aprender).
 
 | Upstream check | Conclusion |
 |----------------|------------|
-| ci / gate, determinism, workspace-test shards 1–3, Contract Enforcement | success [V 2026-09-27] |
-| `x86-main` | **failure** [V 2026-09-27] |
-| `gate` | **failure** |
-| `present` | **failure** |
-| `yoga` | cancelled |
-| `coverage` | in progress |
+| determinism, Build Book, Book Integration Tests, Namespace Discipline, install_test.sh, mac-check, gx10, gpu-touched | success [V 2026-09-28] |
+| `ci / gate`, `gate`, `present`, `workspace-test`, `workspace-test-shard (2)` | **failure** [V 2026-09-28] |
+| workspace-test shards 1 and 3, Contract Enforcement, `x86-main`, `yoga`, chapter examples, SUMMARY.md Integrity | cancelled [V 2026-09-28] |
 
 ## Conformance rows
 
