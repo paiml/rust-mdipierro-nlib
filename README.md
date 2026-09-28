@@ -11,7 +11,7 @@ and Finance* ([Amazon](https://www.amazon.com/dp/0991160401); the author's
 free PDF, CC BY-NC-ND 3.0, is in [mdipierro/nlib](https://github.com/mdipierro/nlib)).
 
 **Sole dependency:** [`aprender`](https://github.com/paiml/aprender) 0.70.0-dev
-(car/0.70.0 @ 1274d040d), pinned by git rev until v0.70.0 is tagged and
+(fleet 0.70 dev @ d13f86934), pinned by git rev until v0.70.0 is tagged and
 published on crates.io — no other external crates.
 
 ## Contract Coverage
@@ -208,10 +208,10 @@ The gate **fails closed**:
 |--------|-------|
 | SHACL shapes (one per example contract) | 12 |
 | Focus nodes (example `--json` receipts in `evidence/examples/`) | 12 |
-| RDF triples checked | 1571 |
+| RDF triples checked | 1670 |
 | Violations | 0 (any violation is exit 1) |
 | Planted control: pv's own broken receipt must violate | fired, 71 violations |
-| Extractor controls fired | 13 of 13 |
+| Extractor controls fired | 19 of 19 |
 | W3C SHACL conformance cases | 19 of 19 |
 | Bound symbols resolved in source | 96 (0 unresolved) |
 
