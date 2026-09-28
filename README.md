@@ -208,10 +208,10 @@ The gate **fails closed**:
 |--------|-------|
 | SHACL shapes (one per example contract) | 12 |
 | Focus nodes (example `--json` receipts in `evidence/examples/`) | 12 |
-| RDF triples checked | 1670 |
+| RDF triples checked | 1571 |
 | Violations | 0 (any violation is exit 1) |
 | Planted control: pv's own broken receipt must violate | fired, 71 violations |
-| Extractor controls fired | 19 of 19 |
+| Extractor controls fired | 13 of 13 |
 | W3C SHACL conformance cases | 19 of 19 |
 | Bound symbols resolved in source | 96 (0 unresolved) |
 

@@ -339,8 +339,6 @@
     }
   ],
   "l4_self_declared_excluded": true,
-  "l4_source": "self-declared",
-  "l4_withheld": null,
   "totals": {
     "contracts": 23,
     "obligations": 81,

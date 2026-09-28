@@ -321,6 +321,7 @@ mod proofs {
     /// 0, -0, pi and -pi, returning what libm returns there (sin(pi) is 1.2246e-16, not 0).
     /// Elsewhere it stays as loose as Kani's own model. The FFT proofs below therefore cover
     /// N = 2 only, and they assume libm's values at those four angles.
+    #[allow(dead_code)] // reached only through #[kani::stub], which rustc does not see
     fn stub_sin_cos(x: f64) -> (f64, f64) {
         const SIN_PI: f64 = 1.224_646_799_147_353_2e-16;
         if x == 0.0 {
@@ -383,12 +384,14 @@ mod proofs {
 
     /// Stands in for f32::powi and f64::powi, whose CBMC model leaves the result loose. For n = 2
     /// compiler-rt's __powisf2/__powidf2 return exactly x * x, which is what this returns.
+    #[allow(dead_code)] // reached only through #[kani::stub], which rustc does not see
     fn stub_powi_f32(x: f32, n: i32) -> f32 {
         assert_eq!(n, 2, "stub_powi_f32 covers n = 2 only");
         x * x
     }
 
     /// See stub_powi_f32.
+    #[allow(dead_code)] // reached only through #[kani::stub], which rustc does not see
     fn stub_powi_f64(x: f64, n: i32) -> f64 {
         assert_eq!(n, 2, "stub_powi_f64 covers n = 2 only");
         x * x
@@ -397,6 +400,7 @@ mod proofs {
     /// Stands in for the cpuid instruction (inline asm, which Kani rejects) that std's feature
     /// detection runs when ChaCha seeds. All-zero registers report a CPU without SIMD, so ChaCha
     /// takes its portable path, which by design yields the same stream.
+    #[allow(dead_code)] // reached only through #[kani::stub], which rustc does not see
     fn stub_cpuid(_leaf: u32, _sub_leaf: u32) -> std::arch::x86_64::CpuidResult {
         std::arch::x86_64::CpuidResult {
             eax: 0,
@@ -408,12 +412,14 @@ mod proofs {
 
     /// Stands in for aprender's chi-square p-value, an incomplete-gamma series that Kani cannot
     /// unwind. nlib reads only the statistic, which is still computed for real.
+    #[allow(dead_code)] // reached only through #[kani::stub], which rustc does not see
     fn stub_chi_square_pvalue(_chi2: f32, _df: usize) -> f32 {
         0.0
     }
 
     /// Stands in for MonteCarloRng::uniform, whose ChaCha backend runs cpuid (inline asm, which
     /// Kani rejects). It returns any value in [0, 1), so a harness using it covers every stream.
+    #[allow(dead_code)] // reached only through #[kani::stub], which rustc does not see
     fn stub_uniform(_rng: &mut aprender::monte_carlo::prelude::MonteCarloRng) -> f64 {
         let u: f64 = kani::any();
         kani::assume((0.0..1.0).contains(&u));
@@ -628,6 +634,7 @@ mod proofs {
 #[cfg(any(kani, test))]
 mod exact_sqrt {
     /// sqrt(x) for x = +0 or a positive normal finite x; asserts on any other input.
+    #[cfg_attr(kani, allow(dead_code))] // under Kani, reached only through #[kani::stub]
     pub(crate) fn sqrt(x: f64) -> f64 {
         if x == 0.0 {
             return x;
