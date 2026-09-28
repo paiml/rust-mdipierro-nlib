@@ -26,6 +26,6 @@
     "statistics-v1": "L5"
   },
   "bindings_implemented": 96,
-  "phantom_kani_harnesses": 28,
+  "phantom_kani_harnesses": 3,
   "lean_grounded": 9
 }

@@ -58,11 +58,25 @@ jobs:
       - name: Falsify Python/Rust parity
         run: uv run tests/falsify_parity.py
 
+  # One shard per job, so no job nears its timeout. scripts/proof_ratchet.sh (kani-ci) fails the
+  # contracts gate unless every #[kani::proof] in src/ is named in exactly one `harnesses:` line.
   kani:
-    name: Kani BMC
+    name: Kani BMC (${{ matrix.shard }})
     runs-on: ubuntu-latest
     needs: lint-test
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: core
+            harnesses: "verify_transpose_involution verify_variance_non_negative verify_correlation_bounded verify_quicksort_sorted verify_quicksort_length verify_within_sound verify_simpson_rejects_odd_n verify_variance_nonneg verify_chi2_nonneg verify_matmul_shape verify_metropolis_balance verify_lcg_range verify_lcg_deterministic verify_mt_range verify_mc_unbiased verify_bootstrap_nonneg"
+          - shard: numerical
+            harnesses: "verify_trapezoid_linear_exact verify_simpson_cubic_exact verify_adaptive_convergence verify_bisection_convergence verify_newton_convergence verify_bisection_interval verify_newton_opt_convergence verify_golden_section_convergence verify_gradient_descent_monotone verify_fft_dft_equivalence verify_idft_roundtrip verify_parseval_theorem"
+          - shard: sort-cholesky
+            harnesses: "verify_sort_permutation verify_mergesort_stable verify_cholesky_roundtrip"
+          - shard: inverse
+            harnesses: "verify_inverse_roundtrip"
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -70,18 +84,14 @@ jobs:
 
       - name: Install Kani
         run: |
-          cargo install kani-verifier
+          cargo install --locked kani-verifier --version 0.68.0
           cargo kani setup
 
       - name: Verify harnesses
         run: |
-          cargo kani --harness verify_transpose_involution
-          cargo kani --harness verify_variance_non_negative
-          cargo kani --harness verify_correlation_bounded
-          cargo kani --harness verify_quicksort_sorted
-          cargo kani --harness verify_quicksort_length
-          cargo kani --harness verify_within_sound
-          cargo kani --harness verify_simpson_rejects_odd_n
+          for h in ${{ matrix.harnesses }}; do
+            cargo kani --harness "$h" -Z stubbing
+          done
 
   # PRs: every mutant on a changed line must be caught (blocking).
   # main: full sweep, advisory until the pre-existing missed-mutant backlog

@@ -85,7 +85,7 @@
       "required_check": "gate",
       "plant": "a strict-order assertion added to verify_quicksort_sorted: Kani reports the assertion failed, Kani BMC red, `gate` red",
       "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475259",
-      "limit": "BOUNDED: unwind {{UNWIND_MIN}} to {{UNWIND_MAX}}, so no loop runs more than {{UNWIND_LOOPS}} times. Nothing is proved beyond the bound. Every declared harness exists for {{KANI_BACKED}} of {{KANI_CONTRACTS}} contracts; {{PHANTOM}} declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6))"
+      "limit": "BOUNDED: unwind {{UNWIND_MIN}} to {{UNWIND_MAX}}, so no loop runs more than {{UNWIND_LOOPS}} times, and most harnesses enumerate a small concrete input domain that their doc comment states. Nothing is proved beyond the bound. Every declared harness exists for {{KANI_BACKED}} of {{KANI_CONTRACTS}} contracts; {{PHANTOM}} declared harnesses are phantoms, unproven: see `docs/ontology-conformance.md` ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6))"
     },
     {
       "id": "CLAIM-008",

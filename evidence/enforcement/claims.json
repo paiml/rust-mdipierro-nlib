@@ -67,7 +67,7 @@
       "id": "CLAIM-006",
       "claim": "Proof levels only rise; phantom Kani references only fall",
       "mechanism": "`scripts/proof_ratchet.sh` against `contracts/proof-baseline.json`",
-      "red_when": "a level drops, or phantoms exceed 28",
+      "red_when": "a level drops, or phantoms exceed 3",
       "job": "contracts",
       "blocks_merge": true,
       "required_check": "gate",
@@ -78,14 +78,14 @@
     {
       "id": "CLAIM-007",
       "claim": "Bounded properties hold for every input within the bound",
-      "mechanism": "Kani BMC, 7 harnesses in `src/kani_harnesses.rs`",
+      "mechanism": "Kani BMC, 32 harnesses in `src/kani_harnesses.rs`",
       "red_when": "a counterexample",
       "job": "kani",
       "blocks_merge": true,
       "required_check": "gate",
       "plant": "a strict-order assertion added to verify_quicksort_sorted: Kani reports the assertion failed, Kani BMC red, `gate` red",
       "plant_run": "https://github.com/paiml/rust-mdipierro-nlib/actions/runs/36315537960/job/108609475259",
-      "limit": "BOUNDED: unwind 4 to 9, so no loop runs more than 8 times. Nothing is proved beyond the bound. Every declared harness exists for 12 of 22 contracts; 28 declared harnesses are phantoms ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6))"
+      "limit": "BOUNDED: unwind 4 to 626, so no loop runs more than 625 times, and most harnesses enumerate a small concrete input domain that their doc comment states. Nothing is proved beyond the bound. Every declared harness exists for 21 of 22 contracts; 3 declared harnesses are phantoms, unproven: see `docs/ontology-conformance.md` ([#6](https://github.com/paiml/rust-mdipierro-nlib/issues/6))"
     },
     {
       "id": "CLAIM-008",
